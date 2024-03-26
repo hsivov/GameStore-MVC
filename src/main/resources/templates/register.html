@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header}"></header>
+    <main>
+        <div class="container">
+            <h1>Sign Up</h1>
+            <form th:action="@{/register}" th:method="POST" th:object="${userRegisterBindingModel}">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input id="username" type="text" th:field="*{username}">
+                    <small th:errors="*{username}" class="text-danger">Username error message</small>
+                </div>
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input id="email" type="email" th:field="*{email}">
+                    <small th:errors="*{email}" class="text-danger">E-mail error message</small>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input id="password" type="password" th:field="*{password}">
+                    <small th:errors="*{password}" class="text-danger">Password error message</small>
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input id="confirm-password" type="password" th:field="*{confirmPassword}">
+                </div>
+
+                <button type="submit" class="btn-submit">Register</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

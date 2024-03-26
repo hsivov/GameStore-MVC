@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header}"></header>
+    <main>
+        <div class="container">
+            <div class="input-group">
+                <div th:if="${hasLoginError}"
+                     th:text="'Incorrect username or password'" class="text-danger">Login error message</div>
+            </div>
+            <h1>Login</h1>
+            <form th:action="@{/login}" th:method="POST" th:object="${userLoginBindingModel}">
+
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input id="username" type="text" th:field="*{username}">
+                    <small th:errors="*{username}" class="text-danger">Username error message</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input id="password" type="password" th:field="*{password}">
+                    <small th:errors="*{password}" class="text-danger">Password error message</small>
+                </div>
+                
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+            <div class="create-account">
+                <p>You don't have an account? It's free <a th:href="@{/register}">Create an account.</a></p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

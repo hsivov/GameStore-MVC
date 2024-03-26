@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Store</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+<header>
+    <div class="wrapper">
+        <div class="logo">
+            <h1>Game Store</h1><small>&#169;</small>
+        </div>
+        <div class="user">
+            <p th:if="${@loggedUser.isLogged()}" th:text="'Welcome: ' + ${@loggedUser.getUsername()}"></p>
+        </div>
+    </div>
+    <nav class="navbar">
+        <div class="store-nav">
+            <ul role="list">
+                <li>
+                    <a th:classappend="${classActiveStore}" href="#">Store</a>
+                </li>
+                <li>
+                    <a href="#">Library</a>
+                </li>
+            </ul>
+        </div>
+        <div class="user-nav">
+            <ul role="list">
+                <li>
+                    <a><i class="fa-solid fa-cart-shopping"></i></a>
+                </li>
+                <li>
+                    <a href="#">Profile</a>
+                </li>
+                <li>
+                    <a th:classappend="${classActiveRegister}" th:href="@{/register}">Sign Up</a>
+                </li>
+                <li>
+                    <a th:classappend="${classActiveLogin}" th:href="@{/login}">Login</a>
+                </li>
+                <li>
+                    <a href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+</body>
+</html>
