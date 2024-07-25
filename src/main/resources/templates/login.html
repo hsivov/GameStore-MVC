@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/commons::head}">
 </head>
 <body>
-<header th:replace="~{fragments/commons::header}"></header>
+<header th:replace="~{fragments/commons::header(activeLink=${'login'})}"></header>
     <main>
         <div class="container">
             <div class="input-group">
@@ -11,7 +11,7 @@
                      th:text="'Incorrect username or password'" class="text-danger">Login error message</div>
             </div>
             <h1>Login</h1>
-            <form th:action="@{/login}" th:method="POST" th:object="${userLoginBindingModel}">
+            <form th:action="@{/users/login}" th:method="POST" th:object="${userLoginBindingModel}">
 
                 <div class="input-group">
                     <label for="username">Username</label>
