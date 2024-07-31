@@ -2,6 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
+import org.example.gamestoreapp.model.dto.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -55,5 +56,15 @@ public class UserController {
 
         // register user
         return new ModelAndView("redirect:/users/login");
+    }
+
+    @GetMapping("/profile")
+    public ModelAndView profile() {
+        ModelAndView modelAndView = new ModelAndView("profile");
+
+        UserProfileViewModel userProfileViewModel = userService.viewProfile();
+        modelAndView.addObject("userProfileViewModel", userProfileViewModel);
+
+        return modelAndView;
     }
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+    <div th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></div>
+    <main>
+        <section class="profile">
+            <div class="profile-card">
+                <h1>Account Details</h1>
+                <div class="profile-card-img"><img src="/images/profile.jpg" alt="Avatar" width="100"></div>
+                <div class="profile-card-wrapper">
+                    <span th:text="${userProfileViewModel.role}">Pro</span>
+                    <h5>Full name</h5>
+                    <span th:text="${userProfileViewModel.fullName}">UI/UX Designer</span>
+                    <h5>Username</h5>
+                    <span th:text="${userProfileViewModel.username}">UI/UX Designer</span>
+                    <h5>Age</h5>
+                    <span th:text="${userProfileViewModel.age}">33</span>
+                    <div>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Enim et nostrum
+                            optio perferendis quam quod ratione rem sit soluta ut! A dolor laborum, maiores neque
+                            nesciunt quis rerum sunt suscipit. </p>
+                    </div>
+                    <div class="social-list">
+                        <i class="fab fa-facebook-square"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-linkedin"></i>
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div>
+                        <a href="/">Back</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -2,6 +2,7 @@ package org.example.gamestoreapp.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public class UserRegisterBindingModel {
@@ -10,6 +11,10 @@ public class UserRegisterBindingModel {
     @Email
     @NotBlank(message = "Email cannot be empty!")
     private String email;
+    @NotBlank(message = "Full name cannot be empty!")
+    private String fullName;
+    @Positive(message = "Age must be positive number!")
+    private int age;
     @Size(min = 4, max = 20, message = "Password length must be between 4 and 20 characters!")
     private String password;
     private String confirmPassword;
@@ -28,6 +33,22 @@ public class UserRegisterBindingModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getPassword() {

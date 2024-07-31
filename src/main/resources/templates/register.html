@@ -19,6 +19,16 @@
                     <small th:errors="*{email}" class="text-danger">E-mail error message</small>
                 </div>
                 <div class="input-group">
+                    <label for="full-name">Full name</label>
+                    <input id="full-name" type="text" th:field="*{fullName}">
+                    <small th:errors="*{fullName}" class="text-danger">Full name error message</small>
+                </div>
+                <div class="input-group">
+                    <label for="age">Age</label>
+                    <input id="age" type="number" th:field="*{age}">
+                    <small th:errors="*{age}" class="text-danger">Age error message</small>
+                </div>
+                <div class="input-group">
                     <label for="password">Password</label>
                     <input id="password" type="password" th:field="*{password}">
                     <small th:errors="*{password}" class="text-danger">Password error message</small>

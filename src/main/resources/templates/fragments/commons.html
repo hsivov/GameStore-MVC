@@ -35,7 +35,7 @@
                     <a><i class="fa-solid fa-cart-shopping"></i></a>
                 </li>
                 <li>
-                    <a href="#">Profile</a>
+                    <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/users/profile}">Profile</a>
                 </li>
                 <li>
                     <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/users/register}">Sign Up</a>
