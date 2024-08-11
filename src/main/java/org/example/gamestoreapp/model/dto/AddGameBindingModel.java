@@ -1,29 +1,17 @@
-package org.example.gamestoreapp.model.entity;
+package org.example.gamestoreapp.model.dto;
 
-import jakarta.persistence.*;
 import org.example.gamestoreapp.model.enums.GenreName;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "titles")
-public class Game extends BaseEntity{
-    @Column(nullable = false)
+public class AddGameBindingModel {
     private String title;
-    @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(nullable = false)
     private String imageThumbnail;
-    @Column(nullable = false)
     private LocalDate releaseDate;
-    @Column(nullable = false)
     private String publisher;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private GenreName genre;
-    @Column(nullable = false)
     private BigDecimal price;
 
     public String getTitle() {

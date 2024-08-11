@@ -1,4 +1,4 @@
-package org.example.gamestoreapp.model.dto;
+package org.example.gamestoreapp.model.view;
 
 public class UserProfileViewModel {
     private String username;

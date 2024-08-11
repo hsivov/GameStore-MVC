@@ -21,30 +21,32 @@
     <nav class="navbar">
         <div class="store-nav">
             <ul role="list">
-                <li>
-                    <a th:classappend="${activeLink == 'index'} ? 'active'" href="#">Store</a>
+                <li th:if="${@userHelperService.isAuthenticated()}">
+                    <a href="#">Library</a>
                 </li>
                 <li>
-                    <a href="#">Library</a>
+                    <a th:classappend="${activeLink == 'index'} ? 'active'" href="#">Store</a>
                 </li>
             </ul>
         </div>
         <div class="user-nav">
             <ul role="list">
-                <li>
+                <li th:if="${@userHelperService.isAuthenticated()}">
                     <a><i class="fa-solid fa-cart-shopping"></i></a>
                 </li>
-                <li>
+                <li th:if="${@userHelperService.isAuthenticated()}">
                     <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/users/profile}">Profile</a>
                 </li>
-                <li>
+                <li th:unless="${@userHelperService.isAuthenticated()}">
                     <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/users/register}">Sign Up</a>
                 </li>
-                <li>
+                <li th:unless="${@userHelperService.isAuthenticated()}">
                     <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/users/login}">Login</a>
                 </li>
-                <li>
-                    <a href="#">Logout</a>
+                <li th:if="${@userHelperService.isAuthenticated()}">
+                    <form th:method="POST" th:action="@{/users/logout}">
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
                 </li>
             </ul>
         </div>

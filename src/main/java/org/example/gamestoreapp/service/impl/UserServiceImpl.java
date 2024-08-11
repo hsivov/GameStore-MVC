@@ -1,6 +1,6 @@
 package org.example.gamestoreapp.service.impl;
 
-import org.example.gamestoreapp.model.dto.UserProfileViewModel;
+import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;

@@ -81,7 +81,7 @@ a.active{
 label {
     margin-top: 0.5rem;
     display: block;
-    color: white;
+    color: #1a9fff;
 }
 
 .text-danger {
@@ -94,6 +94,7 @@ input {
     width: 26rem;
     height: 2rem;
     background-color: #32353c;
+    color: white;
     border: none;
     border-radius: 2px;
 }
@@ -173,7 +174,6 @@ input {
 }
 
 .btn-logout {
-    padding: 5px 10px;
     color: white;
     font-size: 1.75rem;
     background: transparent;

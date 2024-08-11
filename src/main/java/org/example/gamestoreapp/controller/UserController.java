@@ -2,7 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
-import org.example.gamestoreapp.model.dto.UserProfileViewModel;
+import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.service.UserService;
 import org.springframework.stereotype.Controller;
