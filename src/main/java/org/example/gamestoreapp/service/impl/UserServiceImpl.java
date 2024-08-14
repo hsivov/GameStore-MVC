@@ -24,17 +24,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean register(UserRegisterBindingModel userRegisterBindingModel) {
-        if (!userRegisterBindingModel.getPassword().equals(userRegisterBindingModel.getConfirmPassword())) {
-            return false;
-        }
-
-        boolean existsByUsernameOrEmail = userRepository.existsByUsernameOrEmail(
-                userRegisterBindingModel.getUsername(), userRegisterBindingModel.getEmail()
-        );
-
-        if (existsByUsernameOrEmail) {
-            return false;
-        }
 
         User user = new User();
         user.setUsername(userRegisterBindingModel.getUsername());
@@ -60,5 +49,15 @@ public class UserServiceImpl implements UserService {
         userProfileViewModel.setFullName(currentUser.getFullName());
 
         return userProfileViewModel;
+    }
+
+    @Override
+    public boolean isUniqueEmail(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean isUniqueUsername(String username) {
+        return userRepository.findByUsername(username).isEmpty();
     }
 }

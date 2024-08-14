@@ -36,6 +36,7 @@
                 <div class="input-group">
                     <label for="confirm-password">Confirm Password</label>
                     <input id="confirm-password" type="password" th:field="*{confirmPassword}">
+                    <small th:errors="*{confirmPassword}" class="text-danger">Password error message</small>
                 </div>
 
                 <button type="submit" class="btn-submit">Register</button>

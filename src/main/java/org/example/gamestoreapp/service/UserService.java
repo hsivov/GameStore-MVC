@@ -7,4 +7,8 @@ public interface UserService {
     boolean register(UserRegisterBindingModel userRegisterBindingModel);
 
     UserProfileViewModel viewProfile();
+
+    boolean isUniqueEmail(String email);
+
+    boolean isUniqueUsername(String username);
 }

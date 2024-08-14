@@ -4,12 +4,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.example.gamestoreapp.validation.annotation.PasswordMatches;
+import org.example.gamestoreapp.validation.annotation.UniqueEmail;
+import org.example.gamestoreapp.validation.annotation.UniqueUsername;
 
+@PasswordMatches
 public class UserRegisterBindingModel {
     @Size(min = 3, max = 30, message = "Username length must be between 3 and 30 characters!")
+    @UniqueUsername
     private String username;
     @Email
     @NotBlank(message = "Email cannot be empty!")
+    @UniqueEmail
     private String email;
     @NotBlank(message = "Full name cannot be empty!")
     private String fullName;
