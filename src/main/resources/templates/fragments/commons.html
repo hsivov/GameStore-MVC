@@ -21,11 +21,14 @@
     <nav class="navbar">
         <div class="store-nav">
             <ul role="list">
+                <li th:if="${@userHelperService.hasRole('ADMIN')}">
+                    <a th:href="@{/admin/users}" th:classappend="${activeLink == 'admin'} ? 'active'">Admin panel</a>
+                </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <a href="#">Library</a>
                 </li>
                 <li>
-                    <a th:classappend="${activeLink == 'index'} ? 'active'" href="#">Store</a>
+                    <a th:classappend="${activeLink == 'index'} ? 'active'" th:href="@{/}">Store</a>
                 </li>
             </ul>
         </div>

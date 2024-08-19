@@ -12,7 +12,7 @@
                 <div class="profile-card-wrapper">
                     <span th:text="${userProfileViewModel.role}">Pro</span>
                     <h5>Full name</h5>
-                    <span th:text="${userProfileViewModel.fullName}">UI/UX Designer</span>
+                    <span th:text="${userProfileViewModel.firstName} + ' ' + ${userProfileViewModel.lastName}">UI/UX Designer</span>
                     <h5>Username</h5>
                     <span th:text="${userProfileViewModel.username}">UI/UX Designer</span>
                     <h5>Age</h5>

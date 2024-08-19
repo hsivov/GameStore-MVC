@@ -4,6 +4,20 @@
 </head>
 <body>
     <header th:replace="~{fragments/commons::header(activeLink=${'index'})}"></header>
-
+<section class="games">
+    <div class="game-card" th:each="game: ${games}">
+        <div class="game-image">
+            <img th:src="${game.imageThumbnail}">
+        </div>
+        <div class="game-content">
+            <h1 th:text="${game.title}"></h1>
+            <p th:text="${game.description}"></p>
+            <p th:text="${game.publisher}"></p>
+            <h5 th:text="${game.price}"></h5>
+            <p th:text="${game.releaseDate}"></p>
+            <p th:text="${game.genre}"></p>
+        </div>
+    </div>
+</section>
 </body>
 </html>

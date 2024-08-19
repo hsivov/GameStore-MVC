@@ -13,7 +13,9 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+    @Column(nullable = false)
+    private String lastName;
     @Column(nullable = false)
     private int age;
     @Column(nullable = false)
@@ -44,12 +46,20 @@ public class User extends BaseEntity{
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getAge() {

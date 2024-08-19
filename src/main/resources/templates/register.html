@@ -19,9 +19,14 @@
                     <small th:errors="*{email}" class="text-danger">E-mail error message</small>
                 </div>
                 <div class="input-group">
-                    <label for="full-name">Full name</label>
-                    <input id="full-name" type="text" th:field="*{fullName}">
-                    <small th:errors="*{fullName}" class="text-danger">Full name error message</small>
+                    <label for="first-name">First name</label>
+                    <input id="first-name" type="text" th:field="*{firstName}">
+                    <small th:errors="*{firstName}" class="text-danger">Full name error message</small>
+                </div>
+                <div class="input-group">
+                    <label for="last-name">Full name</label>
+                    <input id="last-name" type="text" th:field="*{lastName}">
+                    <small th:errors="*{lastName}" class="text-danger">Full name error message</small>
                 </div>
                 <div class="input-group">
                     <label for="age">Age</label>

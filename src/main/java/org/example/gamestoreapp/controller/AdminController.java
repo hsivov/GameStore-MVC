@@ -7,10 +7,7 @@ import org.example.gamestoreapp.service.AdminService;
 import org.example.gamestoreapp.util.GenreConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -25,6 +22,28 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    @GetMapping("/users")
+    public ModelAndView users() {
+        ModelAndView view = new ModelAndView("admin");
+        view.addObject("users", adminService.getAllUsers());
+
+        return view;
+    }
+
+    @PostMapping("/user/promote/{id}")
+    public ModelAndView promote(@PathVariable("id") long id) {
+        adminService.promote(id);
+
+        return new ModelAndView("redirect:/admin/users");
+    }
+
+    @PostMapping("/user/delete/{id}")
+    public ModelAndView delete(@PathVariable("id") long id) {
+        adminService.delete(id);
+
+        return new ModelAndView("redirect:/admin/users");
+    }
+
     @GetMapping("/add-game")
     public ModelAndView addGame(@ModelAttribute("addGameBindingModel")AddGameBindingModel addGameBindingModel) {
         ModelAndView modelAndView = new ModelAndView("add-game");
@@ -36,7 +55,8 @@ public class AdminController {
 
     @PostMapping("/add-game")
     public ModelAndView addGame(@ModelAttribute("addGameBindingModel") @Valid AddGameBindingModel addGameBindingModel,
-                                BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("addGameBindingModel", addGameBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.addGameBindingModel", bindingResult);

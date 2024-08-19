@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
+<div id="content-wrapper">
+    <div class="sidebar">
+        <a href="#" class="active">User management</a>
+        <a href="#">Game management</a>
+        
+    </div>
+    <div class="dashboard">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">User Id</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Role</th>
+                <th scope="col">Delete</th>
+                <th scope="col">Update</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.firstName}">Hristina</td>
+                <td th:text="${user.lastName}">Racheva</td>
+                <td th:text="${user.email}">hristina@test.com</td>
+                <td th:text="${user.role}">User</td>
+
+                <td>
+                    <form th:method="POST" th:action="@{/admin/user/promote/{id}(id=${user.id})}">
+                        <button type="submit" class="btn warning">Promote</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:method="POST" th:action="@{/admin/user/delete/{id}(id=${user.id})}">
+                        <button type="submit" class="btn danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

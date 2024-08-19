@@ -17,8 +17,10 @@ public class UserRegisterBindingModel {
     @NotBlank(message = "Email cannot be empty!")
     @UniqueEmail
     private String email;
-    @NotBlank(message = "Full name cannot be empty!")
-    private String fullName;
+    @NotBlank(message = "First name cannot be empty!")
+    private String firstName;
+    @NotBlank(message = "Last name cannot be empty!")
+    private String lastName;
     @Positive(message = "Age must be positive number!")
     private int age;
     @Size(min = 4, max = 20, message = "Password length must be between 4 and 20 characters!")
@@ -41,12 +43,20 @@ public class UserRegisterBindingModel {
         this.email = email;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getAge() {

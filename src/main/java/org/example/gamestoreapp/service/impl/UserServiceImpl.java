@@ -28,7 +28,8 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(userRegisterBindingModel.getUsername());
         user.setEmail(userRegisterBindingModel.getEmail());
-        user.setFullName(userRegisterBindingModel.getFullName());
+        user.setFirstName(userRegisterBindingModel.getFirstName());
+        user.setLastName(userRegisterBindingModel.getLastName());
         user.setAge(userRegisterBindingModel.getAge());
         user.setPassword(passwordEncoder.encode(userRegisterBindingModel.getPassword()));
         user.setRole(UserRole.USER);
@@ -46,7 +47,8 @@ public class UserServiceImpl implements UserService {
         userProfileViewModel.setUsername(currentUser.getUsername());
         userProfileViewModel.setRole(currentUser.getRole().toString());
         userProfileViewModel.setAge(currentUser.getAge());
-        userProfileViewModel.setFullName(currentUser.getFullName());
+        userProfileViewModel.setFirstName(currentUser.getFirstName());
+        userProfileViewModel.setLastName(currentUser.getLastName());
 
         return userProfileViewModel;
     }

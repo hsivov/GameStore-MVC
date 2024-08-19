@@ -3,7 +3,8 @@ package org.example.gamestoreapp.model.view;
 public class UserProfileViewModel {
     private String username;
     private String role;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private int age;
 
     public UserProfileViewModel() {}
@@ -24,12 +25,20 @@ public class UserProfileViewModel {
         this.role = role;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getAge() {

@@ -42,11 +42,6 @@ ul li {
     text-decoration: none;
 }
 
-a.active{
-    color: #1a9fff;
-    text-decoration: underline;
-}
-
 .user-nav, .store-nav{
     width: 50%;
     margin-right: 10px;
@@ -180,3 +175,56 @@ input {
     border: none;
     cursor: pointer;
 }
+
+#content-wrapper {
+    display: flex;
+}
+
+.sidebar {
+    padding: 2rem;
+    width: 20%;
+    background-color: #395688;
+}
+
+.sidebar a{
+    margin-bottom: 1rem;
+    display: block;
+    text-decoration: none;
+    color: #fff;
+}
+
+a.active{
+    color: #1a9fff;
+    text-decoration: underline;
+}
+
+.dashboard {
+    width: 80%;
+    padding: 3rem 4rem;
+    background-color: white;
+}
+
+table {
+    width: 100%;
+}
+
+table td {
+    padding: 5px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.btn {
+    border: none; /* Remove borders */
+    border-radius: 5px;
+    color: white; /* Add a text color */
+    padding: 6px 16px; /* Add some padding */
+    cursor: pointer; /* Add a pointer cursor on mouse-over */
+    text-decoration: none;
+}
+
+.warning {background-color: #ff9800;} /* Orange */
+.warning:hover {background: #e68a00;}
+
+.danger {background-color: #f44336;} /* Red */
+.danger:hover {background: #da190b;}

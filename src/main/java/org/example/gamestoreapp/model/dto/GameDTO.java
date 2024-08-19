@@ -1,25 +1,24 @@
 package org.example.gamestoreapp.model.dto;
 
-import jakarta.validation.constraints.*;
-import org.example.gamestoreapp.model.enums.GenreName;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-public class AddGameBindingModel {
-    @Size(min = 3, max = 50, message = "Game title must be between 3 and 50 characters!")
+public class GameDTO {
+    private Long id;
     private String title;
-    @Size(min = 3, max = 200, message = "Description must be between 3 and 200 characters!")
     private String description;
     private String imageThumbnail;
-    @Past
-    private LocalDate releaseDate;
-    @NotBlank
+    private String releaseDate;
     private String publisher;
-    @NotNull
-    private GenreName genre;
-    @Positive
+    private String genre;
     private BigDecimal price;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -45,11 +44,11 @@ public class AddGameBindingModel {
         this.imageThumbnail = imageThumbnail;
     }
 
-    public LocalDate getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
+    public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -61,11 +60,11 @@ public class AddGameBindingModel {
         this.publisher = publisher;
     }
 
-    public GenreName getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(GenreName genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
