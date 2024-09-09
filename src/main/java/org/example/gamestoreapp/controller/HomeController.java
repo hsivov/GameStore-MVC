@@ -14,10 +14,16 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index() {
+
+        return "index";
+    }
+
+    @GetMapping("/store")
+    public String store(Model model) {
 
         model.addAttribute("games", gameService.getAll());
 
-        return "index";
+        return "store";
     }
 }
