@@ -1,7 +1,6 @@
 package org.example.gamestoreapp.model.entity;
 
 import jakarta.persistence.*;
-import org.example.gamestoreapp.model.enums.GenreName;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,15 +13,13 @@ public class Game extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
-    private String imageThumbnail;
+    private String imageUrl;
     @Column(nullable = false)
     private LocalDate releaseDate;
     @Column(nullable = false)
     private String publisher;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private GenreName genre;
+    @ManyToOne
+    private Genre genre;
     @Column(nullable = false)
     private BigDecimal price;
 
@@ -42,12 +39,12 @@ public class Game extends BaseEntity{
         this.description = description;
     }
 
-    public String getImageThumbnail() {
-        return imageThumbnail;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageThumbnail(String imageThumbnail) {
-        this.imageThumbnail = imageThumbnail;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDate getReleaseDate() {
@@ -66,11 +63,11 @@ public class Game extends BaseEntity{
         this.publisher = publisher;
     }
 
-    public GenreName getGenre() {
+    public Genre getGenre() {
         return genre;
     }
 
-    public void setGenre(GenreName genre) {
+    public void setGenre(Genre genre) {
         this.genre = genre;
     }
 

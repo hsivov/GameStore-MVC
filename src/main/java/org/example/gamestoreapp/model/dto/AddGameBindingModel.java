@@ -9,9 +9,9 @@ import java.time.LocalDate;
 public class AddGameBindingModel {
     @Size(min = 3, max = 50, message = "Game title must be between 3 and 50 characters!")
     private String title;
-    @Size(min = 3, max = 200, message = "Description must be between 3 and 200 characters!")
+    @Size(min = 3, max = 500, message = "Description must be between 3 and 500 characters!")
     private String description;
-    private String imageThumbnail;
+    private String imageUrl;
     @Past
     private LocalDate releaseDate;
     @NotBlank
@@ -37,12 +37,12 @@ public class AddGameBindingModel {
         this.description = description;
     }
 
-    public String getImageThumbnail() {
-        return imageThumbnail;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageThumbnail(String imageThumbnail) {
-        this.imageThumbnail = imageThumbnail;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDate getReleaseDate() {

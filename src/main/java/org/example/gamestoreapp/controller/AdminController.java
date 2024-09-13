@@ -24,7 +24,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public ModelAndView users() {
-        ModelAndView view = new ModelAndView("admin");
+        ModelAndView view = new ModelAndView("manage-users");
         view.addObject("users", adminService.getAllUsers());
 
         return view;
@@ -44,6 +44,14 @@ public class AdminController {
         return new ModelAndView("redirect:/admin/users");
     }
 
+    @GetMapping("/games")
+    public ModelAndView games() {
+        ModelAndView view = new ModelAndView("manage-games");
+        view.addObject("games", adminService.getAllGames());
+
+        return view;
+    }
+
     @GetMapping("/add-game")
     public ModelAndView addGame(@ModelAttribute("addGameBindingModel")AddGameBindingModel addGameBindingModel) {
         ModelAndView modelAndView = new ModelAndView("add-game");
@@ -57,12 +65,13 @@ public class AdminController {
     public ModelAndView addGame(@ModelAttribute("addGameBindingModel") @Valid AddGameBindingModel addGameBindingModel,
                                 BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("addGameBindingModel", addGameBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.addGameBindingModel", bindingResult);
 
             // handle errors
-            return new ModelAndView("add-game");
+            return new ModelAndView("redirect:/admin/add-game");
         }
 
         adminService.addGame(addGameBindingModel);

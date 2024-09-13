@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
+<div id="content-wrapper">
+    <div class="sidebar">
+        <a th:href="@{/admin/users}">User management</a>
+        <a th:href="@{/admin/games}" class="active">Game management</a>
+
+    </div>
+    <div class="dashboard">
+        <a th:href="@{/admin/add-game}">Add Game</a>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Game Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Publisher</th>
+                <th scope="col">Release Date</th>
+                <th scope="col">Price</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="game : ${games}">
+                <td th:text="${game.id}">1</td>
+                <td th:text="${game.title}">Title</td>
+                <td th:text="${game.publisher}">Publisher</td>
+                <td th:text="${game.releaseDate}">Release Date</td>
+                <td th:text="${game.price}">Price</td>
+
+                <td>
+                    <form th:method="POST" th:action="@{/admin/game/edit/{id}(id=${game.id})}">
+                        <button type="submit" class="btn warning">Edit</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:method="POST" th:action="@{/admin/game/delete/{id}(id=${game.id})}">
+                        <button type="submit" class="btn danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

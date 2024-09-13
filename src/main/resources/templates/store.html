@@ -7,7 +7,7 @@
 <section class="games">
     <div class="game-card" th:each="game: ${games}">
         <div class="game-image">
-            <img th:src="${game.imageThumbnail}">
+            <img th:src="${game.imageUrl}">
         </div>
         <div class="game-content">
             <h1 th:text="${game.title}"></h1>
@@ -15,7 +15,7 @@
             <p th:text="${game.publisher}"></p>
             <h5 th:text="${game.price}"></h5>
             <p th:text="${game.releaseDate}"></p>
-            <p th:text="${game.genre}"></p>
+            <p th:text="${game.genre.name}"></p>
         </div>
     </div>
 </section>

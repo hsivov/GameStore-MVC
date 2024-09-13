@@ -1,15 +1,17 @@
 package org.example.gamestoreapp.model.dto;
 
+import org.example.gamestoreapp.model.entity.Genre;
+
 import java.math.BigDecimal;
 
 public class GameDTO {
     private Long id;
     private String title;
     private String description;
-    private String imageThumbnail;
+    private String imageUrl;
     private String releaseDate;
     private String publisher;
-    private String genre;
+    private Genre genre;
     private BigDecimal price;
 
     public Long getId() {
@@ -36,12 +38,12 @@ public class GameDTO {
         this.description = description;
     }
 
-    public String getImageThumbnail() {
-        return imageThumbnail;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageThumbnail(String imageThumbnail) {
-        this.imageThumbnail = imageThumbnail;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getReleaseDate() {
@@ -60,11 +62,11 @@ public class GameDTO {
         this.publisher = publisher;
     }
 
-    public String getGenre() {
+    public Genre getGenre() {
         return genre;
     }
 
-    public void setGenre(String genre) {
+    public void setGenre(Genre genre) {
         this.genre = genre;
     }
 

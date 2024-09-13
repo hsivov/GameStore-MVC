@@ -6,8 +6,8 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div id="content-wrapper">
     <div class="sidebar">
-        <a href="#" class="active">User management</a>
-        <a href="#">Game management</a>
+        <a th:href="@{/admin/users}" class="active">User management</a>
+        <a th:href="@{/admin/games}">Game management</a>
         
     </div>
     <div class="dashboard">
@@ -19,8 +19,8 @@
                 <th scope="col">Last Name</th>
                 <th scope="col">E-mail</th>
                 <th scope="col">Role</th>
+                <th scope="col">Promote</th>
                 <th scope="col">Delete</th>
-                <th scope="col">Update</th>
             </tr>
             </thead>
             <tbody>
