@@ -67,7 +67,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteUser(long id) {
         userRepository.deleteById(id);
     }
 
@@ -76,5 +76,10 @@ public class AdminServiceImpl implements AdminService {
         return gameRepository.findAll().stream()
                 .map((game) -> modelMapper.map(game, GameDTO.class))
                 .toList();
+    }
+
+    @Override
+    public void deleteGame(Long id) {
+        gameRepository.deleteById(id);
     }
 }

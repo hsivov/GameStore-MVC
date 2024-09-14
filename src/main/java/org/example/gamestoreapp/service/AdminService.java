@@ -13,7 +13,9 @@ public interface AdminService {
 
     void promote(long id);
 
-    void delete(long id);
+    void deleteUser(long id);
 
     List<GameDTO> getAllGames();
+
+    void deleteGame(Long id);
 }

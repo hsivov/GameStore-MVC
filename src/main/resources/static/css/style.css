@@ -236,6 +236,10 @@ a.active{
     background-color: white;
 }
 
+.dashboard-header {
+    padding: 1.25rem;
+}
+
 table {
     width: 100%;
 }
@@ -255,6 +259,16 @@ table td {
     text-decoration: none;
 }
 
+.btn-link {
+    text-decoration: none;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+}
+
+.success {background-color: #5cb85c}
+.success:hover{background: #449d44}
+
 .warning {background-color: #ff9800;} /* Orange */
 .warning:hover {background: #e68a00;}
 
@@ -272,4 +286,35 @@ table td {
     width: 400px;
     color: white;
     background-color: #185375;
+    box-shadow: 0 0 5px #000000;
+}
+
+.game-content {
+    padding: 1rem;
+    background-image: linear-gradient(45deg, #24799f, #185073);
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.game-content h1 {
+    text-align: center;
+}
+
+.game-content h5 {
+    background-color: #344654;
+    color: #beee11;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+.description {
+    margin-bottom: 0.75rem;
+}
+
+.price-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

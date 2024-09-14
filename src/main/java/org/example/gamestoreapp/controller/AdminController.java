@@ -38,8 +38,8 @@ public class AdminController {
     }
 
     @PostMapping("/user/delete/{id}")
-    public ModelAndView delete(@PathVariable("id") long id) {
-        adminService.delete(id);
+    public ModelAndView deleteUser(@PathVariable("id") long id) {
+        adminService.deleteUser(id);
 
         return new ModelAndView("redirect:/admin/users");
     }
@@ -76,6 +76,13 @@ public class AdminController {
 
         adminService.addGame(addGameBindingModel);
 
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/admin/games");
+    }
+
+    @PostMapping("/game/delete/{id}")
+    public ModelAndView deleteGame(@PathVariable("id") Long id) {
+        adminService.deleteGame(id);
+
+        return new ModelAndView("redirect:/admin/games");
     }
 }

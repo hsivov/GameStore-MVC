@@ -11,7 +11,7 @@ public class GameDTO {
     private String imageUrl;
     private String releaseDate;
     private String publisher;
-    private Genre genre;
+    private String genre;
     private BigDecimal price;
 
     public Long getId() {
@@ -62,11 +62,11 @@ public class GameDTO {
         this.publisher = publisher;
     }
 
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 

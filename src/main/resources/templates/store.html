@@ -11,11 +11,13 @@
         </div>
         <div class="game-content">
             <h1 th:text="${game.title}"></h1>
-            <p th:text="${game.description}"></p>
-            <p th:text="${game.publisher}"></p>
-            <h5 th:text="${game.price}"></h5>
-            <p th:text="${game.releaseDate}"></p>
-            <p th:text="${game.genre.name}"></p>
+            <p th:text="${game.description}" class="description"></p>
+            <p th:text="'Publisher: ' + ${game.publisher}"></p>
+            <p th:text="'Release date: ' + ${game.releaseDate}"></p>
+            <div class="price-box">
+                <h5 th:text="${game.price} + ' лв.'"></h5>
+                <a th:href="@{/game/order}" class="btn-link success">Add to cart</a>
+            </div>
         </div>
     </div>
 </section>
