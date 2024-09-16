@@ -31,8 +31,8 @@ public class AdminUserInit implements CommandLineRunner {
             String password = passwordEncoder.encode(adminPassword);
 
             admin.setUsername("hristo");
-            admin.setEmail("hsivov@gmail.com");
             admin.setPassword(password);
+            admin.setEmail("hsivov@gmail.com");
             admin.setFirstName("Hristo");
             admin.setLastName("Sivov");
             admin.setAge(46);

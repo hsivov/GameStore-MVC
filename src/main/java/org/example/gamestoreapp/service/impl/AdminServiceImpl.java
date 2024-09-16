@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.Game;
@@ -81,5 +82,30 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteGame(Long id) {
         gameRepository.deleteById(id);
+    }
+
+    @Override
+    public UpdateGameBindingModel getById(Long id) {
+        return modelMapper.map(gameRepository.findById(id).orElse(null), UpdateGameBindingModel.class);
+    }
+
+    @Override
+    public void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+            Genre genre = genreRepository.findByName(updateGameBindingModel.getGenre());
+
+            game.setTitle(updateGameBindingModel.getTitle());
+            game.setDescription(updateGameBindingModel.getDescription());
+            game.setImageUrl(updateGameBindingModel.getImageUrl());
+            game.setPublisher(updateGameBindingModel.getPublisher());
+            game.setReleaseDate(updateGameBindingModel.getReleaseDate());
+            game.setPrice(updateGameBindingModel.getPrice());
+            game.setGenre(genre);
+
+            gameRepository.save(game);
+        }
     }
 }

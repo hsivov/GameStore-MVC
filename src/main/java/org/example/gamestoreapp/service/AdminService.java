@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.service;
 
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 
@@ -18,4 +19,8 @@ public interface AdminService {
     List<GameDTO> getAllGames();
 
     void deleteGame(Long id);
+
+    UpdateGameBindingModel getById(Long id);
+
+    void editGame(UpdateGameBindingModel updateGameBindingModel, Long id);
 }

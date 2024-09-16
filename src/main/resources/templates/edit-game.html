@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'edit-game'})}"></header>
+<main>
+    <div class="container">
+        <h1>Edit Game</h1>
+        <form th:action="@{/admin/game/edit/{id}(id=${bindingModel.id})}" th:method="POST" th:object="${bindingModel}">
+            <div class="input-group">
+                <label for="title">Title</label>
+                <input id="title" type="text" th:field="*{title}">
+                <small th:errors="*{title}" class="text-danger">Title error message</small>
+            </div>
+            <div class="input-group">
+                <label for="description">Description</label>
+                <input id="description" type="text" th:field="*{description}">
+                <small th:errors="*{description}" class="text-danger">Description error message</small>
+            </div>
+            <div class="input-group">
+                <label for="image-thumbnail">Image thumbnail</label>
+                <input id="image-thumbnail" type="text" th:field="*{imageUrl}">
+                <small th:errors="*{imageUrl}" class="text-danger">Image thumbnail error message</small>
+            </div>
+            <div class="input-group">
+                <label for="release-date">Release Date</label>
+                <input id="release-date" type="date" th:field="*{releaseDate}">
+                <small th:errors="*{releaseDate}" class="text-danger">Release date error message</small>
+            </div>
+            <div class="input-group">
+                <label for="publisher">Publisher</label>
+                <input id="publisher" type="text" th:field="*{publisher}">
+                <small th:errors="*{publisher}" class="text-danger">Publisher error message</small>
+            </div>
+            <div class="input-group">
+                <label for="genre">Genre</label>
+                <select id="genre" name="genre">
+                    <option value="" selected disabled>Select genre</option>
+                    <option th:each="genre : ${genres}"
+                            th:text="${genre.value}"
+                            th:value="${genre.key}"
+                            th:selected="${bindingModel.genre == genre}">
+                    </option>
+                </select>
+                <small th:errors="*{genre}" class="text-danger">Genre error message</small>
+            </div>
+            <div class="input-group">
+                <label for="price">Price</label>
+                <input id="price" type="number" step=".01" th:field="*{price}">
+                <small th:errors="*{price}" class="text-danger">Price error message</small>
+            </div>
+
+            <button type="submit" class="btn-submit">Edit</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

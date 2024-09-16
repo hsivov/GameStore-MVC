@@ -7,7 +7,7 @@
     <main>
         <div class="container">
             <div class="input-group">
-                <div th:if="${hasLoginError}"
+                <div th:if="${param.error}"
                      th:text="'Incorrect username or password'" class="text-danger">Login error message</div>
             </div>
             <h1>Login</h1>

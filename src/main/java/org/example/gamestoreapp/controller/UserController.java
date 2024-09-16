@@ -1,11 +1,13 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
+import org.example.gamestoreapp.model.dto.AddGameBindingModel;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.service.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,13 +32,17 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public ModelAndView register(@ModelAttribute("userRegisterBindingModel") UserRegisterBindingModel userRegisterBindingModel) {
+    public ModelAndView register(Model model) {
+
+        if (!model.containsAttribute("userRegisterBindingModel")) {
+            model.addAttribute("userRegisterBindingModel", new UserRegisterBindingModel());
+        }
 
         return new ModelAndView("register");
     }
 
     @PostMapping("/register")
-    public ModelAndView register(@ModelAttribute("userRegisterBindingModel") @Valid UserRegisterBindingModel userRegisterBindingModel,
+    public ModelAndView register(@Valid UserRegisterBindingModel userRegisterBindingModel,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -44,7 +50,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userRegisterBindingModel", bindingResult);
 
             // handle errors
-            return new ModelAndView("register");
+            return new ModelAndView("redirect:/users/register");
         }
 
         boolean hasSuccessfulRegistration = userService.register(userRegisterBindingModel);

@@ -20,7 +20,7 @@ public class GenreInit implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         long count = genreRepository.count();
 
         if (count == 0) {

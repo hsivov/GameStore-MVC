@@ -6,27 +6,29 @@ import org.example.gamestoreapp.model.enums.GenreName;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class AddGameBindingModel {
+public class UpdateGameBindingModel {
+    private Long id;
     @Size(min = 3, max = 50, message = "Game title must be between 3 and 50 characters!")
     private String title;
-
     @Size(min = 3, max = 500, message = "Description must be between 3 and 500 characters!")
     private String description;
-
-    @Pattern(regexp = "^(http(s?):)([/|.\\w\\s:])*\\.(?:jpg|jpeg|png)$", message = "Image URL must be a valid image format!")
     private String imageUrl;
-
-    @Past(message = "Release date must be in the past!")
+    @Past
     private LocalDate releaseDate;
-
-    @NotBlank(message = "Publisher cannot be blank!")
+    @NotBlank
     private String publisher;
-
-    @NotNull(message = "Genre is required!")
+    @NotNull
     private GenreName genre;
-
-    @Positive(message = "Price must be a positive value!")
+    @Positive
     private BigDecimal price;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;

@@ -32,7 +32,7 @@ public class SecurityConfig {
                             formLogin.usernameParameter("username");
                             formLogin.passwordParameter("password");
                             formLogin.defaultSuccessUrl("/", true);
-                            formLogin.failureUrl("/users/login-error");
+                            formLogin.failureUrl("/users/login?error=true");
                         }
                 )
                 .logout(

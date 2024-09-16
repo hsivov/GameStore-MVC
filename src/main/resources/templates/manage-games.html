@@ -37,7 +37,7 @@
                 <td th:text="${game.price}">Price</td>
 
                 <td>
-                    <form th:method="POST" th:action="@{/admin/game/edit/{id}(id=${game.id})}">
+                    <form th:method="GET" th:action="@{/admin/game/edit/{id}(id=${game.id})}">
                         <button type="submit" class="btn warning">Edit</button>
                     </form>
                 </td>

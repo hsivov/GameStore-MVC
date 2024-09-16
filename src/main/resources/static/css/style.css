@@ -292,7 +292,6 @@ table td {
 .game-content {
     padding: 1rem;
     background-image: linear-gradient(45deg, #24799f, #185073);
-    height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -310,6 +309,7 @@ table td {
 }
 
 .description {
+    height: 12rem;
     margin-bottom: 0.75rem;
 }
 
