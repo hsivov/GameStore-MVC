@@ -32,12 +32,17 @@
                 <td th:text="${user.email}">hristina@test.com</td>
                 <td th:text="${user.role}">User</td>
 
-                <td>
+                <td th:unless="${user.id == 1 or user.role.toString() == 'ADMIN'}">
                     <form th:method="POST" th:action="@{/admin/user/promote/{id}(id=${user.id})}">
                         <button type="submit" class="btn warning">Promote</button>
                     </form>
                 </td>
-                <td>
+                <td th:if="${user.role.toString() == 'ADMIN' and user.id != 1}">
+                    <form th:method="POST" th:action="@{/admin/user/demote/{id}(id=${user.id})}">
+                        <button type="submit" class="btn warning">Demote </button>
+                    </form>
+                </td>
+                <td th:unless="${user.id == 1}">
                     <form th:method="POST" th:action="@{/admin/user/delete/{id}(id=${user.id})}">
                         <button type="submit" class="btn danger">Delete</button>
                     </form>

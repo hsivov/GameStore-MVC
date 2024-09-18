@@ -25,7 +25,7 @@
             </div>
             <div class="input-group">
                 <label for="release-date">Release Date</label>
-                <input id="release-date" type="date" th:field="*{releaseDate}">
+                <input id="release-date" type="date" th:value="${bindingModel.releaseDate}" name="releaseDate">
                 <small th:errors="*{releaseDate}" class="text-danger">Release date error message</small>
             </div>
             <div class="input-group">
@@ -36,7 +36,6 @@
             <div class="input-group">
                 <label for="genre">Genre</label>
                 <select id="genre" name="genre">
-                    <option value="" selected disabled>Select genre</option>
                     <option th:each="genre : ${genres}"
                             th:text="${genre.value}"
                             th:value="${genre.key}"

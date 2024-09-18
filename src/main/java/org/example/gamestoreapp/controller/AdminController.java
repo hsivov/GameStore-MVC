@@ -39,6 +39,13 @@ public class AdminController {
         return new ModelAndView("redirect:/admin/users");
     }
 
+    @PostMapping("/user/demote/{id}")
+    public ModelAndView demote(@PathVariable("id") long id) {
+        adminService.demote(id);
+
+        return new ModelAndView("redirect:/admin/users");
+    }
+
     @PostMapping("/user/delete/{id}")
     public ModelAndView deleteUser(@PathVariable("id") long id) {
         adminService.deleteUser(id);

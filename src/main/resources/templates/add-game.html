@@ -46,7 +46,7 @@
             </div>
             <div class="input-group">
                 <label for="price">Price</label>
-                <input id="price" type="number" th:field="*{price}">
+                <input id="price" type="number" step=".01" th:field="*{price}">
                 <small th:errors="*{price}" class="text-danger">Price error message</small>
             </div>
 

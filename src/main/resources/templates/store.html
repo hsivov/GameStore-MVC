@@ -12,6 +12,7 @@
         <div class="game-content">
             <h1 th:text="${game.title}"></h1>
             <p th:text="${game.description}" class="description"></p>
+            <p th:text="'Genre: ' + ${game.genre}"></p>
             <p th:text="'Publisher: ' + ${game.publisher}"></p>
             <p th:text="'Release date: ' + ${game.releaseDate}"></p>
             <div class="price-box">

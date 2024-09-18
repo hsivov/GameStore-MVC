@@ -73,6 +73,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void demote(long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isPresent()) {
+            User userEntity = user.get();
+            userEntity.setRole(UserRole.USER);
+
+            userRepository.save(userEntity);
+        }
+    }
+
+    @Override
     public List<GameDTO> getAllGames() {
         return gameRepository.findAll().stream()
                 .map((game) -> modelMapper.map(game, GameDTO.class))
