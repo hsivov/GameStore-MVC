@@ -4,23 +4,80 @@
 </head>
 <body>
 <header th:replace="~{fragments/commons::header(activeLink=${'store'})}"></header>
-<section class="games">
-    <div class="game-card" th:each="game: ${games}">
-        <div class="game-image">
-            <img th:src="${game.imageUrl}">
+<main>
+    <section class="games">
+        <div class="game-card" th:each="game: ${games}">
+            <div class="game-image">
+                <img th:src="${game.imageUrl}" alt="Game Thumbnail">
+            </div>
+            <div class="game-content">
+                <h1 th:text="${game.title}"></h1>
+                <p th:text="${game.description}" class="description"></p>
+                <p th:text="'Genre: ' + ${game.genre}"></p>
+                <p th:text="'Publisher: ' + ${game.publisher}"></p>
+                <p th:text="'Release date: ' + ${game.releaseDate}"></p>
+                <div class="price-box">
+                    <h5 th:text="${game.price} + ' лв.'"></h5>
+                    <a th:href="@{/game/order}" class="btn-link success">Add to cart</a>
+                </div>
+            </div>
         </div>
-        <div class="game-content">
-            <h1 th:text="${game.title}"></h1>
-            <p th:text="${game.description}" class="description"></p>
-            <p th:text="'Genre: ' + ${game.genre}"></p>
-            <p th:text="'Publisher: ' + ${game.publisher}"></p>
-            <p th:text="'Release date: ' + ${game.releaseDate}"></p>
-            <div class="price-box">
-                <h5 th:text="${game.price} + ' лв.'"></h5>
-                <a th:href="@{/game/order}" class="btn-link success">Add to cart</a>
+    </section>
+    <div id="game-modal" class="game-modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-toolbar">
+                <button id="close-button" onclick="closeGameModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="dialog-content">Added to your cart!</div>
+            <div class="modal-game-content">
+                <img id="modal-image" src="" alt="Game Image">
+                <h1 id="modal-title"></h1>
+                <p id="modal-price"></p>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeGameModal()">Continue Shopping</button>
+                <button>View My Cart</button>
             </div>
         </div>
     </div>
-</section>
+</main>
+<<script>
+    // Function to show the modal with game details
+    function showGameModal(game) {
+        // Populate modal with game data
+        document.getElementById('modal-title').textContent = game.title;
+        document.getElementById('modal-image').src = game.imageUrl;
+        document.getElementById('modal-price').textContent = game.price + ' лв.';
+
+        // Show the modal
+        document.getElementById('game-modal').classList.remove('hidden');
+    }
+
+    // Function to close the modal
+    function closeGameModal() {
+        document.getElementById('game-modal').classList.add('hidden');
+    }
+
+    // Attach event listeners to all "Add to cart" buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-link.success');
+        buttons.forEach(function(button, index) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                // Get the specific game data for the clicked button
+                const gameCard = button.closest('.game-card');
+                const game = {
+                    title: gameCard.querySelector('h1').textContent,
+                    imageUrl: gameCard.querySelector('img').src,
+                    price: gameCard.querySelector('.price-box h5').textContent.split(' ')[0]
+                };
+
+                // Show the modal with the game's details
+                showGameModal(game);
+            });
+        });
+    });
+</script>
 </body>
 </html>
