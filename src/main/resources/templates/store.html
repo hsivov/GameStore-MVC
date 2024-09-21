@@ -18,7 +18,9 @@
                 <p th:text="'Release date: ' + ${game.releaseDate}"></p>
                 <div class="price-box">
                     <h5 th:text="${game.price} + ' лв.'"></h5>
-                    <a th:href="@{/game/order}" class="btn-link success">Add to cart</a>
+                    <form th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
+                        <button type="submit" class="btn success">Add to cart</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -41,7 +43,8 @@
         </div>
     </div>
 </main>
-<<script>
+
+<script>
     // Function to show the modal with game details
     function showGameModal(game) {
         // Populate modal with game data
@@ -58,26 +61,44 @@
         document.getElementById('game-modal').classList.add('hidden');
     }
 
-    // Attach event listeners to all "Add to cart" buttons
+    // Attach event listeners to all "Add to cart" forms
     document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.btn-link.success');
-        buttons.forEach(function(button, index) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent default link behavior
+        // Select all forms related to "Add to Cart"
+        const forms = document.querySelectorAll('form[action*="/store/add-to-cart"]');
 
-                // Get the specific game data for the clicked button
-                const gameCard = button.closest('.game-card');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission behavior
+
+                const formData = new FormData(form); // Gather form data
+
+                const gameCard = form.closest('.game-card');
                 const game = {
                     title: gameCard.querySelector('h1').textContent,
                     imageUrl: gameCard.querySelector('img').src,
                     price: gameCard.querySelector('.price-box h5').textContent.split(' ')[0]
                 };
 
-                // Show the modal with the game's details
-                showGameModal(game);
+                // Send the form data via AJAX
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Game was added successfully to cart
+                            showGameModal(game); // Show the modal with game details
+                        } else {
+                            console.error('Failed to add to cart. Status:', response.status);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding to cart:', error);
+                    });
             });
         });
     });
 </script>
+
 </body>
 </html>
