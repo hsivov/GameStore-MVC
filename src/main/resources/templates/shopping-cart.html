@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'cart'})}"></header>
+<main>
+    <section class="products">
+        <div class="dialog-content">Your shopping-cart</div>
+        <div>
+            <div>
+                <div th:each="game: ${games}" class="modal-content">
+                    <div class="modal-game-content">
+                        <img id="modal-image" th:src="${game.imageUrl}" alt="Game Image">
+                        <h1 id="modal-title" th:text="${game.title}"></h1>
+                        <p id="modal-price" th:text="${game.price}"></p>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button onclick="closeGameModal()">Continue Shopping</button>
+                    <button>Remove All Products</button>
+                </div>
+            </div>
+            <div>
+                <p id="total-price">Total price: 264.73</p>
+                <p>Vat is included</p>
+                <button>Remove All Products</button>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

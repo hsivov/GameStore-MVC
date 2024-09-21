@@ -35,7 +35,8 @@
         <div class="user-nav">
             <ul role="list">
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a><i class="fa-solid fa-cart-shopping"></i>
+                    <a th:href="@{/shopping-cart}">
+                        <i class="fa-solid fa-cart-shopping"></i>
                         <span th:text="'(' + ${@cartHelperService.totalItems} + ')'"></span></a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
