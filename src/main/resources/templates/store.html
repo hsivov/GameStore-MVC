@@ -61,39 +61,46 @@
         document.getElementById('game-modal').classList.add('hidden');
     }
 
-    // Attach event listeners to all "Add to cart" forms
+    // Attach event listeners to all "Add to cart" buttons
     document.addEventListener('DOMContentLoaded', function() {
-        // Select all forms related to "Add to Cart"
-        const forms = document.querySelectorAll('form[action*="/store/add-to-cart"]');
+        const buttons = document.querySelectorAll('form[action*="/store/add-to-cart"] button');
 
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent default form submission behavior
+        buttons.forEach(function(button, index) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default form submission
 
-                const formData = new FormData(form); // Gather form data
+                // Get the form and game ID from the action attribute
+                const form = button.closest('form');
+                const actionUrl = form.getAttribute('action');
 
-                const gameCard = form.closest('.game-card');
+                // Get the specific game data for the clicked button
+                const gameCard = button.closest('.game-card');
                 const game = {
                     title: gameCard.querySelector('h1').textContent,
                     imageUrl: gameCard.querySelector('img').src,
                     price: gameCard.querySelector('.price-box h5').textContent.split(' ')[0]
                 };
 
-                // Send the form data via AJAX
-                fetch(form.action, {
+                // Send a POST request to add the game to the cart
+                fetch(actionUrl, {
                     method: 'POST',
-                    body: formData
                 })
                     .then(response => {
-                        if (response.ok) {
-                            // Game was added successfully to cart
-                            showGameModal(game); // Show the modal with game details
-                        } else {
-                            console.error('Failed to add to cart. Status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
+                        return response.json(); // Parse the JSON response
+                    })
+                    .then(data => {
+                        // Update the cart count in the header
+                        const cartCountElement = document.querySelector('.cart-count');
+                        cartCountElement.textContent = `(${data.totalItems})`;
+
+                        // Show the modal with the game's details
+                        showGameModal(game);
                     })
                     .catch(error => {
-                        console.error('Error adding to cart:', error);
+                        console.error('Error updating cart:', error);
                     });
             });
         });

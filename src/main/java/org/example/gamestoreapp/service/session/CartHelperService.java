@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Component
@@ -25,12 +26,23 @@ public class CartHelperService {
 
     public int getTotalItems() {
         User currentUser = userHelperService.getUser();
-        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findById(currentUser.getId());
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByCustomer(currentUser);
 
         if (shoppingCartOptional.isPresent()) {
             return modelMapper.map(shoppingCartOptional, ShoppingCartDTO.class).getTotalItems();
         }
 
         return 0;
+    }
+
+    public BigDecimal getTotalPrice() {
+        User currentUser = userHelperService.getUser();
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByCustomer(currentUser);
+
+        if (shoppingCartOptional.isPresent()) {
+            return modelMapper.map(shoppingCartOptional, ShoppingCartDTO.class).getTotalPrice();
+        }
+
+        return BigDecimal.ZERO;
     }
 }

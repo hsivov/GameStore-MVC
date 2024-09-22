@@ -37,7 +37,7 @@
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <a th:href="@{/shopping-cart}">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span th:text="'(' + ${@cartHelperService.totalItems} + ')'"></span></a>
+                        <span class="cart-count" th:text="'(' + ${@cartHelperService.totalItems} + ')'"></span></a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/users/profile}">Profile</a>

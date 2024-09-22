@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,6 +43,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Optional<Game> game = gameRepository.findById(gameId);
 
         Set<Game> games = shoppingCart.getGames();
+
+        if (games == null) {
+            games = new HashSet<>();
+            shoppingCart.setGames(games);
+        }
 
         game.ifPresent(games::add);
 
