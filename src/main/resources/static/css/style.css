@@ -52,6 +52,10 @@ header {
     align-items: end;
 }
 
+.wrapper a {
+    text-decoration: none;
+}
+
 .logo {
     display: flex;
     padding-left: 25px;
@@ -89,7 +93,25 @@ ul li {
     color: white;
 }
 
+main {
+    background: url(https://images.unsplash.com/photo-1689443111130-6e9c7dfd8f9e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D) center;
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+}
+
+main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(27, 40, 56, 0.9);
+}
+
 .container {
+    position: relative;
     padding: 3rem;
     display: flex;
     flex-direction: column;
@@ -135,7 +157,7 @@ input {
     cursor: pointer;
     color: #c3e1f8;
     background: #2665d3;
-    text-shadow: 1px 1px 0px rgba( 0, 0, 0, 0.3 );
+    text-shadow: 1px 1px 0 rgba( 0, 0, 0, 0.3 );
 }
 
 .create-account {
@@ -266,6 +288,9 @@ table td {
     border-radius: 4px;
 }
 
+.continue {background-color: #3d4450}
+.continue:hover{background: #2f3440}
+
 .success {background-color: #5cb85c}
 .success:hover{background: #449d44}
 
@@ -276,6 +301,7 @@ table td {
 .danger:hover {background: #da190b;}
 
 .games {
+    position: relative;
     display: flex;
     padding: 3rem;
     gap: 3rem;
@@ -318,6 +344,8 @@ table td {
     align-items: center;
     gap: 0.5rem;
 }
+
+/*Game modal*/
 
 .hidden {
     opacity: 0;
@@ -387,7 +415,7 @@ p#modal-price {
     gap: 15px;
 }
 
-.modal-buttons button:nth-child(1) {
+.modal-buttons button {
     flex-grow: 1;
     width: 100px;
     height: 40px;
@@ -397,9 +425,89 @@ p#modal-price {
     cursor: pointer;
 }
 
-.modal-buttons button:nth-child(2) {
+.modal-buttons a {
     flex-grow: 1;
     background: linear-gradient(to right, #00ccff, #3366ff);
+    color: white;
+    text-decoration: none;
+    line-height: 40px;
+}
+
+/*Shopping cart*/
+
+.shopping-cart {
+    position: relative;
+    width: 70rem;
+    margin: 1rem auto;
+}
+
+.shopping-cart-header {
+    font-size: 2rem;
+    color: white;
+}
+
+.shopping-cart-container {
+    display: flex;
+    gap: 2rem;
+}
+
+.product {
+    width: 800px;
+    margin-bottom: 25px;
+    background: #233041;
+}
+
+.product-content {
+    display: flex;
+    padding: 15px;
+    color: white;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.product-content img {
+    width: 200px;
+}
+
+.remove-item {
+    text-align: end;
+}
+
+.remove-item button {
+    padding: 8px;
+    background: transparent;
+    color: gray;
+    text-decoration: underline;
     border: none;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.shopping-card-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.remove-all {
+    background: transparent;
+    border: none;
+    color: gray;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.checkout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #192430;
+    color: white;
+    padding: 20px;
+}
+
+a.btn-link:nth-child(3) {
+    background: linear-gradient(to right, #00ccff, #3366ff);
     color: white;
 }

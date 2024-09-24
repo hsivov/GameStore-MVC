@@ -11,9 +11,11 @@
 <body>
 <header th:fragment="header(activeLink)">
     <div class="wrapper">
-        <div class="logo">
-            <h1>Game Store</h1><small>&#169;</small>
-        </div>
+        <a href="/">
+            <div class="logo">
+                <h1>Game Store</h1><small>&#169;</small>
+            </div>
+        </a>
         <div class="user">
             <p th:if="${@userHelperService.isAuthenticated()}" th:text="'Welcome: ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
         </div>

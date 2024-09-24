@@ -1,7 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.gamestoreapp.model.dto.GameDTO;
+import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.ShoppingCart;
 import org.example.gamestoreapp.model.entity.User;
@@ -12,11 +12,9 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -58,14 +56,43 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     @Transactional
-    public Set<GameDTO> getAddedGames() {
+    public ShoppingCartDTO getShoppingCart() {
         User currentUser = userHelperService.getUser();
 
-        Set<Game> games = shoppingCartRepository.findByCustomer(currentUser)
-                .map(ShoppingCart::getGames).orElse(Collections.emptySet());
+        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findByCustomer(currentUser);
 
-        return games.stream()
-                .map(game -> modelMapper.map(game, GameDTO.class))
-                .collect(Collectors.toSet());
+        return modelMapper.map(optionalShoppingCart, ShoppingCartDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public void remove(Long gameId) {
+        User currentUser = userHelperService.getUser();
+        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer(currentUser)
+                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
+        // Remove the game from the cart
+        if (shoppingCart.getGames().contains(game)) {
+            shoppingCart.getGames().remove(game);
+
+            // Save the updated shopping cart
+            shoppingCartRepository.save(shoppingCart);
+        } else {
+            throw new RuntimeException("Game not found in the cart");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeAll() {
+        User currentUser = userHelperService.getUser();
+        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer(currentUser)
+                .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
+
+        shoppingCart.getGames().clear();
+        shoppingCartRepository.save(shoppingCart);
     }
 }
