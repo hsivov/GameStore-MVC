@@ -13,10 +13,20 @@ import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AdminService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -24,6 +34,8 @@ public class AdminServiceImpl implements AdminService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
+    @Value("${image.upload.dir}")
+    private String imageUploadDir;
 
     public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
         this.modelMapper = modelMapper;
@@ -33,19 +45,49 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void addGame(AddGameBindingModel addGameBindingModel) {
+    public void addGame(AddGameBindingModel addGameBindingModel) throws IOException {
         Game game = new Game();
         Genre genre = genreRepository.findByName(addGameBindingModel.getGenre());
 
+        String imageUrl = downloadAndSaveImage(addGameBindingModel.getImageUrl());
+
         game.setTitle(addGameBindingModel.getTitle());
         game.setDescription(addGameBindingModel.getDescription());
-        game.setImageUrl(addGameBindingModel.getImageUrl());
+        game.setImageUrl(imageUrl);
         game.setPublisher(addGameBindingModel.getPublisher());
         game.setReleaseDate(addGameBindingModel.getReleaseDate());
         game.setPrice(addGameBindingModel.getPrice());
         game.setGenre(genre);
 
         gameRepository.save(game);
+    }
+
+    private String downloadAndSaveImage(String imageFile) throws IOException {
+        URL url = new URL(imageFile);
+
+        InputStream inputStream = url.openStream();
+
+        // Generate a unique filename based on the original URL or a UUID
+        String fileName = Paths.get(url.getPath()).getFileName().toString();
+        String uniqueFileName = UUID.randomUUID() + "_" + fileName;
+
+        File uploadDir = new File(imageUploadDir);
+
+        if (!uploadDir.exists()) {
+            if (!uploadDir.mkdirs()) {  // Check if directory creation was successful
+                throw new IOException("Failed to create directory: " + imageUploadDir);
+            }
+        }
+
+        Path imagePath = Paths.get(imageUploadDir, uniqueFileName);
+
+        // Save the image file to the static/images directory
+        Files.copy(inputStream, imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+        inputStream.close();
+
+        // Return the relative path to the image
+        return "/images/" + uniqueFileName;
     }
 
     @Override
