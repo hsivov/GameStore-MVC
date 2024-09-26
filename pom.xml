@@ -11,7 +11,7 @@
     <groupId>org.example</groupId>
     <artifactId>game-store-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>GameStoreApp</name>
     <description>GameStoreApp</description>
     <properties>
