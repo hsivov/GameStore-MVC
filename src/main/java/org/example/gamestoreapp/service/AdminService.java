@@ -5,10 +5,11 @@ import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface AdminService {
-    void addGame(AddGameBindingModel addGameBindingModel);
+    void addGame(AddGameBindingModel addGameBindingModel) throws IOException;
 
     List<UserDTO> getAllUsers();
 

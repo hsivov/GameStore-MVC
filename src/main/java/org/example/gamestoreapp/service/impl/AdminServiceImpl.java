@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service.impl;
 
+import com.cloudinary.Cloudinary;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
@@ -13,10 +14,18 @@ import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AdminService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -24,28 +33,83 @@ public class AdminServiceImpl implements AdminService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
+    private final Cloudinary cloudinary;
 
-    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
+    @Value("${image.upload.dir}")
+    private String imageUploadDir;
+
+    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, Cloudinary cloudinary) {
         this.modelMapper = modelMapper;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.genreRepository = genreRepository;
+        this.cloudinary = cloudinary;
     }
 
     @Override
-    public void addGame(AddGameBindingModel addGameBindingModel) {
+    public void addGame(AddGameBindingModel addGameBindingModel) throws IOException {
         Game game = new Game();
         Genre genre = genreRepository.findByName(addGameBindingModel.getGenre());
 
+        String localImagePath = saveImageLocally(addGameBindingModel.getImageUrl());
+
+        String cloudinaryImageUrl = uploadImageToCloudinary(localImagePath);
+
         game.setTitle(addGameBindingModel.getTitle());
         game.setDescription(addGameBindingModel.getDescription());
-        game.setImageUrl(addGameBindingModel.getImageUrl());
+        game.setImageUrl(cloudinaryImageUrl);
         game.setPublisher(addGameBindingModel.getPublisher());
         game.setReleaseDate(addGameBindingModel.getReleaseDate());
         game.setPrice(addGameBindingModel.getPrice());
         game.setGenre(genre);
 
         gameRepository.save(game);
+    }
+
+    private String saveImageLocally(String imageFile) throws IOException {
+        URL url = new URL(imageFile);
+
+        InputStream inputStream = url.openStream();
+
+        // Generate a unique filename based on the original URL or a UUID
+        String originalFileName = Paths.get(url.getPath()).getFileName().toString();
+        String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
+
+        Path uploadPath = Paths.get(imageUploadDir);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path imagePath = uploadPath.resolve(uniqueFileName);
+
+        // Save the image file to the static/images directory
+        Files.copy(inputStream, imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+        inputStream.close();
+
+        // Return the relative path to the image
+        return imagePath.toString();
+    }
+
+    private String uploadImageToCloudinary(String localImagePath) throws IOException {
+        File file = new File(localImagePath);
+
+        // Upload the File object directly to Cloudinary
+        try {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file, Collections.emptyMap());
+
+            // Extract and return the Cloudinary URL
+            Object secureUrl = uploadResult.get("secure_url");
+            if (secureUrl != null) {
+                return secureUrl.toString();
+            } else {
+                throw new IOException("Upload to Cloudinary failed: secure_url not found in response");
+            }
+        } catch (Exception e) {
+            // Handle errors more gracefully
+            throw new IOException("Error uploading image to Cloudinary: " + e.getMessage(), e);
+        }
     }
 
     @Override

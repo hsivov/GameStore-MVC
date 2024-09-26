@@ -11,7 +11,7 @@
     <groupId>org.example</groupId>
     <artifactId>game-store-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>GameStoreApp</name>
     <description>GameStoreApp</description>
     <properties>
@@ -70,7 +70,11 @@
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary</artifactId>
+            <version>1.0.14</version>
+        </dependency>
 
     </dependencies>
 

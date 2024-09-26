@@ -25,7 +25,7 @@ public class AddGameBindingModel {
     @NotNull(message = "Genre is required!")
     private GenreName genre;
 
-    @Positive(message = "Price must be a positive value!")
+    @PositiveOrZero(message = "Price must be a positive value!")
     private BigDecimal price;
 
     public String getTitle() {
