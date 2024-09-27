@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.controller;
 
-import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.service.ShoppingCartService;
 import org.example.gamestoreapp.service.session.CartHelperService;
@@ -9,8 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Set;
 
 @Controller
 public class ShoppingCartController {
@@ -29,7 +26,7 @@ public class ShoppingCartController {
         model.addAttribute("shoppingCart", shoppingCartDTO);
         model.addAttribute("totalPrice", cartHelperService.getTotalPrice());
 
-        return "/shopping-cart";
+        return "shopping-cart";
     }
 
     @PostMapping("/shopping-cart/remove/{id}")
