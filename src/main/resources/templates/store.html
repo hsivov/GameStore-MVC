@@ -18,8 +18,11 @@
                 <p th:text="'Release date: ' + ${game.releaseDate}"></p>
                 <div class="price-box">
                     <h5 th:text="${game.price} + ' лв.'"></h5>
-                    <form th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
+                    <form th:unless="${game.price == 0}" th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
                         <button type="submit" class="btn success">Add to cart</button>
+                    </form>
+                    <form th:if="${game.price == 0}" th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
+                        <button type="submit" class="btn success">Add to library</button>
                     </form>
                 </div>
             </div>

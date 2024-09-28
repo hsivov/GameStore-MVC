@@ -114,7 +114,7 @@ public class AdminController {
     @PostMapping("/game/edit/{id}")
     public ModelAndView editGame(@Valid UpdateGameBindingModel updateGameBindingModel,
                                  BindingResult bindingResult,
-                                 RedirectAttributes redirectAttributes, @PathVariable Long id) {
+                                 RedirectAttributes redirectAttributes, @PathVariable Long id) throws IOException {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("editGameBindingModel", updateGameBindingModel);

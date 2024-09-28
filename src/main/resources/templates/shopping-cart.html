@@ -8,6 +8,7 @@
     <section class="shopping-cart">
         <div class="shopping-cart-header">Your shopping-cart</div>
         <div class="shopping-cart-container">
+            <th:block th:unless="${@cartHelperService.totalItems == 0}">
             <div class="shopping-cart-products-section">
                 <div th:each="game: ${shoppingCart.games}" class="product">
                     <div class="product-content">
@@ -33,6 +34,12 @@
                     <a href="checkout" class="btn-link">Continue to payment</a>
                 </div>
             </div>
+            </th:block>
+            <th:block th:if="${@cartHelperService.totalItems == 0}">
+                <div class="shopping-cart-empty">
+                    Your shopping cart is empty!
+                </div>
+            </th:block>
         </div>
     </section>
 </main>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'library'})}"></header>
+<main>
+    <section class="games">
+        <div class="game-card" th:each="game: ${ownedGames}">
+            <div class="game-image">
+                <img th:src="${game.imageUrl}" alt="Game Thumbnail">
+            </div>
+            <div class="game-content">
+                <h1 th:text="${game.title}"></h1>
+                <p th:text="${game.description}" class="description"></p>
+                <p th:text="'Genre: ' + ${game.genre}"></p>
+                <p th:text="'Publisher: ' + ${game.publisher}"></p>
+                <p th:text="'Release date: ' + ${game.releaseDate}"></p>
+                <div class="price-box">
+                    <button class="btn success">Play game</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

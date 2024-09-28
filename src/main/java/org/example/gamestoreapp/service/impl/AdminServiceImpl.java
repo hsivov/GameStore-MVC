@@ -152,16 +152,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) {
+    public void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) throws IOException {
         Optional<Game> optionalGame = gameRepository.findById(id);
 
         if (optionalGame.isPresent()) {
             Game game = optionalGame.get();
             Genre genre = genreRepository.findByName(updateGameBindingModel.getGenre());
 
+            String blobUrl = uploadImageToAzureBlobStorage(updateGameBindingModel.getImageUrl());
+
             game.setTitle(updateGameBindingModel.getTitle());
             game.setDescription(updateGameBindingModel.getDescription());
-            game.setImageUrl(updateGameBindingModel.getImageUrl());
+            game.setImageUrl(blobUrl);
             game.setPublisher(updateGameBindingModel.getPublisher());
             game.setReleaseDate(updateGameBindingModel.getReleaseDate());
             game.setPrice(updateGameBindingModel.getPrice());

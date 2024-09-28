@@ -27,7 +27,7 @@
                     <a th:href="@{/admin/users}" th:classappend="${activeLink == 'admin'} ? 'active'">Admin panel</a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a href="#">Library</a>
+                    <a th:href="@{/library}" th:classappend="${activeLink == 'library'} ? 'active'">Library</a>
                 </li>
                 <li>
                     <a th:classappend="${activeLink == 'store'} ? 'active'" th:href="@{/store}">Store</a>

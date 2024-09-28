@@ -25,5 +25,5 @@ public interface AdminService {
 
     UpdateGameBindingModel getById(Long id);
 
-    void editGame(UpdateGameBindingModel updateGameBindingModel, Long id);
+    void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) throws IOException;
 }

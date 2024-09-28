@@ -99,6 +99,7 @@ main {
     background-position: center;
     background-attachment: fixed;
     position: relative;
+    min-height: 100vh;
 }
 
 main::before {
@@ -171,6 +172,7 @@ input {
 }
 
 .profile {
+    position: relative;
     display: flex;
     justify-content: center;
 }
@@ -445,6 +447,8 @@ p#modal-price {
 .shopping-cart-header {
     font-size: 2rem;
     color: white;
+    font-weight: bold;
+    margin-bottom: 2rem;
 }
 
 .shopping-cart-container {
@@ -497,6 +501,15 @@ p#modal-price {
     color: gray;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.shopping-cart-empty {
+    color: white;
+    font-size: 2rem;
+    height: 250px;
+    background: #233041;
+    padding: 3rem;
+    flex-grow: 1;
 }
 
 .checkout {

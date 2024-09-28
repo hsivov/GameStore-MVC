@@ -3,6 +3,8 @@ package org.example.gamestoreapp.model.entity;
 import jakarta.persistence.*;
 import org.example.gamestoreapp.model.enums.UserRole;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity{
@@ -21,6 +23,8 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Game> ownedGames;
 
     public String getUsername() {
         return username;
@@ -76,5 +80,13 @@ public class User extends BaseEntity{
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public Set<Game> getOwnedGames() {
+        return ownedGames;
+    }
+
+    public void setOwnedGames(Set<Game> ownedGames) {
+        this.ownedGames = ownedGames;
     }
 }

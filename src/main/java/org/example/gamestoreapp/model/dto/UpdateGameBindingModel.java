@@ -19,7 +19,7 @@ public class UpdateGameBindingModel {
     private String publisher;
     @NotNull
     private GenreName genre;
-    @Positive
+    @PositiveOrZero
     private BigDecimal price;
 
     public Long getId() {

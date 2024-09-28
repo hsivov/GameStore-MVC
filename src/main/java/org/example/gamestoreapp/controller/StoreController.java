@@ -46,4 +46,11 @@ public class StoreController {
         // Return the updated cart count in the response
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/store/add-to-library/{id}")
+    public String addToLibrary(@PathVariable("id") Long id) {
+        gameService.addToLibrary(id);
+
+        return "redirect:/library";
+    }
 }
