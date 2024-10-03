@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/commons::head}">
 </head>
 <body>
@@ -17,11 +17,12 @@
                 <p th:text="'Publisher: ' + ${game.publisher}"></p>
                 <p th:text="'Release date: ' + ${game.releaseDate}"></p>
                 <div class="price-box">
-                    <h5 th:text="${game.price} + ' лв.'"></h5>
-                    <form th:unless="${game.price == 0}" th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
+                    <h5 th:if="${!gamesInLibrary[game.id]}" th:text="${game.price == 0} ? 'Free' : ${game.price} + ' лв.'"></h5>
+                    <h5 th:if="${gamesInLibrary[game.id]}" class="already-in-library">Game is already in your library</h5>
+                    <form th:if="${!gamesInLibrary[game.id] && game.price != 0}" th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
                         <button type="submit" class="btn success">Add to cart</button>
                     </form>
-                    <form th:if="${game.price == 0}" th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
+                    <form th:if="${!gamesInLibrary[game.id] && game.price == 0}" th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
                         <button type="submit" class="btn success">Add to library</button>
                     </form>
                 </div>

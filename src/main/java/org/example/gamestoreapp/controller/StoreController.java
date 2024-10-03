@@ -1,6 +1,8 @@
 package org.example.gamestoreapp.controller;
 
+import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.service.GameService;
+import org.example.gamestoreapp.service.LibraryService;
 import org.example.gamestoreapp.service.ShoppingCartService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,17 +22,29 @@ public class StoreController {
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
     private final CartHelperService cartHelperService;
+    private final LibraryService libraryService;
 
-    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService) {
+    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, LibraryService libraryService) {
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
         this.cartHelperService = cartHelperService;
+        this.libraryService = libraryService;
     }
 
     @GetMapping("/store")
     public String store(Model model) {
 
-        model.addAttribute("games", gameService.getAll());
+        List<GameDTO> games = gameService.getAll();
+        model.addAttribute("games", games);
+
+        Map<Long, Boolean> gamesInLibrary = new HashMap<>();
+
+        for (GameDTO gameDTO : games) {
+            boolean inLibrary = libraryService.isGameInLibrary(gameDTO.getId());
+            gamesInLibrary.put(gameDTO.getId(), inLibrary);
+        }
+
+        model.addAttribute("gamesInLibrary", gamesInLibrary);
 
         return "store";
     }

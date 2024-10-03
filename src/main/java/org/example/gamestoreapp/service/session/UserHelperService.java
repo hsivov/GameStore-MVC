@@ -17,6 +17,10 @@ public class UserHelperService {
     }
 
     public User getUser() {
+        if (!isAuthenticated()) {
+            return null;
+        }
+
         return userRepository.findByUsername(getUserDetails().getUsername())
                 .orElse(null);
     }
