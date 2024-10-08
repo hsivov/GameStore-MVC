@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<header th:replace="~{fragments/commons::header(activeLink=${'game-details'})}"></header>
+<body>
+    <main>
+        <div class="game-details-wrapper">
+            <div class="game-details">
+                <div class="video-section">
+                    <video width="100%" controls>
+                        <source th:src="${game.videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="info-section">
+                    <h2 th:text="${game.title}">Game Title</h2>
+                    <img th:src="${game.imageUrl}" alt="Game Image" class="game-img">
+                    <div class="game-description">
+                        <p th:text="${game.description}">This is a brief description of the game. Immerse yourself in an epic adventure with stunning visuals and engaging gameplay.</p>
+                        <p th:text="'Release date: ' + ${game.releaseDate}">Release date: </p>
+                        <p th:text="'Developer: ' + ${game.publisher}">Developer: </p>
+                    </div>
+                </div>
+            </div>
+            <div class="purchase-wrapper">
+                <h1>Buy Farming Simulator 22</h1>
+                <div class="purchase-action">
+                    <div class="price">
+                        <p th:text="${game.price} + 'лв.'">69.99$</p>
+                    </div>
+                    <div class="btn-add-to-cart">
+                        <form th:action="@{/game-details/add-to-cart/{id}(id=${game.id})}" th:method="post">
+                            <button type="submit" class="btn success">Add to cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -14,6 +14,8 @@ public class Game extends BaseEntity{
     private String description;
     @Column(nullable = false)
     private String imageUrl;
+    @Column
+    private String videoUrl;
     @Column(nullable = false)
     private LocalDate releaseDate;
     @Column(nullable = false)
@@ -45,6 +47,14 @@ public class Game extends BaseEntity{
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     public LocalDate getReleaseDate() {

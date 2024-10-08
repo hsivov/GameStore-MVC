@@ -314,13 +314,16 @@ table td {
 .game-card {
     width: 400px;
     color: white;
-    background-color: #185375;
+    background-image: linear-gradient(45deg, #24799f, #185073);
     box-shadow: 0 0 5px #000000;
+}
+
+.game-card:hover {
+    cursor: pointer;
 }
 
 .game-content {
     padding: 1rem;
-    background-image: linear-gradient(45deg, #24799f, #185073);
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -524,4 +527,136 @@ p#modal-price {
 a.btn-link:nth-child(3) {
     background: linear-gradient(to right, #00ccff, #3366ff);
     color: white;
+}
+
+/*Game details*/
+
+/* General Styling */
+
+.game-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-details {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+    height: auto;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: rgba(26, 36, 48, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+}
+
+/* Video Section */
+.video-section {
+    flex: 0 0 60%;
+}
+
+video {
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Info Section */
+
+.info-section {
+    flex: 0 0 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.game-img {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-section h2 {
+    margin-bottom: 20px;
+    color: #c6d4df;
+    align-self: flex-start;
+}
+
+.game-description > * {
+    margin-bottom: 20px;
+}
+
+.game-description > p:nth-child(1) {
+    color: #c6d4df;
+}
+
+.game-description p {
+    font-size: 16px;
+    color: #556772;
+}
+
+/* First Div styling */
+.purchase-wrapper {
+    width: 60%;
+
+    position: relative; /* Important for positioning the second div */
+    padding: 20px;
+    margin-top: 20px;
+    background-color: rgba(67, 82, 96, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    color: #c6d4df;
+}
+
+/* Second Div styling */
+.purchase-action {
+    padding: 4px;
+    display: flex;
+    width: 200px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    position: absolute;
+    bottom: 0;
+    left: 80%;
+    transform: translate(-50%, 50%);
+}
+
+.price {
+    padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+        text-align: center;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+
+    .video-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .info-section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .game-img {
+        max-width: 100%;
+    }
 }

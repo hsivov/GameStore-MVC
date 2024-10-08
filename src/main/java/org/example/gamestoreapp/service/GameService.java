@@ -11,4 +11,6 @@ public interface GameService {
     Set<GameDTO> getOwnedGames();
 
     void addToLibrary(Long id);
+
+    GameDTO getGameById(Long id);
 }

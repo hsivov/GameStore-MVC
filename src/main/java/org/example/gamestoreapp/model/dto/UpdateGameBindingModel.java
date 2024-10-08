@@ -12,7 +12,9 @@ public class UpdateGameBindingModel {
     private String title;
     @Size(min = 3, max = 500, message = "Description must be between 3 and 500 characters!")
     private String description;
+    @Pattern(regexp = "^(http(s?):)([/|.\\w\\s:])*\\.(?:jpg|jpeg|png)(\\?\\w+=\\w+(&\\w+=\\w+)*)?$", message = "Image URL must be a valid image format!")
     private String imageUrl;
+    private String videoUrl;
     @Past
     private LocalDate releaseDate;
     @NotBlank
@@ -52,6 +54,14 @@ public class UpdateGameBindingModel {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     public LocalDate getReleaseDate() {

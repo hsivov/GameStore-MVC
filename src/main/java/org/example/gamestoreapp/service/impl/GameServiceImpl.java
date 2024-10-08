@@ -57,4 +57,11 @@ public class GameServiceImpl implements GameService {
             userRepository.save(currentUser);
         }
     }
+
+    @Override
+    public GameDTO getGameById(Long id) {
+        Optional<Game> optionalGame = gameRepository.findById(id);
+
+        return optionalGame.map(game -> modelMapper.map(game, GameDTO.class)).orElse(null);
+    }
 }

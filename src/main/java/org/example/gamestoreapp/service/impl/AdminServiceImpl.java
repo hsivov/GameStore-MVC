@@ -4,6 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.models.BlobHttpHeaders;
+import org.apache.tika.Tika;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
@@ -37,8 +38,6 @@ public class AdminServiceImpl implements AdminService {
     @Value("${azure.storage.connection-string}")
     private String azureStorageConnectionString;
 
-    @Value("${azure.storage.container-name}")
-    private String containerName;
 
     public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
         this.modelMapper = modelMapper;
@@ -52,11 +51,13 @@ public class AdminServiceImpl implements AdminService {
         Game game = new Game();
         Genre genre = genreRepository.findByName(addGameBindingModel.getGenre());
 
-        String blobUrl = uploadImageToAzureBlobStorage(addGameBindingModel.getImageUrl());
+        String imageBlobUrl = uploadToAzureBlobStorage(addGameBindingModel.getImageUrl(), "images");
+        String videoBlobUrl = uploadToAzureBlobStorage(addGameBindingModel.getVideoUrl(), "videos");
 
         game.setTitle(addGameBindingModel.getTitle());
         game.setDescription(addGameBindingModel.getDescription());
-        game.setImageUrl(blobUrl);
+        game.setImageUrl(imageBlobUrl);
+        game.setVideoUrl(videoBlobUrl);
         game.setPublisher(addGameBindingModel.getPublisher());
         game.setReleaseDate(addGameBindingModel.getReleaseDate());
         game.setPrice(addGameBindingModel.getPrice());
@@ -65,12 +66,13 @@ public class AdminServiceImpl implements AdminService {
         gameRepository.save(game);
     }
 
-    private String uploadImageToAzureBlobStorage(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
+    private String uploadToAzureBlobStorage(String fileUrl, String containerName) throws IOException {
+        URL url = new URL(fileUrl);
+        String uuidShort= UUID.randomUUID().toString().substring(0, 8);
 
         // Generate a unique filename based on the original URL or a UUID
         String originalFileName = Paths.get(url.getPath()).getFileName().toString();
-        String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
+        String uniqueFileName = uuidShort + "_" + originalFileName;
 
         // Create the BlobContainerClient to interact with the container
         BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
@@ -89,8 +91,12 @@ public class AdminServiceImpl implements AdminService {
             // Upload the image to Azure Blob Storage
             blobClient.upload(new ByteArrayInputStream(data), data.length, true);
 
+            // Use Apache Tika to determine the content type dynamically
+            Tika tika = new Tika();
+            String detectedContentType = tika.detect(data);
+
             // Optionally, set the correct content type (e.g., image/jpeg)
-            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType("image/jpeg");
+            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(detectedContentType);
             blobClient.setHttpHeaders(headers);
         }
 
@@ -158,12 +164,21 @@ public class AdminServiceImpl implements AdminService {
         if (optionalGame.isPresent()) {
             Game game = optionalGame.get();
             Genre genre = genreRepository.findByName(updateGameBindingModel.getGenre());
+            String imageBlobUrl = updateGameBindingModel.getImageUrl();
+            String videoBlobUrl = updateGameBindingModel.getVideoUrl();
 
-            String blobUrl = uploadImageToAzureBlobStorage(updateGameBindingModel.getImageUrl());
+            if (!imageBlobUrl.equals(game.getImageUrl())) {
+                imageBlobUrl = uploadToAzureBlobStorage(updateGameBindingModel.getImageUrl(), "images");
+            }
+
+            if (!videoBlobUrl.equals(game.getVideoUrl())) {
+                videoBlobUrl = uploadToAzureBlobStorage(updateGameBindingModel.getVideoUrl(), "videos");
+            }
 
             game.setTitle(updateGameBindingModel.getTitle());
             game.setDescription(updateGameBindingModel.getDescription());
-            game.setImageUrl(blobUrl);
+            game.setImageUrl(imageBlobUrl);
+            game.setVideoUrl(videoBlobUrl);
             game.setPublisher(updateGameBindingModel.getPublisher());
             game.setReleaseDate(updateGameBindingModel.getReleaseDate());
             game.setPrice(updateGameBindingModel.getPrice());

@@ -49,8 +49,15 @@ public class StoreController {
         return "store";
     }
 
+    @PostMapping("/game-details/add-to-cart/{gameId}")
+    public String addToCartFromDetails(@PathVariable("gameId") Long id) {
+        shoppingCartService.addToCart(id);
+
+        return "redirect:/shopping-cart";
+    }
+
     @PostMapping("/store/add-to-cart/{gameId}")
-    public ResponseEntity<Map<String, Integer>> addToCart(@PathVariable("gameId") Long gameId) {
+    public ResponseEntity<Map<String, Integer>> addToCartWithResponse(@PathVariable("gameId") Long gameId) {
         shoppingCartService.addToCart(gameId);
 
         // Get the updated cart item count after adding the game
@@ -67,5 +74,13 @@ public class StoreController {
         gameService.addToLibrary(id);
 
         return "redirect:/library";
+    }
+
+    @GetMapping("/store/game-details/{id}")
+    public String gameDetails(@PathVariable Long id, Model model) {
+        GameDTO gameById = gameService.getGameById(id);
+        model.addAttribute("game", gameById);
+
+        return "game-details";
     }
 }

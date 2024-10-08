@@ -6,7 +6,7 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'store'})}"></header>
 <main>
     <section class="games">
-        <div class="game-card" th:each="game: ${games}">
+        <div th:id="${game.id}" class="game-card" th:each="game: ${games}">
             <div class="game-image">
                 <img th:src="${game.imageUrl}" alt="Game Thumbnail">
             </div>
@@ -50,6 +50,22 @@
 
 <div th:if="${@userHelperService.authenticated}">
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all divs that have the class 'clickable-div'
+            const gameCards = document.querySelectorAll('.game-card');
+
+            gameCards.forEach(function(div) {
+                // Add click event listener for each div
+                div.addEventListener('click', function() {
+                    let divId = this.id;  // Get the dynamic div ID
+                    console.log('Div clicked:', divId);
+
+                    // Redirect based on div ID (example)
+                    window.location.href = '/store/game-details/' + divId;  // Redirect using ID
+                });
+            });
+        });
+
         // Function to show the modal with game details
         function showGameModal(game) {
             // Populate modal with game data

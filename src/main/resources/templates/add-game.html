@@ -24,6 +24,11 @@
                 <small th:errors="*{imageUrl}" class="text-danger">Image thumbnail error message</small>
             </div>
             <div class="input-group">
+                <label for="video-url">Video url (optional)</label>
+                <input id="video-url" type="text" th:field="*{videoUrl}">
+
+            </div>
+            <div class="input-group">
                 <label for="release-date">Release Date</label>
                 <input id="release-date" type="date" th:field="*{releaseDate}">
                 <small th:errors="*{releaseDate}" class="text-danger">Release date error message</small>

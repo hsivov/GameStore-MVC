@@ -1,7 +1,5 @@
 package org.example.gamestoreapp.model.dto;
 
-import org.example.gamestoreapp.model.entity.Genre;
-
 import java.math.BigDecimal;
 
 public class GameDTO {
@@ -9,6 +7,7 @@ public class GameDTO {
     private String title;
     private String description;
     private String imageUrl;
+    private String videoUrl;
     private String releaseDate;
     private String publisher;
     private String genre;
@@ -44,6 +43,14 @@ public class GameDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     public String getReleaseDate() {
