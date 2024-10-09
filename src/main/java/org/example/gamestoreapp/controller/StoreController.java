@@ -76,7 +76,7 @@ public class StoreController {
         return "redirect:/library";
     }
 
-    @GetMapping("/store/game-details/{id}")
+    @GetMapping("/game-details/{id}")
     public String gameDetails(@PathVariable Long id, Model model) {
         GameDTO gameById = gameService.getGameById(id);
         model.addAttribute("game", gameById);

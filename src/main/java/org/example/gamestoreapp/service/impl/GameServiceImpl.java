@@ -10,9 +10,9 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +37,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Set<GameDTO> getOwnedGames() {
+    public List<GameDTO> getOwnedGames() {
         User currentUser = userHelperService.getUser();
 
         return currentUser.getOwnedGames().stream()
                 .map((game) -> modelMapper.map(game, GameDTO.class))
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(GameDTO::getTitle))
+                .toList();
     }
 
     @Override

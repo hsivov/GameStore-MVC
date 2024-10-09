@@ -12,7 +12,7 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Set<Game> games = shoppingCart.getGames();
 
         if (games == null) {
-            games = new HashSet<>();
+            games = new LinkedHashSet<>();
             shoppingCart.setGames(games);
         }
 

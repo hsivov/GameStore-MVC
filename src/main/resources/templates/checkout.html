@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${''})}"></header>
+
+    <div class="wrapper">
+        <div class="checkout-form">
+            <div class="checkout-header">Checkout</div>
+
+            <div class="payment-logos">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
+                     alt="Mastercard">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
+            </div>
+
+            <div class="form-group">
+                <label for="payment-method">Choose payment method</label>
+                <select id="payment-method">
+                    <option value="credit-card">Credit Card</option>
+                    <option value="bank-transfer">Bank Transfer</option>
+                </select>
+            </div>
+
+            <!-- Credit Card Form -->
+            <div class="credit-card-form">
+                <div class="form-group">
+                    <label for="card-number">Credit Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label for="expiry-date">Expiration Date</label>
+                        <input type="text" id="expiry-date" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label for="ccv">CCV Code</label>
+                        <input type="text" id="ccv" placeholder="123">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardholder-name">Cardholder Name</label>
+                    <input type="text" id="cardholder-name" placeholder="John Doe">
+                </div>
+            </div>
+
+            <!-- Bank Transfer Info -->
+            <div class="bank-transfer-info">
+                <p><strong>Bank Name:</strong> Fake Bank Inc.</p>
+                <p><strong>IBAN:</strong> FB12 3456 7890 1234 5678 90</p>
+                <p><strong>Note:</strong> Bank transfer could take up to 24 hours to process.</p>
+            </div>
+
+            <form th:action="@{/payment}" th:method="post">
+                <button type="submit" class="checkout-button">Checkout</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the payment method dropdown and the two sections
+        const paymentMethodDropdown = document.getElementById('payment-method');
+        const creditCardForm = document.querySelector('.credit-card-form');
+        const bankTransferInfo = document.querySelector('.bank-transfer-info');
+
+        // Function to toggle visibility based on selected payment method
+        paymentMethodDropdown.addEventListener('change', function() {
+            if (paymentMethodDropdown.value === 'credit-card') {
+                creditCardForm.style.display = 'block';
+                bankTransferInfo.style.display = 'none';
+            } else if (paymentMethodDropdown.value === 'bank-transfer') {
+                creditCardForm.style.display = 'none';
+                bankTransferInfo.style.display = 'block';
+            }
+        });
+
+        // Trigger the change event on page load to show the correct section by default
+        paymentMethodDropdown.dispatchEvent(new Event('change'));
+    </script>
+
+</body>
+</html>

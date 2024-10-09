@@ -27,7 +27,7 @@
                 <h1>Buy Farming Simulator 22</h1>
                 <div class="purchase-action">
                     <div class="price">
-                        <p th:text="${game.price} + 'лв.'">69.99$</p>
+                        <p th:text="${game.price} + '&nbsp;лв.'">69.99$</p>
                     </div>
                     <div class="btn-add-to-cart">
                         <form th:action="@{/game-details/add-to-cart/{id}(id=${game.id})}" th:method="post">

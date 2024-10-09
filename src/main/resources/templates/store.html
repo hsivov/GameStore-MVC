@@ -51,17 +51,16 @@
 <div th:if="${@userHelperService.authenticated}">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get all divs that have the class 'clickable-div'
+
             const gameCards = document.querySelectorAll('.game-card');
 
             gameCards.forEach(function(div) {
                 // Add click event listener for each div
                 div.addEventListener('click', function() {
                     let divId = this.id;  // Get the dynamic div ID
-                    console.log('Div clicked:', divId);
 
                     // Redirect based on div ID (example)
-                    window.location.href = '/store/game-details/' + divId;  // Redirect using ID
+                    window.location.href = '/game-details/' + divId;  // Redirect using ID
                 });
             });
         });
@@ -89,6 +88,7 @@
             buttons.forEach(function (button) {
                 button.addEventListener('click', function (event) {
                     event.preventDefault(); // Prevent default form submission
+                    event.stopPropagation();
 
                     // Get the form and game ID from the action attribute
                     const form = button.closest('form');

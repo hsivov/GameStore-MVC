@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Set;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -25,7 +25,7 @@ public class HomeController {
 
     @GetMapping("/library")
     public String library(Model model) {
-        Set<GameDTO> ownedGames = gameService.getOwnedGames();
+        List<GameDTO> ownedGames = gameService.getOwnedGames();
         model.addAttribute("ownedGames", ownedGames);
 
         return "library";
