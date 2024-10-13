@@ -23,7 +23,7 @@ public class AdminUserInit implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         long count = userRepository.count();
 
         if (count == 0) {
@@ -37,6 +37,7 @@ public class AdminUserInit implements CommandLineRunner {
             admin.setLastName("Sivov");
             admin.setAge(46);
             admin.setRole(UserRole.ADMIN);
+            admin.setEnabled(true);
 
             userRepository.save(admin);
         }

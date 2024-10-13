@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) throws Exception {
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -22,7 +22,7 @@ public class SecurityConfig {
                             authorizeRequest
                                     .requestMatchers("/admin/**").hasRole("ADMIN")
                                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                    .requestMatchers("/", "/store","/users/login", "/users/login-error", "/users/register").permitAll()
+                                    .requestMatchers("/", "/store","/users/**").permitAll()
                                     .anyRequest().authenticated();
                         }
                 )
@@ -32,7 +32,7 @@ public class SecurityConfig {
                             formLogin.usernameParameter("username");
                             formLogin.passwordParameter("password");
                             formLogin.defaultSuccessUrl("/", true);
-                            formLogin.failureUrl("/users/login?error=true");
+                            formLogin.failureHandler(customAuthenticationFailureHandler);
                         }
                 )
                 .logout(

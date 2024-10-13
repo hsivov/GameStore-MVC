@@ -107,7 +107,7 @@ main {
     background-position: center;
     background-attachment: fixed;
     position: relative;
-    min-height: 100vh;
+    min-height: calc(100vh - 140px);
 }
 
 main::before {
@@ -146,6 +146,11 @@ label {
 
 .text-danger {
     color: #dc3545;
+    text-align: center;
+}
+
+.text-info {
+    color: #c6d4df;
     text-align: center;
 }
 
@@ -754,4 +759,11 @@ video {
     margin: 5px 0;
     font-size: 14px;
     color: #333;
+}
+
+.token-expired {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }

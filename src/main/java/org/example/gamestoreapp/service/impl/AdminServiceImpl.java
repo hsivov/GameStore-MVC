@@ -4,6 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.models.BlobHttpHeaders;
+import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
@@ -13,6 +14,7 @@ import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.Genre;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
+import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
@@ -34,16 +36,18 @@ public class AdminServiceImpl implements AdminService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     @Value("${azure.storage.connection-string}")
     private String azureStorageConnectionString;
 
 
-    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
+    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, ConfirmationTokenRepository confirmationTokenRepository) {
         this.modelMapper = modelMapper;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.genreRepository = genreRepository;
+        this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
     @Override
@@ -124,7 +128,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(long id) {
+        confirmationTokenRepository.deleteByUserId(id);
+
         userRepository.deleteById(id);
     }
 

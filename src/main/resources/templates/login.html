@@ -7,8 +7,9 @@
     <main>
         <div class="container">
             <div class="input-group">
+                <div th:if="${message}" th:text="${message}" class="text-info"></div>
                 <div th:if="${param.error}"
-                     th:text="'Incorrect username or password'" class="text-danger">Login error message</div>
+                     th:text="${param.error}" class="text-danger">Login error message</div>
             </div>
             <h1>Login</h1>
             <form th:action="@{/users/login}" th:method="POST" th:object="${userLoginBindingModel}">
