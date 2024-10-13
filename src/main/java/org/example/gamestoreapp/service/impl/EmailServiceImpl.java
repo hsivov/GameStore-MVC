@@ -25,10 +25,10 @@ public class EmailServiceImpl implements EmailService {
 
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+            helper.setFrom("hsivov@gmail.com");
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text, true);
-            helper.setFrom("hsivov@gmail.com");
 
             mailSender.send(message);
         } catch (MessagingException e) {
