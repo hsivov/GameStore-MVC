@@ -107,7 +107,7 @@ main {
     background-position: center;
     background-attachment: fixed;
     position: relative;
-    min-height: 100vh;
+    min-height: calc(100vh - 140px);
 }
 
 main::before {

@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         tokenService.saveConfirmationToken(token);
 
         // Send confirmation email
-        String link = "http://localhost:8080/users/confirm?token=" + token.getToken();
+        String link = "https://hsivov-game-store.azurewebsites.net/users/confirm?token=" + token.getToken();
 
         String subject = "Confirm your email";
         String htmlContent = "<h3>Thank you for registering!</h3>"
