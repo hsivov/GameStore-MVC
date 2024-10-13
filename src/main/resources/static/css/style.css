@@ -149,6 +149,11 @@ label {
     text-align: center;
 }
 
+.text-info {
+    color: #c6d4df;
+    text-align: center;
+}
+
 input, select {
     width: 100%;
     height: 2rem;
@@ -754,4 +759,11 @@ video {
     margin: 5px 0;
     font-size: 14px;
     color: #333;
+}
+
+.token-expired {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }

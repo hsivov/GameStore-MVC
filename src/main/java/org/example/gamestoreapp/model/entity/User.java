@@ -2,12 +2,17 @@ package org.example.gamestoreapp.model.entity;
 
 import jakarta.persistence.*;
 import org.example.gamestoreapp.model.enums.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity{
+public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false,unique = true)
     private String username;
     @Column(nullable = false,unique = true)
@@ -23,11 +28,44 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @Column
+    private boolean enabled = false;
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Game> ownedGames;
 
+    @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role));
     }
 
     public void setUsername(String username) {
@@ -40,10 +78,6 @@ public class User extends BaseEntity{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
@@ -80,6 +114,10 @@ public class User extends BaseEntity{
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Set<Game> getOwnedGames() {

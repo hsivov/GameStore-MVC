@@ -1,7 +1,7 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
-import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
@@ -9,10 +9,7 @@ import org.example.gamestoreapp.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,19 +23,25 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ModelAndView login(@ModelAttribute("userLoginBindingModel") UserLoginBindingModel userLoginBindingModel) {
+    public String login(@RequestParam(value = "confirmed", required = false) String confirmed,
+                              @ModelAttribute("userLoginBindingModel") UserLoginBindingModel userLoginBindingModel,
+                              Model model) {
 
-        return new ModelAndView("login");
+        if (confirmed != null) {
+            model.addAttribute("message", "Your account is confirmed");
+        }
+
+        return "login";
     }
 
     @GetMapping("/register")
-    public ModelAndView register(Model model) {
+    public String register(Model model) {
 
         if (!model.containsAttribute("userRegisterBindingModel")) {
             model.addAttribute("userRegisterBindingModel", new UserRegisterBindingModel());
         }
 
-        return new ModelAndView("register");
+        return "register";
     }
 
     @PostMapping("/register")
@@ -56,12 +59,47 @@ public class UserController {
         boolean hasSuccessfulRegistration = userService.register(userRegisterBindingModel);
 
         if (!hasSuccessfulRegistration){
-
-            return new ModelAndView("register");
+            // If registration failed (user not saved or email not sent), show the registration page with an error
+            return new ModelAndView("register", "error", "Registration failed, please try again.");
         }
 
+        // If registration was successful, redirect to login or show a message saying to check email
+        redirectAttributes.addFlashAttribute("message", "Registration successful! Please check your email to confirm.");
         // register user
         return new ModelAndView("redirect:/users/login");
+    }
+
+    @GetMapping("/confirm")
+    public String confirmEmail(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+        try {
+            userService.confirmToken(token);
+            return "redirect:/users/login?confirmed";
+        } catch (TokenExpiredException e) {
+
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("token", token);
+
+            return "redirect:/users/token-expired";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/error";
+        }
+    }
+
+    @PostMapping("/resend-confirmation")
+    public ModelAndView resendConfirmation(@RequestParam("token") String token) {
+        try {
+            userService.resendConfirmationToken(token);
+            return new ModelAndView("redirect:/users/login?resendSuccess");
+        } catch (Exception e) {
+            return new ModelAndView("error", "message", e.getMessage());
+        }
+    }
+
+    @GetMapping("token-expired")
+    public String tokenExpiredPage() {
+
+        return "token-expired";
     }
 
     @GetMapping("/profile")
