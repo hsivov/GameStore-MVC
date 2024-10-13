@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
 import jakarta.mail.MessagingException;
+import org.example.gamestoreapp.exception.AccountConfirmedException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalStateException("Token not found"));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("Email already confirmed");
+            throw new AccountConfirmedException("Account already confirmed");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
@@ -119,7 +120,7 @@ public class UserServiceImpl implements UserService {
         User user = oldToken.getUser();
 
         if (user.isEnabled()) {
-            throw new IllegalStateException("User already confirmed");
+            throw new AccountConfirmedException("Account already confirmed");
         }
 
         // Generate a new token and send the confirmation email

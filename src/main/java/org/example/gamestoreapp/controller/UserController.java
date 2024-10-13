@@ -1,6 +1,8 @@
 package org.example.gamestoreapp.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.example.gamestoreapp.exception.AccountConfirmedException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -80,6 +82,9 @@ public class UserController {
             redirectAttributes.addFlashAttribute("token", token);
 
             return "redirect:/users/token-expired";
+        } catch (AccountConfirmedException e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/users/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             return "redirect:/error";
@@ -87,12 +92,13 @@ public class UserController {
     }
 
     @PostMapping("/resend-confirmation")
-    public ModelAndView resendConfirmation(@RequestParam("token") String token) {
+    public String resendConfirmation(@RequestParam("token") String token, RedirectAttributes redirectAttributes) throws MessagingException {
         try {
             userService.resendConfirmationToken(token);
-            return new ModelAndView("redirect:/users/login?resendSuccess");
-        } catch (Exception e) {
-            return new ModelAndView("error", "message", e.getMessage());
+            return "redirect:/users/login?resendSuccess";
+        } catch (AccountConfirmedException e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/users/login";
         }
     }
 
