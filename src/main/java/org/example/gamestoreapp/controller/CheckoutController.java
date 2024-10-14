@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.controller;
 
+import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.service.CheckoutService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class CheckoutController {
     }
 
     @PostMapping("/payment")
-    public String payment() {
+    public String payment() throws MessagingException {
        checkoutService.payment();
 
        return "redirect:/library";

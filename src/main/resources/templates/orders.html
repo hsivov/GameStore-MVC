@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
+<div id="content-wrapper">
+    <div class="sidebar">
+        <a th:href="@{/admin/users}">User management</a>
+        <a th:href="@{/admin/games}">Game management</a>
+        <a th:href="@{/admin/orders}" class="active">Orders</a>
+    </div>
+    <div class="dashboard">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Order N</th>
+                <th scope="col">Order Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total Sum</th>
+                <th scope="col">Customer</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}">1</td>
+                <td th:text="${order.orderDate}">Order date</td>
+                <td th:text="${order.status}">Status</td>
+                <td th:text="${order.totalPrice} + ' лв.'">Total Sum</td>
+                <td th:text="${order.customer.firstName} + ' ' + ${order.customer.lastName}">Customer</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

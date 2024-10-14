@@ -1,5 +1,7 @@
 package org.example.gamestoreapp.service;
 
+import jakarta.mail.MessagingException;
+
 public interface CheckoutService {
-    void payment();
+    void payment() throws MessagingException;
 }

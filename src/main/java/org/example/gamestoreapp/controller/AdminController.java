@@ -2,9 +2,11 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.model.dto.OrderDTO;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.enums.GenreName;
 import org.example.gamestoreapp.service.AdminService;
+import org.example.gamestoreapp.service.OrderService;
 import org.example.gamestoreapp.util.GenreConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,15 +16,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     private final AdminService adminService;
+    private final OrderService orderService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, OrderService orderService) {
         this.adminService = adminService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/users")
@@ -127,5 +132,14 @@ public class AdminController {
         adminService.editGame(updateGameBindingModel, id);
 
         return new ModelAndView("redirect:/admin/games");
+    }
+
+    @GetMapping("/orders")
+    public String getOrders(Model model) {
+        List<OrderDTO> orders = orderService.getAll();
+
+        model.addAttribute("orders", orders);
+
+        return "orders";
     }
 }
