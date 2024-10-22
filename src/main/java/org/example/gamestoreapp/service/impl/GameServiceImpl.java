@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -59,9 +60,17 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameDTO getGameById(Long id) {
+    public Optional<GameDTO> getGameById(Long id) {
         Optional<Game> optionalGame = gameRepository.findById(id);
 
-        return optionalGame.map(game -> modelMapper.map(game, GameDTO.class)).orElse(null);
+        return optionalGame.map(game -> modelMapper.map(game, GameDTO.class));
+    }
+
+    @Override
+    public List<GameDTO> getGamesByIds(Set<Long> gameIds) {
+
+        return gameRepository.findByIdIn(gameIds).stream()
+                .map(game -> modelMapper.map(game, GameDTO.class))
+                .toList();
     }
 }

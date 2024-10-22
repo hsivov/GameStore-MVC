@@ -3,6 +3,7 @@ package org.example.gamestoreapp.service.impl;
 import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.AccountConfirmedException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
+import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
@@ -13,6 +14,7 @@ import org.example.gamestoreapp.service.ConfirmationTokenService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.UserHelperService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -21,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,13 +33,15 @@ public class UserServiceImpl implements UserService {
     private final ConfirmationTokenService tokenService;
     private final EmailService emailService;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserHelperService userHelperService, ConfirmationTokenService tokenService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserHelperService userHelperService, ConfirmationTokenService tokenService, EmailService emailService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userHelperService = userHelperService;
         this.tokenService = tokenService;
         this.emailService = emailService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -125,6 +130,12 @@ public class UserServiceImpl implements UserService {
 
         // Generate a new token and send the confirmation email
         sendConfirmationEmail(user);
+    }
+
+    @Override
+    public Optional<UserDTO> getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
     @Override

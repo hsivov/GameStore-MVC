@@ -1,20 +1,21 @@
 package org.example.gamestoreapp.service.impl;
 
 import jakarta.mail.MessagingException;
+import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
+import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.entity.Game;
-import org.example.gamestoreapp.model.entity.Order;
 import org.example.gamestoreapp.model.entity.ShoppingCart;
 import org.example.gamestoreapp.model.entity.User;
-import org.example.gamestoreapp.model.enums.OrderStatus;
-import org.example.gamestoreapp.repository.OrderRepository;
 import org.example.gamestoreapp.repository.ShoppingCartRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.CheckoutService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,15 +26,13 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final UserHelperService userHelperService;
     private final ShoppingCartRepository shoppingCartRepository;
     private final CartHelperService cartHelperService;
-    private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
 
-    public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, OrderRepository orderRepository, UserRepository userRepository, EmailService emailService) {
+    public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, UserRepository userRepository, EmailService emailService) {
         this.userHelperService = userHelperService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.cartHelperService = cartHelperService;
-        this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
@@ -49,26 +48,53 @@ public class CheckoutServiceImpl implements CheckoutService {
             Set<Game> games = shoppingCart.getGames();
             currentUser.getOwnedGames().addAll(games);
 
-            Order order = new Order();
-            order.setCustomer(currentUser);
-            order.setOrderDate(LocalDateTime.now());
-            order.setBoughtGames(games);
-            order.setStatus(OrderStatus.APPROVED);
-            order.setTotalPrice(cartHelperService.getTotalPrice());
+            // Prepare request to App2
+            CreateOrderRequestDTO createOrderRequest = new CreateOrderRequestDTO();
+            createOrderRequest.setCustomerId(currentUser.getId());
+            createOrderRequest.setGameIds(games.stream().map(Game::getId).toList());
+            createOrderRequest.setTotalPrice(cartHelperService.getTotalPrice());
+            createOrderRequest.setOrderDate(LocalDateTime.now());
 
-            orderRepository.save(order);
-            userRepository.save(currentUser);
+            // Send request to App2
+            OrderResponseDTO orderResponse = sendRequest(createOrderRequest);
 
+            // Send confirmation email
             String subject = "Order Confirmation";
-            String body = createConfirmationEmail(order, currentUser, shoppingCart.getGames());
-
+            String body = createConfirmationEmail(orderResponse, currentUser, games);
             emailService.sendEmail(currentUser.getEmail(), subject, body);
 
+            // Remove shopping cart from App1
             shoppingCartRepository.delete(shoppingCart);
+
+            // Update user with owned games
+            userRepository.save(currentUser);
         }
     }
 
-    private String createConfirmationEmail(Order order, User customer, Set<Game> games) {
+    private OrderResponseDTO sendRequest(CreateOrderRequestDTO createOrderRequest) {
+        // Using RestTemplate for HTTP request
+        RestTemplate restTemplate = new RestTemplate();
+        String app2Url = "http://localhost:8081/api/orders/create";
+
+        // Create headers and set Content-Type to application/json
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON); // This ensures the request body is treated as JSON
+
+        // Wrap the request and headers in an HttpEntity
+        HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
+
+        // Make POST request to App2's createOrder endpoint
+        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(app2Url, entity, OrderResponseDTO.class);
+
+        // Check response status and return the OrderResponseDTO
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to create order in App2");
+        }
+    }
+
+    private String createConfirmationEmail(OrderResponseDTO order, User customer, Set<Game> games) {
         StringBuilder sb = new StringBuilder();
 
         for (Game game : games) {

@@ -136,9 +136,9 @@ public class AdminController {
 
     @GetMapping("/orders")
     public String getOrders(Model model) {
-        List<OrderDTO> orders = orderService.getAll();
+        List<OrderDTO> allOrders = orderService.getAllOrders();
 
-        model.addAttribute("orders", orders);
+        model.addAttribute("orders", allOrders);
 
         return "orders";
     }

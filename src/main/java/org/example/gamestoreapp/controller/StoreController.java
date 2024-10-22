@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.controller;
 
+import org.example.gamestoreapp.exception.GameNotFoundException;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.LibraryService;
@@ -78,7 +79,9 @@ public class StoreController {
 
     @GetMapping("/game-details/{id}")
     public String gameDetails(@PathVariable Long id, Model model) {
-        GameDTO gameById = gameService.getGameById(id);
+        GameDTO gameById = gameService.getGameById(id)
+                .orElseThrow(() -> new GameNotFoundException("Game with ID " + id + " not found"));
+
         model.addAttribute("game", gameById);
 
         return "game-details";
