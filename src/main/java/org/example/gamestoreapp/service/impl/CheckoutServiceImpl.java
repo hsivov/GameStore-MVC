@@ -12,6 +12,7 @@ import org.example.gamestoreapp.service.CheckoutService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,9 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final CartHelperService cartHelperService;
     private final UserRepository userRepository;
     private final EmailService emailService;
+
+    @Value("${order-service.url}")
+    private String orderServiceUrl;
 
     public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, UserRepository userRepository, EmailService emailService) {
         this.userHelperService = userHelperService;
@@ -74,7 +78,7 @@ public class CheckoutServiceImpl implements CheckoutService {
     private OrderResponseDTO sendRequest(CreateOrderRequestDTO createOrderRequest) {
         // Using RestTemplate for HTTP request
         RestTemplate restTemplate = new RestTemplate();
-        String app2Url = "http://localhost:8081/api/orders/create";
+        String url = orderServiceUrl + "/create";
 
         // Create headers and set Content-Type to application/json
         HttpHeaders headers = new HttpHeaders();
@@ -84,7 +88,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
 
         // Make POST request to App2's createOrder endpoint
-        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(app2Url, entity, OrderResponseDTO.class);
+        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(url, entity, OrderResponseDTO.class);
 
         // Check response status and return the OrderResponseDTO
         if (response.getStatusCode() == HttpStatus.OK) {

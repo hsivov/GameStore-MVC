@@ -4,10 +4,17 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.exception.AccountConfirmedException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
+import org.example.gamestoreapp.jwt.JwtUtil;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,9 +26,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/login")
@@ -34,6 +47,22 @@ public class UserController {
         }
 
         return "login";
+    }
+
+    @PostMapping("/login")
+    public String createAuthenticationToken(@RequestBody UserLoginBindingModel authRequest) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+        } catch (Exception e) {
+            throw new TokenExpiredException("Incorrect username or password");
+        }
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        String response = jwtUtil.generateToken(userDetails.getUsername());
+
+        return response;
     }
 
     @GetMapping("/register")
@@ -65,7 +94,7 @@ public class UserController {
             return new ModelAndView("register", "error", "Registration failed, please try again.");
         }
 
-        // If registration was successful, redirect to login or show a message saying to check email
+        // If registration was successful, redirect to login page or show a message saying to check email
         redirectAttributes.addFlashAttribute("message", "Registration successful! Please check your email to confirm.");
         // register user
         return new ModelAndView("redirect:/users/login");
