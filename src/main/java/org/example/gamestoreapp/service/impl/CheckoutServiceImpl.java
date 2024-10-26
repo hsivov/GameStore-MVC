@@ -12,11 +12,16 @@ import org.example.gamestoreapp.service.CheckoutService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
+import org.example.gamestoreapp.util.HMACUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -28,18 +33,32 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final CartHelperService cartHelperService;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final RestTemplate restTemplate;
 
-    public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, UserRepository userRepository, EmailService emailService) {
+    @Value("${order.service.url}")
+    private String orderServiceUrl;
+
+    @Value("${app.api.key}")
+    private String apiKey;
+
+    @Value("${app.api.secret}")
+    private String secret;
+    public static final String HEADER_API_KEY = "X-Api-Key";
+    public static final String HEADER_SIGNATURE = "X-Signature";
+    public static final String HEADER_TIMESTAMP = "X-Timestamp";
+
+    public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, UserRepository userRepository, EmailService emailService, RestTemplate restTemplate) {
         this.userHelperService = userHelperService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.cartHelperService = cartHelperService;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.restTemplate = restTemplate;
     }
 
     @Override
     @Transactional
-    public void payment() throws MessagingException {
+    public void payment() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
         User currentUser = userHelperService.getUser();
         Optional<ShoppingCart> cart = shoppingCartRepository.findByCustomer(currentUser);
 
@@ -48,14 +67,14 @@ public class CheckoutServiceImpl implements CheckoutService {
             Set<Game> games = shoppingCart.getGames();
             currentUser.getOwnedGames().addAll(games);
 
-            // Prepare request to App2
+            // Prepare request to OrderService
             CreateOrderRequestDTO createOrderRequest = new CreateOrderRequestDTO();
             createOrderRequest.setCustomerId(currentUser.getId());
             createOrderRequest.setGameIds(games.stream().map(Game::getId).toList());
             createOrderRequest.setTotalPrice(cartHelperService.getTotalPrice());
             createOrderRequest.setOrderDate(LocalDateTime.now());
 
-            // Send request to App2
+            // Send request to OrderService
             OrderResponseDTO orderResponse = sendRequest(createOrderRequest);
 
             // Send confirmation email
@@ -63,7 +82,7 @@ public class CheckoutServiceImpl implements CheckoutService {
             String body = createConfirmationEmail(orderResponse, currentUser, games);
             emailService.sendEmail(currentUser.getEmail(), subject, body);
 
-            // Remove shopping cart from App1
+            // Remove shopping cart from the App
             shoppingCartRepository.delete(shoppingCart);
 
             // Update user with owned games
@@ -71,26 +90,37 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
     }
 
-    private OrderResponseDTO sendRequest(CreateOrderRequestDTO createOrderRequest) {
-        // Using RestTemplate for HTTP request
-        RestTemplate restTemplate = new RestTemplate();
-        String app2Url = "http://localhost:8081/api/orders/create";
+    private OrderResponseDTO sendRequest(CreateOrderRequestDTO createOrderRequest) throws NoSuchAlgorithmException, InvalidKeyException {
+
+        String endpoint = "/api/orders/create";
+        String url = orderServiceUrl + endpoint;
+        String method = "POST";
+        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+
+        // Construct the payload
+        String payload = method + endpoint + timestamp;
+
+        // Generate HMAC signature
+        String signature = HMACUtil.generateHMAC(payload, secret);
 
         // Create headers and set Content-Type to application/json
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON); // This ensures the request body is treated as JSON
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HEADER_API_KEY, apiKey);
+        headers.set(HEADER_SIGNATURE, signature);
+        headers.set(HEADER_TIMESTAMP, timestamp);
 
         // Wrap the request and headers in an HttpEntity
         HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
 
-        // Make POST request to App2's createOrder endpoint
-        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(app2Url, entity, OrderResponseDTO.class);
+        // Make POST request to OrderService createOrder endpoint
+        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(url, entity, OrderResponseDTO.class);
 
         // Check response status and return the OrderResponseDTO
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
-            throw new RuntimeException("Failed to create order in App2");
+            throw new RuntimeException("Failed to create order in OrderService");
         }
     }
 
