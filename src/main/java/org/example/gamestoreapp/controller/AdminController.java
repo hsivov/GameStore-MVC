@@ -16,6 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -135,7 +137,7 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String getOrders(Model model) {
+    public String getOrders(Model model) throws NoSuchAlgorithmException, InvalidKeyException {
         List<OrderDTO> allOrders = orderService.getAllOrders();
 
         model.addAttribute("orders", allOrders);
