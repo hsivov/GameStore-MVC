@@ -30,6 +30,9 @@
                 <td th:text="${order.status}">Status</td>
                 <td th:text="${order.totalPrice} + ' лв.'">Total Sum</td>
                 <td th:text="${order.customer.firstName} + ' ' + ${order.customer.lastName}">Customer</td>
+                <td>
+                    <a th:href="@{/admin/order/{id}(id=${order.id})}" class="btn-link continue">Order details</a>
+                </td>
             </tr>
             </tbody>
         </table>

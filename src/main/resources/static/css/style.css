@@ -648,36 +648,6 @@ video {
     padding: 6px;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .container {
-        flex-direction: column;
-        text-align: center;
-        margin-left: 10%;
-        margin-right: 10%;
-    }
-
-    .video-section {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .info-section {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        width: 100%;
-        padding: 10px;
-    }
-
-    .game-img {
-        max-width: 100%;
-    }
-}
-
 /*Checkout page*/
 
 .checkout-form {
@@ -766,4 +736,78 @@ video {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+}
+
+.order-container {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    padding: 5rem;
+}
+
+.order-info, .order-items, .total-price {
+    margin-bottom: 20px;
+}
+.order-info p, .order-items p, .total-price p {
+    margin: 5px 0;
+}
+.order-items table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.order-items table, .order-items th, .order-items td {
+    border: 1px solid #ddd;
+}
+.order-items th, .order-items td {
+    padding: 10px;
+    text-align: left;
+}
+.order-items th {
+    background-color: #f9f9f9;
+}
+.total-price {
+    text-align: right;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.actions {
+    display: flex;
+    justify-content: space-between;
+}
+.actions a {
+    text-decoration: none;
+    color: #fff;
+    background: #000000;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+        text-align: center;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+
+    .video-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .info-section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .game-img {
+        max-width: 100%;
+    }
 }

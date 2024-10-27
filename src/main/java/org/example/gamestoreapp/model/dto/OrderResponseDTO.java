@@ -1,14 +1,20 @@
 package org.example.gamestoreapp.model.dto;
 
+import org.example.gamestoreapp.model.entity.User;
+import org.example.gamestoreapp.model.enums.OrderStatus;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class OrderResponseDTO {
     private Long id;
-    private Long customerId;
-    private List<Long> gameIds;
-    private BigDecimal totalPrice;
     private String orderDate;
+    private OrderStatus status;
+    private List<GameDTO> boughtGames;
+    private BigDecimal totalPrice;
+    private User customer;
+
+    public OrderResponseDTO() {}
 
     public Long getId() {
         return id;
@@ -18,20 +24,20 @@ public class OrderResponseDTO {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public String getOrderDate() {
+        return orderDate;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
     }
 
-    public List<Long> getGameIds() {
-        return gameIds;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setGameIds(List<Long> gameIds) {
-        this.gameIds = gameIds;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public BigDecimal getTotalPrice() {
@@ -42,11 +48,11 @@ public class OrderResponseDTO {
         this.totalPrice = totalPrice;
     }
 
-    public String getOrderDate() {
-        return orderDate;
+    public User getCustomer() {
+        return customer;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setCustomer(User customer) {
+        this.customer = customer;
     }
 }

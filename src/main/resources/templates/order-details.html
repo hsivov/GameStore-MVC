@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
+
+<div class="order-container">
+    <h1>Order Details</h1>
+
+    <div class="order-info">
+        <p><strong th:text="'Order ID: ' + ${order.id}">Order ID:</strong></p>
+        <p><strong th:text="'Customer: ' + ${order.customer.firstName} + ' ' + ${order.customer.lastName}">Customer:</strong></p>
+        <p><strong th:text="'Order Date: ' + ${order.orderDate}">Order Date:</strong></p>
+    </div>
+
+    <div class="order-items">
+        <h3>Purchased Games</h3>
+        <table>
+            <tr>
+                <th>Game Name</th>
+                <th>Price</th>
+            </tr>
+
+            <tr th:each="game: ${order.boughtGames}">
+                <td th:text="${game.title}">{{ game.name }}</td>
+                <td th:text="${game.price}">${{ game.price }}</td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="total-price">
+        <p th:text="'Total Price: ' + ${order.totalPrice}">Total Price: ${{ order.totalPrice }}</p>
+    </div>
+
+    <div class="actions">
+        <a href="/admin/orders">Back to Orders</a>
+    </div>
+</div>
+
+</body>
+</html>

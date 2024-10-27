@@ -9,6 +9,7 @@ public class CreateOrderRequestDTO {
     private List<Long> gameIds;
     private BigDecimal totalPrice;
     private LocalDateTime orderDate;
+    private String paymentMethod;
 
     public Long getCustomerId() {
         return customerId;
@@ -40,5 +41,13 @@ public class CreateOrderRequestDTO {
 
     public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

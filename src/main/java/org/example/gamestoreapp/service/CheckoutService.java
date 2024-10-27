@@ -6,5 +6,5 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public interface CheckoutService {
-    void payment() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException;
+    void payment(String paymentMethod) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException;
 }

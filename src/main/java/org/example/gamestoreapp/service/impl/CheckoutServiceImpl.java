@@ -58,7 +58,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     @Transactional
-    public void payment() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void payment(String paymentMethod) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
         User currentUser = userHelperService.getUser();
         Optional<ShoppingCart> cart = shoppingCartRepository.findByCustomer(currentUser);
 
@@ -73,6 +73,7 @@ public class CheckoutServiceImpl implements CheckoutService {
             createOrderRequest.setGameIds(games.stream().map(Game::getId).toList());
             createOrderRequest.setTotalPrice(cartHelperService.getTotalPrice());
             createOrderRequest.setOrderDate(LocalDateTime.now());
+            createOrderRequest.setPaymentMethod(paymentMethod);
 
             // Send request to OrderService
             OrderResponseDTO orderResponse = sendRequest(createOrderRequest);

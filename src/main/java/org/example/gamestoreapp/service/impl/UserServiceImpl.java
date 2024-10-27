@@ -17,6 +17,7 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,12 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserHelperService userHelperService, ConfirmationTokenService tokenService, EmailService emailService, ModelMapper modelMapper) {
+    @Value("${app.domain.name}")
+    private String domain;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                           UserHelperService userHelperService, ConfirmationTokenService tokenService,
+                           EmailService emailService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userHelperService = userHelperService;
@@ -80,7 +86,7 @@ public class UserServiceImpl implements UserService {
         tokenService.saveConfirmationToken(token);
 
         // Send confirmation email
-        String link = "https://hsivov-game-store.azurewebsites.net/users/confirm?token=" + token.getToken();
+        String link = domain + "/users/confirm?token=" + token.getToken();
 
         String subject = "Confirm your email";
         String htmlContent = "<h3>Thank you for registering!</h3>"

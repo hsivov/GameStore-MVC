@@ -2,7 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
-import org.example.gamestoreapp.model.dto.OrderDTO;
+import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.enums.GenreName;
 import org.example.gamestoreapp.service.AdminService;
@@ -138,10 +138,17 @@ public class AdminController {
 
     @GetMapping("/orders")
     public String getOrders(Model model) throws NoSuchAlgorithmException, InvalidKeyException {
-        List<OrderDTO> allOrders = orderService.getAllOrders();
+        List<OrderResponseDTO> allOrders = orderService.getAllOrders();
 
         model.addAttribute("orders", allOrders);
 
         return "orders";
+    }
+
+    @GetMapping("/order/{orderId}")
+    public String getOrderDetail(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+        OrderResponseDTO order = orderService.getOrderById(id);
+        model.addAttribute("order", order);
+        return "order-details";
     }
 }
