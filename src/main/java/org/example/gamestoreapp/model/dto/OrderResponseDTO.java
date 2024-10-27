@@ -40,6 +40,14 @@ public class OrderResponseDTO {
         this.status = status;
     }
 
+    public List<GameDTO> getBoughtGames() {
+        return boughtGames;
+    }
+
+    public void setBoughtGames(List<GameDTO> boughtGames) {
+        this.boughtGames = boughtGames;
+    }
+
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
