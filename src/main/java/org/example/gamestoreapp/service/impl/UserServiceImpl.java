@@ -92,6 +92,8 @@ public class UserServiceImpl implements UserService {
         String htmlContent = "<h3>Thank you for registering!</h3>"
                 + "<p>Please click the link below to confirm your email:</p>"
                 + "<a href='" + link + "'>Confirm Email</a>"
+                + "<p>If the button above doesn’t work, copy and paste the following link into your browser:</p>"
+                + "<p>" + link + "</p>"
                 + "<p>If you didn't request this, please ignore this email.</p>";
 
         emailService.sendEmail(user.getEmail(), subject, htmlContent);

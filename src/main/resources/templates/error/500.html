@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Internal Server Error</title>
+    <link rel="stylesheet" href="/css/500.css">
+    <link rel="stylesheet" href="/css/reset.css">
+</head>
+<body>
+    <div class="container">
+        <div class="img-bar">
+            <img src="/images/server-down.png" alt="Server">
+        </div>
+        <div class="content">
+            <h1>Server Error</h1>
+            <h1 class="big-text">500</h1>
+            <h2>Internal Server Error</h2>
+            <p class="description">The server encountered an internal error or misconfiguration and was unable to complete your request. 
+                Please contact the server administrator to inform of the time the error occurred and of anything you 
+                might have done that may have caused the error. More information about this error may be available 
+                in the server error log.</p>
+                <hr>
+            <h3>That's what you can do</h3>
+            <div class="actions">
+                 <a href="javascript:location.reload()">Reload Page</a>
+                 <a href="javascript:history.back()">Back to Previous Page</a>
+                 <a href="/">Home Page</a>
+            </div>
+            <p><a href="javascript:void(0)" onclick="toggleStackTrace()" id="toggleTraceLink">Show stack trace</a></p>
+            <div class="error-container hidden" id="errorContainer">
+                <pre th:text="${errorAttributes.get('trace')}"></pre>
+            </div>
+            <p id="timestamp"><span th:text="${errorAttributes.get('timestamp')}"></span></p>
+        </div>
+    </div>
+
+    <!-- JavaScript for toggling stack trace -->
+    <script defer>
+        function toggleStackTrace() {
+            const errorContainer = document.getElementById("errorContainer");
+            const toggleLink = document.getElementById("toggleTraceLink");
+
+            // Toggle the 'hidden' class
+            if (errorContainer.classList.contains("hidden")) {
+                errorContainer.classList.remove("hidden");  // Show stack trace
+                toggleLink.textContent = "Hide stack trace";
+            } else {
+                errorContainer.classList.add("hidden");  // Hide stack trace
+                toggleLink.textContent = "Show stack trace";
+            }
+        }
+    </script>
+</body>
+</html>

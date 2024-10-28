@@ -7,7 +7,7 @@
     <main>
         <div class="container">
             <h1>Sign Up</h1>
-            <form th:action="@{/users/register}" th:method="POST" th:object="${userRegisterBindingModel}">
+            <form th:action="@{/auth/register}" th:method="POST" th:object="${userRegisterBindingModel}">
                 <div class="input-group">
                     <label for="username">Username</label>
                     <input id="username" type="text" th:field="*{username}">

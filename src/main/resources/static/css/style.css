@@ -9,6 +9,19 @@ body {
     background-color: #1b2838;
 }
 
+h4 {
+    color: #1a9fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+h5 {
+    background-color: #344654;
+    color: #beee11;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
 .main::before {
     content: '';
     position: fixed;
@@ -85,6 +98,21 @@ ul li {
     color: white;
     font-size: 1.75rem;
     text-decoration: none;
+    position: relative;
+}
+
+.cart-count {
+    display: inline-block;
+    position: absolute;
+    background: red;
+    border-radius: 50%;
+    font-size: 14px;
+    width: 18px;
+    height: 19px;
+    text-align: center;
+    top: 20px;
+    bottom: 0;
+    right: 1px;
 }
 
 .user-nav, .store-nav{
@@ -345,13 +373,6 @@ table td {
 
 .game-content h1 {
     text-align: center;
-}
-
-.game-content h5 {
-    background-color: #344654;
-    color: #beee11;
-    padding: 0.5rem;
-    font-size: 1rem;
 }
 
 .description {
@@ -646,6 +667,62 @@ video {
 
 .price {
     padding: 6px;
+}
+
+/* Comment section */
+
+.comments {
+    background-color: #171d25;
+    color: white;
+    width: 60%;
+    margin: 2rem 0;
+    padding: 1rem;
+    position: relative;
+}
+
+#comment {
+    margin: 1rem auto;
+    padding: 0 5px;
+    background: #32353c;
+    color: white;
+    border: none;
+    border-radius: 2px;
+}
+
+.comment {
+    position: relative; /* Ensure pseudo-elements align properly */
+    padding: 10px 20px; /* Add some padding for content */
+    box-sizing: border-box;
+}
+
+.comment::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px; /* Thickness of the border */
+    bottom: -1px;
+    background: linear-gradient(to right, lightblue, rgb(0, 0, 80)); /* Gradient color */
+}
+
+.user-group {
+    display: flex;
+    color: #1a9fff;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+#post-comment {
+    padding: 3rem;
+}
+
+#post-comment label {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.avatar {
+    height: 40px;
 }
 
 /*Checkout page*/

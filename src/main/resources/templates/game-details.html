@@ -4,39 +4,83 @@
 </head>
 <header th:replace="~{fragments/commons::header(activeLink=${'game-details'})}"></header>
 <body>
-    <main>
-        <div class="game-details-wrapper">
-            <div class="game-details">
-                <div class="video-section">
-                    <video width="100%" controls>
-                        <source th:src="${game.videoUrl}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div class="info-section">
-                    <h2 th:text="${game.title}">Game Title</h2>
-                    <img th:src="${game.imageUrl}" alt="Game Image" class="game-img">
-                    <div class="game-description">
-                        <p th:text="${game.description}">This is a brief description of the game. Immerse yourself in an epic adventure with stunning visuals and engaging gameplay.</p>
-                        <p th:text="'Release date: ' + ${game.releaseDate}">Release date: </p>
-                        <p th:text="'Developer: ' + ${game.publisher}">Developer: </p>
-                    </div>
-                </div>
+<main>
+    <div class="game-details-wrapper">
+        <div class="game-details">
+            <div class="video-section">
+                <video width="100%" controls>
+                    <source th:src="${game.videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
-            <div class="purchase-wrapper">
-                <h1 th:text="'Buy ' + ${game.title}">Buy Farming Simulator 22</h1>
-                <div class="purchase-action">
-                    <div class="price">
-                        <p th:text="${game.price} + '&nbsp;лв.'">69.99$</p>
-                    </div>
-                    <div class="btn-add-to-cart">
-                        <form th:action="@{/game-details/add-to-cart/{id}(id=${game.id})}" th:method="post">
-                            <button type="submit" class="btn success">Add to cart</button>
-                        </form>
-                    </div>
+            <div class="info-section">
+                <h2 th:text="${game.title}">Game Title</h2>
+                <img th:src="${game.imageUrl}" alt="Game Image" class="game-img">
+                <div class="game-description">
+                    <p th:text="${game.description}">This is a brief description of the game. Immerse yourself in an
+                        epic adventure with stunning visuals and engaging gameplay.</p>
+                    <p th:text="'Release date: ' + ${game.releaseDate}">Release date: </p>
+                    <p th:text="'Developer: ' + ${game.publisher}">Developer: </p>
                 </div>
             </div>
         </div>
-    </main>
+        <div class="purchase-wrapper">
+            <h1 th:text="'Buy ' + ${game.title}">Buy Farming Simulator 22</h1>
+            <div class="purchase-action">
+                <div class="price">
+                    <h5 th:if="${isInLibrary}" class="already-in-library">Game is already in your library</h5>
+                    <p th:unless="${isInLibrary}" th:text="${game.price} + '&nbsp;лв.'">69.99$</p>
+                </div>
+                <div class="btn-add-to-cart">
+                    <form th:if="${!isInLibrary && game.price != 0}"
+                          th:action="@{/game-details/add-to-cart/{id}(id=${game.id})}" th:method="POST">
+                        <button type="submit" class="btn success" th:text="${isInCart} ? 'In cart' : 'Add to cart'">Add
+                            to cart
+                        </button>
+                    </form>
+                    <form th:if="${!isInLibrary && game.price == 0}"
+                          th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
+                        <button type="submit" class="btn success">Add to library</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <section class="comments">
+            <h4 th:text="'Comments ' + ${comments.size()}"></h4>
+
+            <div th:each="comment: ${comments}" class="comment">
+                <div class="user-group">
+                    <img src='/images/profile.jpg' alt="Avatar" class="avatar"/>
+                    <p th:text="${comment.author}"></p>
+                </div>
+                <p th:text="${comment.createdAt}" style="font-size: 14px"></p>
+                <p th:text="${comment.content}">{c.content}</p>
+            </div>
+
+            <div th:if="${@userHelperService.isAuthenticated()}">
+                <form id="post-comment" th:method="POST" th:action="@{/game-details/post-comment/{id}(id=${game.id})}">
+                    <label for="comment">Leave Comment</label>
+                    <textarea id="comment" name="comment" cols=70 rows=4></textarea>
+                    <button type="submit" class="btn-submit">Post</button>
+                </form>
+                <script>
+                    // Save scroll position before reload
+                    window.addEventListener("beforeunload", () => {
+                        localStorage.setItem("scrollPosition", window.scrollY.toString());
+                    });
+
+                    // Restore scroll position after reload
+                    window.addEventListener("load", () => {
+                        const scrollPosition = localStorage.getItem("scrollPosition");
+                        if (scrollPosition) {
+                            window.scrollTo(0, parseInt(scrollPosition, 10));
+                            localStorage.removeItem("scrollPosition"); // Clear after restoring (optional)
+                        }
+                    });
+                </script>
+            </div>
+        </section>
+    </div>
+</main>
 </body>
 </html>

@@ -6,22 +6,29 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "titles")
+@Table(name = "games")
 public class Game extends BaseEntity{
     @Column(nullable = false)
     private String title;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
     @Column(nullable = false)
     private String imageUrl;
+
     @Column
     private String videoUrl;
+
     @Column(nullable = false)
     private LocalDate releaseDate;
+
     @Column(nullable = false)
     private String publisher;
+
     @ManyToOne
     private Genre genre;
+
     @Column(nullable = false)
     private BigDecimal price;
 

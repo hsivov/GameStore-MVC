@@ -11,4 +11,6 @@ public interface ShoppingCartService {
     void remove(Long id);
 
     void removeAll();
+
+    boolean isGameInCart(Long id);
 }

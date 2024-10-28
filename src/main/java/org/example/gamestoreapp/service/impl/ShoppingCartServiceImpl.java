@@ -95,4 +95,19 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCart.getGames().clear();
         shoppingCartRepository.save(shoppingCart);
     }
+
+    @Override
+    @Transactional
+    public boolean isGameInCart(Long id) {
+        User currentUser = userHelperService.getUser();
+        Optional<ShoppingCart> byCustomer = shoppingCartRepository.findByCustomer(currentUser);
+
+        Optional<Game> game = gameRepository.findById(id);
+
+        if (byCustomer.isEmpty() || game.isEmpty()) {
+            return false;
+        }
+
+        return byCustomer.get().getGames().contains(game.get());
+    }
 }

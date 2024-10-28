@@ -22,13 +22,13 @@ public class SecurityConfig {
                             authorizeRequest
                                     .requestMatchers("/admin/**").hasRole("ADMIN")
                                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                    .requestMatchers("/", "/store","/users/**", "/api/**").permitAll()
+                                    .requestMatchers("/", "/store","/auth/**", "/api/**").permitAll()
                                     .anyRequest().authenticated();
                         }
                 )
                 .formLogin(
                         formLogin -> {
-                            formLogin.loginPage("/users/login");
+                            formLogin.loginPage("/auth/login");
                             formLogin.usernameParameter("username");
                             formLogin.passwordParameter("password");
                             formLogin.defaultSuccessUrl("/", true);
@@ -37,7 +37,7 @@ public class SecurityConfig {
                 )
                 .logout(
                         logout -> {
-                            logout.logoutUrl("/users/logout");
+                            logout.logoutUrl("/auth/logout");
                             logout.logoutSuccessUrl("/");
                             logout.invalidateHttpSession(true);
                         }

@@ -17,13 +17,31 @@
                 <p th:text="'Publisher: ' + ${game.publisher}"></p>
                 <p th:text="'Release date: ' + ${game.releaseDate}"></p>
                 <div class="price-box">
-                    <h5 th:if="${!gamesInLibrary[game.id]}" th:text="${game.price == 0} ? 'Free' : ${game.price} + ' лв.'"></h5>
-                    <h5 th:if="${gamesInLibrary[game.id]}" class="already-in-library">Game is already in your library</h5>
-                    <form th:if="${!gamesInLibrary[game.id] && game.price != 0}" th:action="@{/store/add-to-cart/{id}(id=${game.id})}" th:method="POST">
-                        <button type="submit" class="btn success">Add to cart</button>
-                    </form>
-                    <form th:if="${!gamesInLibrary[game.id] && game.price == 0}" th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
+
+                    <!-- Display price or "Free" -->
+                    <h5 th:if="${!gamesInLibrary[game.id]}"
+                        th:text="${game.price == 0} ? 'Free' : ${game.price} + ' лв.'">
+                    </h5>
+
+                    <!-- Message for games already in the library -->
+                    <h5 th:if="${gamesInLibrary[game.id]}" class="already-in-library">
+                        Game is already in your library
+                    </h5>
+
+                    <!-- Separate forms based on game price -->
+                    <form th:if="${!gamesInLibrary[game.id] && game.price == 0}"
+                          th:action="@{/store/add-to-library/{id}(id=${game.id})}"
+                          th:method="POST">
                         <button type="submit" class="btn success">Add to library</button>
+                    </form>
+
+                    <form th:if="${!gamesInLibrary[game.id] && game.price != 0}"
+                          th:action="@{/store/add-to-cart/{id}(id=${game.id})}"
+                          th:method="POST">
+                        <button th:disabled="${gamesInShoppingCart[game.id]}"
+                                type="submit" class="btn success"
+                                th:text="${gamesInShoppingCart[game.id]} ? 'In cart' : 'Add to cart'">
+                        </button>
                     </form>
                 </div>
             </div>
@@ -42,7 +60,7 @@
             </div>
             <div class="modal-buttons">
                 <button onclick="closeGameModal()">Continue Shopping</button>
-                <a href="/shopping-cart">View My Cart</a>
+                <a href="/user/shopping-cart">View My Cart</a>
             </div>
         </div>
     </div>
@@ -50,13 +68,13 @@
 
 <div th:if="${@userHelperService.authenticated}">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             const gameCards = document.querySelectorAll('.game-card');
 
-            gameCards.forEach(function(div) {
+            gameCards.forEach(function (div) {
                 // Add click event listener for each div
-                div.addEventListener('click', function() {
+                div.addEventListener('click', function () {
                     let divId = this.id;  // Get the dynamic div ID
 
                     // Redirect based on div ID (example)

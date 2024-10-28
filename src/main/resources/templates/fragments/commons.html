@@ -37,21 +37,21 @@
         <div class="user-nav">
             <ul role="list">
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a th:href="@{/shopping-cart}">
+                    <a th:href="@{/user/shopping-cart}">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-count" th:text="'(' + ${@cartHelperService.totalItems} + ')'"></span></a>
+                        <span class="cart-count" th:text="${@cartHelperService.totalItems}"></span></a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/users/profile}">Profile</a>
+                    <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/user/profile}">Profile</a>
                 </li>
                 <li th:unless="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/users/register}">Sign Up</a>
+                    <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/auth/register}">Sign Up</a>
                 </li>
                 <li th:unless="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/users/login}">Login</a>
+                    <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/auth/login}">Login</a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <form th:method="POST" th:action="@{/users/logout}">
+                    <form th:method="POST" th:action="@{/auth/logout}">
                         <button type="submit" class="btn-logout">Logout</button>
                     </form>
                 </li>

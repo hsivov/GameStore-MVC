@@ -12,7 +12,7 @@
                      th:text="${param.error}" class="text-danger">Login error message</div>
             </div>
             <h1>Login</h1>
-            <form th:action="@{/users/login}" th:method="POST" th:object="${userLoginBindingModel}">
+            <form th:action="@{/auth/login}" th:method="POST" th:object="${userLoginBindingModel}">
 
                 <div class="input-group">
                     <label for="username">Username</label>
@@ -29,7 +29,7 @@
                 <button type="submit" class="btn-submit">Login</button>
             </form>
             <div class="create-account">
-                <p>You don't have an account? It's free <a th:href="@{/users/register}">Create an account.</a></p>
+                <p>You don't have an account? It's free <a th:href="@{/auth/register}">Create an account.</a></p>
             </div>
         </div>
     </main>

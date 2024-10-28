@@ -16,13 +16,13 @@
                         <h1 th:text="${game.title}"></h1>
                         <p th:text="${game.price}"></p>
                     </div>
-                    <form th:action="@{/shopping-cart/remove/{id}(id=${game.id})}" th:method="POST" class="remove-item">
+                    <form th:action="@{/user/shopping-cart/remove/{id}(id=${game.id})}" th:method="POST" class="remove-item">
                         <button type="submit">Remove</button>
                     </form>
                 </div>
                 <div class="shopping-card-buttons">
                     <a href="/store" class="btn-link continue">Continue Shopping</a>
-                    <form th:method="POST" th:action="@{/shopping-cart/remove-all}">
+                    <form th:method="POST" th:action="@{/user/shopping-cart/remove-all}">
                         <button type="submit" class="remove-all">Remove All Products</button>
                     </form>
                 </div>

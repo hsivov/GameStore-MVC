@@ -1,7 +1,11 @@
 package org.example.gamestoreapp.controller;
 
+import jakarta.validation.Valid;
 import org.example.gamestoreapp.exception.GameNotFoundException;
+import org.example.gamestoreapp.model.dto.CommentDTO;
 import org.example.gamestoreapp.model.dto.GameDTO;
+import org.example.gamestoreapp.model.dto.PostCommentDTO;
+import org.example.gamestoreapp.service.CommentService;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.LibraryService;
 import org.example.gamestoreapp.service.ShoppingCartService;
@@ -24,12 +28,14 @@ public class StoreController {
     private final ShoppingCartService shoppingCartService;
     private final CartHelperService cartHelperService;
     private final LibraryService libraryService;
+    private final CommentService commentService;
 
-    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, LibraryService libraryService) {
+    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, LibraryService libraryService, CommentService commentService) {
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
         this.cartHelperService = cartHelperService;
         this.libraryService = libraryService;
+        this.commentService = commentService;
     }
 
     @GetMapping("/store")
@@ -47,6 +53,14 @@ public class StoreController {
 
         model.addAttribute("gamesInLibrary", gamesInLibrary);
 
+        Map<Long, Boolean> gamesInShoppingCart = new HashMap<>();
+
+        games.forEach(gameDTO -> {
+            boolean isInCart = shoppingCartService.isGameInCart(gameDTO.getId());
+            gamesInShoppingCart.put(gameDTO.getId(), isInCart);
+        });
+
+        model.addAttribute("gamesInShoppingCart", gamesInShoppingCart);
         return "store";
     }
 
@@ -54,7 +68,7 @@ public class StoreController {
     public String addToCartFromDetails(@PathVariable("gameId") Long id) {
         shoppingCartService.addToCart(id);
 
-        return "redirect:/shopping-cart";
+        return "redirect:/game-details/{gameId}";
     }
 
     @PostMapping("/store/add-to-cart/{gameId}")
@@ -78,12 +92,28 @@ public class StoreController {
     }
 
     @GetMapping("/game-details/{id}")
-    public String gameDetails(@PathVariable Long id, Model model) {
+    public String gameDetails(@PathVariable Long id, Model model, CommentDTO commentDTO) {
         GameDTO gameById = gameService.getGameById(id)
                 .orElseThrow(() -> new GameNotFoundException("Game with ID " + id + " not found"));
 
+        boolean isInLibrary = libraryService.isGameInLibrary(id);
+        boolean isInCart = shoppingCartService.isGameInCart(id);
+
+        List<CommentDTO> comments = commentService.getCommentsByGame(id);
+
         model.addAttribute("game", gameById);
+        model.addAttribute("isInLibrary", isInLibrary);
+        model.addAttribute("isInCart", isInCart);
+        model.addAttribute("comments", comments);
 
         return "game-details";
+    }
+
+    @PostMapping("/game-details/post-comment/{gameId}")
+    public String postComment(@PathVariable("gameId") Long gameId,
+                              @Valid PostCommentDTO postCommentDTO) {
+        commentService.postComment(postCommentDTO, gameId);
+
+        return "redirect:/game-details/{gameId}";
     }
 }
