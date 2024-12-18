@@ -5,7 +5,8 @@ import org.example.gamestoreapp.model.dto.PostCommentDTO;
 import org.example.gamestoreapp.model.entity.Comment;
 import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.User;
-import org.example.gamestoreapp.repository.CommentsRepository;
+
+import org.example.gamestoreapp.repository.CommentRepository;
 import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.service.CommentService;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -18,12 +19,12 @@ import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private final CommentsRepository commentsRepository;
+    private final CommentRepository commentRepository;
     private final GameRepository gameRepository;
     private final UserHelperService userHelperService;
 
-    public CommentServiceImpl(CommentsRepository commentsRepository, GameRepository gameRepository, UserHelperService userHelperService) {
-        this.commentsRepository = commentsRepository;
+    public CommentServiceImpl(CommentRepository commentRepository, GameRepository gameRepository, UserHelperService userHelperService) {
+        this.commentRepository = commentRepository;
         this.gameRepository = gameRepository;
         this.userHelperService = userHelperService;
     }
@@ -32,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDTO> getCommentsByGame(Long id) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy HH:mm");
 
-        return commentsRepository.findByGame_Id(id).stream()
+        return commentRepository.findByGame_Id(id).stream()
                 .map(comment -> {
                     CommentDTO commentDTO = new CommentDTO();
                     commentDTO.setContent(comment.getContent());
@@ -55,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setGame(byId.get());
             comment.setCreatedAt(LocalDateTime.now());
 
-            commentsRepository.save(comment);
+            commentRepository.save(comment);
         }
     }
 }

@@ -92,7 +92,7 @@ public class StoreController {
     }
 
     @GetMapping("/game-details/{id}")
-    public String gameDetails(@PathVariable Long id, Model model, CommentDTO commentDTO) {
+    public String gameDetails(@PathVariable Long id, Model model) {
         GameDTO gameById = gameService.getGameById(id)
                 .orElseThrow(() -> new GameNotFoundException("Game with ID " + id + " not found"));
 

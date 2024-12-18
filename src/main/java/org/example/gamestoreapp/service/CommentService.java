@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service;
 
-import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.CommentDTO;
 import org.example.gamestoreapp.model.dto.PostCommentDTO;
 
