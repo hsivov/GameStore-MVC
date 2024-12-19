@@ -1,8 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
 import jakarta.mail.MessagingException;
-import org.example.gamestoreapp.exception.AccountConfirmedException;
-import org.example.gamestoreapp.exception.TokenExpiredException;
+import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -10,7 +9,7 @@ import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
 import org.example.gamestoreapp.repository.UserRepository;
-import org.example.gamestoreapp.service.ConfirmationTokenService;
+import org.example.gamestoreapp.service.TokenService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -23,7 +22,6 @@ import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -31,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserHelperService userHelperService;
-    private final ConfirmationTokenService tokenService;
+    private final TokenService tokenService;
     private final EmailService emailService;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final ModelMapper modelMapper;
@@ -40,7 +38,7 @@ public class UserServiceImpl implements UserService {
     private String domain;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           UserHelperService userHelperService, ConfirmationTokenService tokenService,
+                           UserHelperService userHelperService, TokenService tokenService,
                            EmailService emailService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -86,7 +84,7 @@ public class UserServiceImpl implements UserService {
         tokenService.saveConfirmationToken(token);
 
         // Send confirmation email
-        String link = domain + "/users/confirm?token=" + token.getToken();
+        String link = domain + "/auth/confirm?token=" + token.getToken();
 
         String subject = "Confirm your email";
         String htmlContent = "<h3>Thank you for registering!</h3>"
@@ -100,32 +98,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void confirmToken(String token) {
-        ConfirmationToken confirmationToken = tokenService.getToken(token)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
-
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new AccountConfirmedException("Account already confirmed");
-        }
-
-        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
-        if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new TokenExpiredException("Token expired");
-        }
-
-        // Mark token as confirmed
-        confirmationToken.setConfirmedAt(LocalDateTime.now());
-        tokenService.saveConfirmationToken(confirmationToken);
-
-        // Enable the user account
-        User user = confirmationToken.getUser();
-        user.setEnabled(true);
-
-        userRepository.save(user);
-    }
-
-    @Override
     public void resendConfirmationToken(String token) throws MessagingException {
         ConfirmationToken oldToken = tokenService.getToken(token)
                 .orElseThrow(() -> new IllegalStateException("Invalid token"));
@@ -133,7 +105,7 @@ public class UserServiceImpl implements UserService {
         User user = oldToken.getUser();
 
         if (user.isEnabled()) {
-            throw new AccountConfirmedException("Account already confirmed");
+            throw new UsedTokenException("Account already confirmed");
         }
 
         // Generate a new token and send the confirmation email
@@ -144,6 +116,20 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDTO> getUserById(Long userId) {
         return userRepository.findById(userId)
                 .map(user -> modelMapper.map(user, UserDTO.class));
+    }
+
+    @Override
+    public void enableUser(String token) {
+        Optional<ConfirmationToken> tokenOptional = tokenService.getToken(token);
+        if (tokenOptional.isPresent()) {
+            ConfirmationToken confirmationToken = tokenOptional.get();
+            User user = confirmationToken.getUser();
+            // Enable user account
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            tokenService.invalidateToken(confirmationToken); // Mark token as confirmed
+        }
     }
 
     @Override

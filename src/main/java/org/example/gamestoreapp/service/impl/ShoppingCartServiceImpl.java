@@ -12,9 +12,9 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -40,10 +40,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         Optional<Game> game = gameRepository.findById(gameId);
 
-        Set<Game> games = shoppingCart.getGames();
+        List<Game> games = shoppingCart.getGames();
 
         if (games == null) {
-            games = new LinkedHashSet<>();
+            games = new ArrayList<>();
             shoppingCart.setGames(games);
         }
 

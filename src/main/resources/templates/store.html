@@ -30,13 +30,13 @@
 
                     <!-- Separate forms based on game price -->
                     <form th:if="${!gamesInLibrary[game.id] && game.price == 0}"
-                          th:action="@{/store/add-to-library/{id}(id=${game.id})}"
+                          th:action="@{/user/add-to-library/{id}(id=${game.id})}"
                           th:method="POST">
                         <button type="submit" class="btn success">Add to library</button>
                     </form>
 
                     <form th:if="${!gamesInLibrary[game.id] && game.price != 0}"
-                          th:action="@{/store/add-to-cart/{id}(id=${game.id})}"
+                          th:action="@{/user/add-to-cart/{id}(id=${game.id})}"
                           th:method="POST">
                         <button th:disabled="${gamesInShoppingCart[game.id]}"
                                 type="submit" class="btn success"
@@ -66,86 +66,93 @@
     </div>
 </main>
 
-<div th:if="${@userHelperService.authenticated}">
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            const gameCards = document.querySelectorAll('.game-card');
+        const gameCards = document.querySelectorAll('.game-card');
 
-            gameCards.forEach(function (div) {
-                // Add click event listener for each div
-                div.addEventListener('click', function () {
-                    let divId = this.id;  // Get the dynamic div ID
+        gameCards.forEach(function (div) {
+            // Add click event listener for each div
+            div.addEventListener('click', function () {
+                let divId = this.id;  // Get the dynamic div ID
 
-                    // Redirect based on div ID (example)
-                    window.location.href = '/game-details/' + divId;  // Redirect using ID
+                // Redirect based on div ID (example)
+                window.location.href = '/store/game-details/' + divId;  // Redirect using ID
+            });
+        });
+    });
+
+    // Function to show the modal with game details
+    function showGameModal(game) {
+        // Populate modal with game data
+        document.getElementById('modal-title').textContent = game.title;
+        document.getElementById('modal-image').src = game.imageUrl;
+        document.getElementById('modal-price').textContent = game.price + ' лв.';
+
+        // Show the modal
+        document.getElementById('game-modal').classList.remove('hidden');
+    }
+
+    // Function to close the modal
+    function closeGameModal() {
+        document.getElementById('game-modal').classList.add('hidden');
+    }
+
+    // Attach event listeners to all "Add to cart" buttons
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('form[action*="/user/add-to-cart"] button');
+
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent default form submission
+                event.stopPropagation();
+
+                // Disable button to prevent multiple clicks
+                button.disabled = true;
+                button.textContent = 'Adding...';
+
+                // Get the form and game ID from the action attribute
+                const form = button.closest('form');
+                const actionUrl = form.getAttribute('action');
+
+                // Get the specific game data for the clicked button
+                const gameCard = button.closest('.game-card');
+                const game = {
+                    title: gameCard.querySelector('h1').textContent,
+                    imageUrl: gameCard.querySelector('img').src,
+                    price: gameCard.querySelector('.price-box h5').textContent.split(' ')[0]
+                };
+
+                // Send a POST request to add the game to the cart
+                fetch(actionUrl, {
+                    method: 'POST',
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json(); // Parse the JSON response
+                })
+                .then(data => {
+                    // Update the cart count in the header
+                    const cartCountElement = document.querySelector('.cart-count');
+                    cartCountElement.textContent = data.totalItems;
+
+                    // Show the modal with the game's details
+                    showGameModal(game);
+                    button.textContent = "In Cart";
+                })
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+
+                    // Re-enable button and revert text in case of error
+                    button.disabled = false;
+                    button.textContent = 'Add to Cart';
                 });
             });
         });
-
-        // Function to show the modal with game details
-        function showGameModal(game) {
-            // Populate modal with game data
-            document.getElementById('modal-title').textContent = game.title;
-            document.getElementById('modal-image').src = game.imageUrl;
-            document.getElementById('modal-price').textContent = game.price + ' лв.';
-
-            // Show the modal
-            document.getElementById('game-modal').classList.remove('hidden');
-        }
-
-        // Function to close the modal
-        function closeGameModal() {
-            document.getElementById('game-modal').classList.add('hidden');
-        }
-
-        // Attach event listeners to all "Add to cart" buttons
-        document.addEventListener('DOMContentLoaded', function () {
-            const buttons = document.querySelectorAll('form[action*="/store/add-to-cart"] button');
-
-            buttons.forEach(function (button) {
-                button.addEventListener('click', function (event) {
-                    event.preventDefault(); // Prevent default form submission
-                    event.stopPropagation();
-
-                    // Get the form and game ID from the action attribute
-                    const form = button.closest('form');
-                    const actionUrl = form.getAttribute('action');
-
-                    // Get the specific game data for the clicked button
-                    const gameCard = button.closest('.game-card');
-                    const game = {
-                        title: gameCard.querySelector('h1').textContent,
-                        imageUrl: gameCard.querySelector('img').src,
-                        price: gameCard.querySelector('.price-box h5').textContent.split(' ')[0]
-                    };
-
-                    // Send a POST request to add the game to the cart
-                    fetch(actionUrl, {
-                        method: 'POST',
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json(); // Parse the JSON response
-                        })
-                        .then(data => {
-                            // Update the cart count in the header
-                            const cartCountElement = document.querySelector('.cart-count');
-                            cartCountElement.textContent = `(${data.totalItems})`;
-
-                            // Show the modal with the game's details
-                            showGameModal(game);
-                        })
-                        .catch(error => {
-                            console.error('Error updating cart:', error);
-                        });
-                });
-            });
-        });
-    </script>
-</div>
+    });
+</script>
 
 </body>
 </html>

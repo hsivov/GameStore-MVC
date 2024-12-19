@@ -2,24 +2,31 @@ package org.example.gamestoreapp.controller;
 
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
+import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.ShoppingCartService;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.CartHelperService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
+    private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
     private final CartHelperService cartHelperService;
 
-    public UserController(UserService userService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService) {
         this.userService = userService;
+        this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
         this.cartHelperService = cartHelperService;
     }
@@ -42,6 +49,26 @@ public class UserController {
         model.addAttribute("totalPrice", cartHelperService.getTotalPrice());
 
         return "shopping-cart";
+    }
+
+    @PostMapping("/add-to-cart/{gameId}")
+    public ResponseEntity<Map<String, Integer>> addToCartWithResponse(@PathVariable("gameId") Long gameId) {
+        shoppingCartService.addToCart(gameId);
+
+        // Get the updated cart item count after adding the game
+        int totalItems = cartHelperService.getTotalItems();
+        Map<String, Integer> response = new HashMap<>();
+        response.put("totalItems", totalItems);
+
+        // Return the updated cart count in the response
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add-to-library/{id}")
+    public String addToLibrary(@PathVariable("id") Long id) {
+        gameService.addToLibrary(id);
+
+        return "redirect:/library";
     }
 
     @PostMapping("/shopping-cart/remove/{id}")

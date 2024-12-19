@@ -5,7 +5,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "shopping_carts")
@@ -15,7 +15,7 @@ public class ShoppingCart extends BaseEntity {
     private User customer;
 
     @ManyToMany
-    private Set<Game> games;
+    private List<Game> games;
 
     public User getCustomer() {
         return customer;
@@ -25,11 +25,11 @@ public class ShoppingCart extends BaseEntity {
         this.customer = customer;
     }
 
-    public Set<Game> getGames() {
+    public List<Game> getGames() {
         return games;
     }
 
-    public void setGames(Set<Game> games) {
+    public void setGames(List<Game> games) {
         this.games = games;
     }
 }

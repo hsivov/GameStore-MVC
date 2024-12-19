@@ -21,6 +21,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         }
 
         // Redirect to the login page with an error message
-        response.sendRedirect("/users/login?error=" + errorMessage);
+        response.sendRedirect("/auth/login?error=" + errorMessage);
     }
 }

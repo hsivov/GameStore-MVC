@@ -2,10 +2,11 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import org.example.gamestoreapp.exception.AccountConfirmedException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
+import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
+import org.example.gamestoreapp.service.TokenService;
 import org.example.gamestoreapp.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +20,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/login")
@@ -55,7 +58,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userRegisterBindingModel", bindingResult);
 
             // handle errors
-            return new ModelAndView("redirect:/users/register");
+            return new ModelAndView("redirect:/auth/register");
         }
 
         boolean hasSuccessfulRegistration = userService.register(userRegisterBindingModel);
@@ -68,23 +71,24 @@ public class AuthController {
         // If registration was successful, redirect to login or show a message saying to check email
         redirectAttributes.addFlashAttribute("message", "Registration successful! Please check your email to confirm.");
         // register user
-        return new ModelAndView("redirect:/users/login");
+        return new ModelAndView("redirect:/auth/login");
     }
 
     @GetMapping("/confirm")
     public String confirmEmail(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
         try {
-            userService.confirmToken(token);
-            return "redirect:/users/login?confirmed";
+            tokenService.validateToken(token);
+            userService.enableUser(token);
+            return "redirect:/auth/login?confirmed";
         } catch (TokenExpiredException e) {
 
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("token", token);
 
-            return "redirect:/users/token-expired";
-        } catch (AccountConfirmedException e) {
+            return "redirect:/auth/token-expired";
+        } catch (UsedTokenException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
-            return "redirect:/users/login";
+            return "redirect:/auth/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             return "redirect:/error";
@@ -96,7 +100,7 @@ public class AuthController {
         try {
             userService.resendConfirmationToken(token);
             return "redirect:/users/login?resendSuccess";
-        } catch (AccountConfirmedException e) {
+        } catch (UsedTokenException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             return "redirect:/users/login";
         }

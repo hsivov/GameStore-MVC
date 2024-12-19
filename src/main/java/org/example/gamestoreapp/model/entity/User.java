@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +30,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column
     private boolean enabled = false;
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Game> ownedGames;
+    private List<Game> ownedGames;
 
     @Override
     public String getUsername() {
@@ -120,11 +119,11 @@ public class User extends BaseEntity implements UserDetails {
         this.enabled = enabled;
     }
 
-    public Set<Game> getOwnedGames() {
+    public List<Game> getOwnedGames() {
         return ownedGames;
     }
 
-    public void setOwnedGames(Set<Game> ownedGames) {
+    public void setOwnedGames(List<Game> ownedGames) {
         this.ownedGames = ownedGames;
     }
 }

@@ -1,17 +1,17 @@
 package org.example.gamestoreapp.model.dto;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 public class ShoppingCartDTO {
 
-    private Set<GameDTO> games;
+    private List<GameDTO> games;
 
-    public Set<GameDTO> getGames() {
+    public List<GameDTO> getGames() {
         return games;
     }
 
-    public void setGames(Set<GameDTO> games) {
+    public void setGames(List<GameDTO> games) {
         this.games = games;
     }
 

@@ -39,7 +39,7 @@
                         </button>
                     </form>
                     <form th:if="${!isInLibrary && game.price == 0}"
-                          th:action="@{/store/add-to-library/{id}(id=${game.id})}" th:method="POST">
+                          th:action="@{/user/add-to-library/{id}(id=${game.id})}" th:method="POST">
                         <button type="submit" class="btn success">Add to library</button>
                     </form>
                 </div>

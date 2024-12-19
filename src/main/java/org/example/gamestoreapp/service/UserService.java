@@ -16,9 +16,9 @@ public interface UserService {
 
     boolean isUniqueUsername(String username);
 
-    void confirmToken(String token);
-
     void resendConfirmationToken(String email) throws MessagingException;
 
     Optional<UserDTO> getUserById(Long userId);
+
+    void enableUser(String token);
 }

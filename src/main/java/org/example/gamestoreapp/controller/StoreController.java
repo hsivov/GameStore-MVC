@@ -9,8 +9,6 @@ import org.example.gamestoreapp.service.CommentService;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.LibraryService;
 import org.example.gamestoreapp.service.ShoppingCartService;
-import org.example.gamestoreapp.service.session.CartHelperService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +24,12 @@ public class StoreController {
 
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
-    private final CartHelperService cartHelperService;
     private final LibraryService libraryService;
     private final CommentService commentService;
 
-    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, LibraryService libraryService, CommentService commentService) {
+    public StoreController(GameService gameService, ShoppingCartService shoppingCartService, LibraryService libraryService, CommentService commentService) {
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
-        this.cartHelperService = cartHelperService;
         this.libraryService = libraryService;
         this.commentService = commentService;
     }
@@ -64,34 +60,7 @@ public class StoreController {
         return "store";
     }
 
-    @PostMapping("/game-details/add-to-cart/{gameId}")
-    public String addToCartFromDetails(@PathVariable("gameId") Long id) {
-        shoppingCartService.addToCart(id);
-
-        return "redirect:/game-details/{gameId}";
-    }
-
-    @PostMapping("/store/add-to-cart/{gameId}")
-    public ResponseEntity<Map<String, Integer>> addToCartWithResponse(@PathVariable("gameId") Long gameId) {
-        shoppingCartService.addToCart(gameId);
-
-        // Get the updated cart item count after adding the game
-        int totalItems = cartHelperService.getTotalItems();
-        Map<String, Integer> response = new HashMap<>();
-        response.put("totalItems", totalItems);
-
-        // Return the updated cart count in the response
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/store/add-to-library/{id}")
-    public String addToLibrary(@PathVariable("id") Long id) {
-        gameService.addToLibrary(id);
-
-        return "redirect:/library";
-    }
-
-    @GetMapping("/game-details/{id}")
+    @GetMapping("/store/game-details/{id}")
     public String gameDetails(@PathVariable Long id, Model model) {
         GameDTO gameById = gameService.getGameById(id)
                 .orElseThrow(() -> new GameNotFoundException("Game with ID " + id + " not found"));
@@ -109,11 +78,18 @@ public class StoreController {
         return "game-details";
     }
 
+    @PostMapping("/game-details/add-to-cart/{gameId}")
+    public String addToCartFromDetails(@PathVariable("gameId") Long id) {
+        shoppingCartService.addToCart(id);
+
+        return "redirect:/store/game-details/{gameId}";
+    }
+
     @PostMapping("/game-details/post-comment/{gameId}")
     public String postComment(@PathVariable("gameId") Long gameId,
                               @Valid PostCommentDTO postCommentDTO) {
         commentService.postComment(postCommentDTO, gameId);
 
-        return "redirect:/game-details/{gameId}";
+        return "redirect:/store/game-details/{gameId}";
     }
 }

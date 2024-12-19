@@ -23,8 +23,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CheckoutServiceImpl implements CheckoutService {
@@ -64,7 +64,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         if (cart.isPresent()) {
             ShoppingCart shoppingCart = cart.get();
-            Set<Game> games = shoppingCart.getGames();
+            List<Game> games = shoppingCart.getGames();
             currentUser.getOwnedGames().addAll(games);
 
             // Prepare request to OrderService
@@ -125,7 +125,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
     }
 
-    private String createConfirmationEmail(OrderResponseDTO order, User customer, Set<Game> games) {
+    private String createConfirmationEmail(OrderResponseDTO order, User customer, List<Game> games) {
         StringBuilder sb = new StringBuilder();
 
         for (Game game : games) {
