@@ -1,15 +1,19 @@
 package org.example.gamestoreapp.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.ShoppingCartService;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.CartHelperService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -23,6 +27,8 @@ public class UserController {
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
     private final CartHelperService cartHelperService;
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService) {
         this.userService = userService;
@@ -39,6 +45,14 @@ public class UserController {
         modelAndView.addObject("userProfileViewModel", userProfileViewModel);
 
         return modelAndView;
+    }
+
+    @PostMapping("/profile/upload-image")
+    public ResponseEntity<String> uploadImage(@RequestParam("profileImage") MultipartFile file, HttpServletRequest request) {
+        log.info("Request received from: {}", request.getRemoteAddr());
+        log.info("File name: {}", file.getOriginalFilename());
+        String originalFileName = file.getOriginalFilename();
+        return ResponseEntity.ok("");
     }
 
     @GetMapping("/shopping-cart")

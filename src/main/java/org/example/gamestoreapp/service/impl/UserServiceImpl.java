@@ -140,6 +140,7 @@ public class UserServiceImpl implements UserService {
         userProfileViewModel.setUsername(currentUser.getUsername());
         userProfileViewModel.setRole(currentUser.getRole().toString());
         userProfileViewModel.setAge(currentUser.getAge());
+        userProfileViewModel.setEmail(currentUser.getEmail());
         userProfileViewModel.setFirstName(currentUser.getFirstName());
         userProfileViewModel.setLastName(currentUser.getLastName());
 

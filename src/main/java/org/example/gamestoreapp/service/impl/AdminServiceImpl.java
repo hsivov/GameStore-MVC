@@ -19,6 +19,7 @@ import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AdminService;
+import org.example.gamestoreapp.service.AzureBlobStorageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,17 +38,19 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final AzureBlobStorageService azureBlobStorageService;
 
     @Value("${azure.storage.connection-string}")
     private String azureStorageConnectionString;
 
 
-    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, ConfirmationTokenRepository confirmationTokenRepository) {
+    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, ConfirmationTokenRepository confirmationTokenRepository, AzureBlobStorageService azureBlobStorageService) {
         this.modelMapper = modelMapper;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.genreRepository = genreRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
+        this.azureBlobStorageService = azureBlobStorageService;
     }
 
     @Override
