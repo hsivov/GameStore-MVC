@@ -9,7 +9,8 @@
         <div class="profile-card">
             <h1>Account Details</h1>
             <div class="profile-card-img" style="position: relative">
-                <img id="profileImage" th:src="${userProfileViewModel.profileImageUrl ?:'/images/profile.jpg'}" alt="Avatar" width="100">
+                <img id="profileImage" th:src="${userProfileViewModel.profileImageUrl ?:'/images/profile.jpg'}"
+                     alt="Avatar" width="100">
                 <span title="Upload image" class="image-upload"
                       onclick="document.getElementById('fileInput').click()">
                     <i class="fa-solid fa-file-arrow-up"></i>
@@ -62,20 +63,22 @@
     async function uploadImage(event) {
         const file = event.target.files[0];
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('profileImage', file);
 
         if (file) {
             try {
-                const respond = await fetch('/user/profile/upload-image', {
+                const response = await fetch('/user/profile/upload-image', {
                     method: 'POST',
                     body: formData
                 });
 
-                if (!respond.ok) {
-                    console.error(`HTTP error! status: ${respond.status}`);
+                if (!response.ok) {
+                    console.error(`HTTP error! status: ${response.status}`);
+                    alert('Failed to upload image. Please try again.');
+                    return;
                 }
 
-                return await respond.json();
+                window.location.reload();
             } catch (error) {
                 console.error('Error uploading image:', error);
                 alert('Failed to upload image. Please try again.');

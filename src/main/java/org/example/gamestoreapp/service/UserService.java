@@ -4,13 +4,17 @@ import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public interface UserService {
     boolean register(UserRegisterBindingModel userRegisterBindingModel);
 
     UserProfileViewModel viewProfile();
+
+    String uploadProfileImage(MultipartFile file, String containerName) throws IOException;
 
     boolean isUniqueEmail(String email);
 

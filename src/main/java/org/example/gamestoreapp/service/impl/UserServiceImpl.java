@@ -1,5 +1,8 @@
 package org.example.gamestoreapp.service.impl;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
 import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.model.dto.UserDTO;
@@ -21,7 +24,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,6 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Value("${app.domain.name}")
     private String domain;
+
+    @Value("${azure.storage.connection-string}")
+    private String azureStorageConnectionString;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                            UserHelperService userHelperService, TokenService tokenService,
@@ -143,8 +154,53 @@ public class UserServiceImpl implements UserService {
         userProfileViewModel.setEmail(currentUser.getEmail());
         userProfileViewModel.setFirstName(currentUser.getFirstName());
         userProfileViewModel.setLastName(currentUser.getLastName());
+        userProfileViewModel.setProfileImageUrl(currentUser.getProfileImageUrl());
 
         return userProfileViewModel;
+    }
+
+    @Override
+    public String uploadProfileImage(MultipartFile file, String containerName) throws IOException {
+
+        String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
+
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png");
+
+        boolean isValidExtension = allowedExtensions.stream()
+                .anyMatch(ext -> originalFileName.toLowerCase().endsWith(ext));
+
+        if (!isValidExtension) {
+            throw new IllegalArgumentException("Invalid file type: only .jpg, .jpeg, and .png files are allowed.");
+        }
+        // Get currently logged user
+        User currentUser = userHelperService.getUser();
+
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String username = currentUser.getUsername();
+        String newFileName = username + "_" + System.currentTimeMillis() + extension;
+
+        // Create the BlobContainerClient to interact with the container
+        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
+                .connectionString(azureStorageConnectionString)
+                .containerName(containerName)
+                .buildClient();
+
+        // Ensure the container exists
+        if (!blobContainerClient.exists()) {
+            blobContainerClient.create();
+        }
+
+        // Get the blob client for the file
+        BlobClient blobClient = blobContainerClient.getBlobClient(newFileName);
+
+        // Upload the file
+        blobClient.upload(file.getInputStream(), file.getSize(), true);
+
+        // Get the file blob url and save
+        currentUser.setProfileImageUrl(blobClient.getBlobUrl());
+        userRepository.save(currentUser);
+
+        return blobClient.getBlobUrl();
     }
 
     @Override

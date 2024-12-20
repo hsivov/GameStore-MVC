@@ -9,6 +9,7 @@ import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,11 +51,18 @@ public class UserController {
     }
 
     @PostMapping("/profile/upload-image")
-    public ResponseEntity<String> uploadImage(@RequestParam("profileImage") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<?> uploadImage(@RequestParam("profileImage") MultipartFile file, HttpServletRequest request) {
         log.info("Request received from: {}", request.getRemoteAddr());
         log.info("File name: {}", file.getOriginalFilename());
-        String originalFileName = file.getOriginalFilename();
-        return ResponseEntity.ok("");
+        try {
+            String profileImageUrl = userService.uploadProfileImage(file, "profile-images");
+            log.info("File uploaded successfully. URL: {}", profileImageUrl);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Collections.singletonMap("profileImageUrl", profileImageUrl));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
+        }
     }
 
     @GetMapping("/shopping-cart")
