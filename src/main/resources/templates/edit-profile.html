@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<div class="container">
+    <div class="edit-profile">
+        <h1>Edit Profile</h1>
+        <form th:method="POST" th:action="@{/user/edit-profile}" th:object="${editProfileDTO}">
+            <div class="input-group">
+                <label for="firstName">First name</label>
+                <input id="firstName" name="firstName"
+                       type="text"
+                       th:field="*{firstName}"
+                />
+                <small th:errors="*{firstName}" class="text-danger">{errors.firstName}</small>
+            </div>
+            <div class="input-group">
+                <label for="lastName">Last name</label>
+                <input id="lastName" name="lastName"
+                       type="text"
+                       th:field="*{lastName}"
+                />
+                <small th:errors="*{lastName}" class="text-danger">{errors.lastName}</small>
+            </div>
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input id="email" name="email"
+                       type="email"
+                       th:field="*{email}"
+                />
+                <small th:errors="*{email}" class="text-danger">{errors.email}</small>
+            </div>
+            <div class="input-group">
+                <label for="age">Age</label>
+                <input id="age" name="age"
+                       type="number"
+                       th:field="*{age}"
+                />
+                <small th:errors="*{age}" class="text-danger">{errors.age}</small>
+            </div>
+            <div class="edit-button-group">
+                <button type="submit" class="btn-submit">
+                    Save
+                </button>
+                <button class="btn btn-cancel" onclick="window.history.back()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

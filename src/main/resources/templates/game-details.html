@@ -50,8 +50,8 @@
 
             <div th:each="comment: ${comments}" class="comment">
                 <div class="user-group">
-                    <img src='/images/profile.jpg' alt="Avatar" class="avatar"/>
-                    <p th:text="${comment.author}"></p>
+                    <img th:src="${comment.authorAvatar ?:'/images/profile.jpg'}" alt="Avatar" class="avatar"/>
+                    <p th:text="${comment.authorName}"></p>
                 </div>
                 <p th:text="${comment.createdAt}" style="font-size: 14px"></p>
                 <p th:text="${comment.content}">{c.content}</p>

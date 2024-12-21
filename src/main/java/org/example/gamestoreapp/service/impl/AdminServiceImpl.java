@@ -3,9 +3,7 @@ package org.example.gamestoreapp.service.impl;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
-import com.azure.storage.blob.models.BlobHttpHeaders;
 import jakarta.transaction.Transactional;
-import org.apache.tika.Tika;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.dto.GameDTO;
@@ -94,14 +92,6 @@ public class AdminServiceImpl implements AdminService {
 
             // Upload the image to Azure Blob Storage
             blobClient.upload(new ByteArrayInputStream(data), data.length, true);
-
-            // Use Apache Tika to determine the content type dynamically
-            Tika tika = new Tika();
-            String detectedContentType = tika.detect(data);
-
-            // Optionally, set the correct content type (e.g., image/jpeg)
-            BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(detectedContentType);
-            blobClient.setHttpHeaders(headers);
         }
 
         // Return the URL of the uploaded image

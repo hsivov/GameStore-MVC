@@ -193,14 +193,18 @@ input, select {
 
 .btn-submit {
     display: block;
-    margin-top: 1rem;
-    border-radius: 2px;
+    border-radius: 5px;
     border: none;
     padding: 3px 50px;
     cursor: pointer;
     color: #c3e1f8;
     background: #2665d3;
     text-shadow: 1px 1px 0 rgba( 0, 0, 0, 0.3 );
+    transition: background-color 0.5s ease;
+}
+
+.btn-submit:hover {
+    background: #1f5bbf;
 }
 
 .create-account {
@@ -299,6 +303,23 @@ input, select {
     gap: 1rem;
 }
 
+/* Edit profile */
+.edit-profile {
+    background: #16202d;
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.edit-button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
 .btn-logout {
     color: white;
     font-size: 1.75rem;
@@ -351,12 +372,18 @@ table td {
 
 .btn {
     border: none; /* Remove borders */
-    border-radius: 5px;
+    border-radius: 4px;
     color: white; /* Add a text color */
     padding: 6px 16px; /* Add some padding */
     cursor: pointer; /* Add a pointer cursor on mouse-over */
     text-decoration: none;
-    width: 100%;
+    min-width: 8rem;
+    transition: background-color 0.5s ease;
+}
+
+.btn-cancel {
+    border: 1px solid red;
+    color: red;
 }
 
 .btn-link {

@@ -37,7 +37,8 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> {
                     CommentDTO commentDTO = new CommentDTO();
                     commentDTO.setContent(comment.getContent());
-                    commentDTO.setAuthor(comment.getAuthor().getUsername());
+                    commentDTO.setAuthorName(comment.getAuthor().getUsername());
+                    commentDTO.setAuthorAvatar(comment.getAuthor().getProfileImageUrl());
                     commentDTO.setCreatedAt(formatter.format(comment.getCreatedAt()));
                     return commentDTO;
                 })

@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.UsedTokenException;
+import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -141,6 +142,31 @@ public class UserServiceImpl implements UserService {
 
             tokenService.invalidateToken(confirmationToken); // Mark token as confirmed
         }
+    }
+
+    @Override
+    public EditProfileDTO getUserProfile() {
+        User currentUser = userHelperService.getUser();
+
+        EditProfileDTO editProfileDTO = new EditProfileDTO();
+        editProfileDTO.setEmail(currentUser.getEmail());
+        editProfileDTO.setFirstName(currentUser.getFirstName());
+        editProfileDTO.setLastName(currentUser.getLastName());
+        editProfileDTO.setAge(currentUser.getAge());
+
+        return editProfileDTO;
+    }
+
+    @Override
+    public void editProfile(EditProfileDTO editProfileDTO) {
+        User currentUser = userHelperService.getUser();
+
+        currentUser.setEmail(editProfileDTO.getEmail());
+        currentUser.setFirstName(editProfileDTO.getFirstName());
+        currentUser.setLastName(editProfileDTO.getLastName());
+        currentUser.setAge(editProfileDTO.getAge());
+
+        userRepository.save(currentUser);
     }
 
     @Override

@@ -78,7 +78,13 @@
                     return;
                 }
 
-                window.location.reload();
+                const data = await response.json();
+
+                const profileImageUrl = data.profileImageUrl;
+                const imgElement = document.getElementById('profileImage');
+
+                // Force refresh by adding a timestamp to the image URL
+                imgElement.src = `${profileImageUrl}?t=${new Date().getTime()}`;
             } catch (error) {
                 console.error('Error uploading image:', error);
                 alert('Failed to upload image. Please try again.');

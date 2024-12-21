@@ -2,7 +2,8 @@ package org.example.gamestoreapp.model.dto;
 
 public class CommentDTO {
     private String content;
-    private String author;
+    private String authorName;
+    private String authorAvatar;
     private String createdAt;
 
     public String getContent() {
@@ -13,12 +14,20 @@ public class CommentDTO {
         this.content = content;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getAuthorAvatar() {
+        return authorAvatar;
+    }
+
+    public void setAuthorAvatar(String authorAvatar) {
+        this.authorAvatar = authorAvatar;
     }
 
     public String getCreatedAt() {

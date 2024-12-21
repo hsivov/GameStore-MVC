@@ -1,6 +1,8 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.GameService;
@@ -13,9 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -63,6 +67,35 @@ public class UserController {
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/edit-profile")
+    public String editProfile(Model model) {
+
+        if (!model.containsAttribute("editProfileDTO")) {
+            EditProfileDTO profileDTO = userService.getUserProfile();
+            model.addAttribute("editProfileDTO", profileDTO);
+        }
+
+        return "edit-profile";
+    }
+
+    @PostMapping("/edit-profile")
+    public String editProfile(@Valid EditProfileDTO editProfileDTO, BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("editProfileDTO", editProfileDTO);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editProfileDTO", bindingResult);
+
+            System.out.println("Flash attributes: " + redirectAttributes.getFlashAttributes());
+
+
+            return "redirect:/user/edit-profile";
+        }
+
+        userService.editProfile(editProfileDTO);
+
+        return "redirect:/user/profile";
     }
 
     @GetMapping("/shopping-cart")
