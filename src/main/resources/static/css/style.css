@@ -217,7 +217,6 @@ input, select {
 }
 
 .profile {
-    margin: 2rem 0;
     position: relative;
     display: flex;
     justify-content: center;
@@ -379,6 +378,16 @@ table td {
     text-decoration: none;
     min-width: 8rem;
     transition: background-color 0.5s ease;
+}
+
+.btn-back {
+    position: absolute;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    background: transparent;
+    left: 3rem;
 }
 
 .btn-cancel {

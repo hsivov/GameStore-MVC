@@ -2,6 +2,7 @@ package org.example.gamestoreapp.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -31,4 +32,8 @@ public interface UserService {
     EditProfileDTO getUserProfile();
 
     void editProfile(@Valid EditProfileDTO editProfileDTO);
+
+    boolean isCorrectPassword(String password);
+
+    void changePassword(@Valid ChangePasswordBindingModel changePasswordBindingModel);
 }

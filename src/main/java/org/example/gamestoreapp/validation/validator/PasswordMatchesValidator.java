@@ -2,11 +2,12 @@ package org.example.gamestoreapp.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.validation.annotation.PasswordMatches;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, UserRegisterBindingModel> {
+public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {
     private String message;
 
     @Override
@@ -16,12 +17,23 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     }
 
     @Override
-    public boolean isValid(UserRegisterBindingModel bindingModel, ConstraintValidatorContext constraintValidatorContext) {
-        if (bindingModel.getPassword() == null || bindingModel.getConfirmPassword() == null) {
-            return true;
+    public boolean isValid(Object obj, ConstraintValidatorContext constraintValidatorContext) {
+        String password = null;
+        String confirmPassword = null;
+
+        if (obj instanceof UserRegisterBindingModel userRegisterBindingModel) {
+            password = userRegisterBindingModel.getPassword();
+            confirmPassword = userRegisterBindingModel.getConfirmPassword();
+        } else if (obj instanceof ChangePasswordBindingModel changePasswordBindingModel) {
+            password = changePasswordBindingModel.getNewPassword();
+            confirmPassword = changePasswordBindingModel.getConfirmPassword();
         }
 
-        boolean isValid = bindingModel.getPassword().equals(bindingModel.getConfirmPassword());
+        if (password == null || confirmPassword == null) {
+            return false;
+        }
+
+        boolean isValid = password.equals(confirmPassword);
 
         if (!isValid) {
             constraintValidatorContext.unwrap(HibernateConstraintValidatorContext.class)

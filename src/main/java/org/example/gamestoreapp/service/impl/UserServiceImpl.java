@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.UsedTokenException;
+import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
@@ -166,6 +167,21 @@ public class UserServiceImpl implements UserService {
         currentUser.setLastName(editProfileDTO.getLastName());
         currentUser.setAge(editProfileDTO.getAge());
 
+        userRepository.save(currentUser);
+    }
+
+    @Override
+    public boolean isCorrectPassword(String password) {
+        User currentUser = userHelperService.getUser();
+
+        return passwordEncoder.matches(password, currentUser.getPassword());
+    }
+
+    @Override
+    public void changePassword(ChangePasswordBindingModel changePasswordBindingModel) {
+        User currentUser = userHelperService.getUser();
+
+        currentUser.setPassword(passwordEncoder.encode(changePasswordBindingModel.getNewPassword()));
         userRepository.save(currentUser);
     }
 

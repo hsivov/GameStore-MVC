@@ -2,6 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -87,8 +88,6 @@ public class UserController {
             redirectAttributes.addFlashAttribute("editProfileDTO", editProfileDTO);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editProfileDTO", bindingResult);
 
-            System.out.println("Flash attributes: " + redirectAttributes.getFlashAttributes());
-
 
             return "redirect:/user/edit-profile";
         }
@@ -96,6 +95,36 @@ public class UserController {
         userService.editProfile(editProfileDTO);
 
         return "redirect:/user/profile";
+    }
+
+    @GetMapping("/change-password")
+    public String changePassword(@ModelAttribute("message") String message, Model model) {
+        if (!model.containsAttribute("changePasswordBindingModel")) {
+            model.addAttribute("changePasswordBindingModel", new ChangePasswordBindingModel());
+        }
+
+        if (message != null && !message.isEmpty()) {
+            model.addAttribute("message", message);
+        }
+
+        return "change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@Valid ChangePasswordBindingModel changePasswordBindingModel,
+                                 BindingResult bindingResult,
+                                 RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("changePasswordBindingModel", changePasswordBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.changePasswordBindingModel", bindingResult);
+
+            return "redirect:/user/change-password";
+        }
+
+        userService.changePassword(changePasswordBindingModel);
+        redirectAttributes.addFlashAttribute("message", "Password has been changed successfully.");
+
+        return "redirect:/user/change-password";
     }
 
     @GetMapping("/shopping-cart")
