@@ -28,6 +28,8 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
     @Column
+    private String profileImageUrl;
+    @Column
     private boolean enabled = false;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Game> ownedGames;
@@ -113,6 +115,14 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public void setEnabled(boolean enabled) {

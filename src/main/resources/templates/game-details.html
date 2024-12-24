@@ -5,6 +5,8 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'game-details'})}"></header>
 <body>
 <main>
+    <button class="btn btn-back" onclick="window.history.back()" style="top: 1rem">
+        <i class="fa-solid fa-arrow-left-long"></i> Back to store</button>
     <div class="game-details-wrapper">
         <div class="game-details">
             <div class="video-section">
@@ -50,8 +52,8 @@
 
             <div th:each="comment: ${comments}" class="comment">
                 <div class="user-group">
-                    <img src='/images/profile.jpg' alt="Avatar" class="avatar"/>
-                    <p th:text="${comment.author}"></p>
+                    <img th:src="${comment.authorAvatar ?:'/images/profile.jpg'}" alt="Avatar" class="avatar"/>
+                    <p th:text="${comment.authorName}"></p>
                 </div>
                 <p th:text="${comment.createdAt}" style="font-size: 14px"></p>
                 <p th:text="${comment.content}">{c.content}</p>

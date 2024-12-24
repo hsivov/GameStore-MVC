@@ -3,37 +3,94 @@
 <head th:replace="~{fragments/commons::head}">
 </head>
 <body>
-    <div th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></div>
-    <main>
-        <section class="profile">
-            <div class="profile-card">
-                <h1>Account Details</h1>
-                <div class="profile-card-img"><img src="/images/profile.jpg" alt="Avatar" width="100"></div>
-                <div class="profile-card-wrapper">
-                    <span th:text="${userProfileViewModel.role}">Pro</span>
-                    <h5>Full name</h5>
-                    <span th:text="${userProfileViewModel.firstName} + ' ' + ${userProfileViewModel.lastName}">UI/UX Designer</span>
-                    <h5>Username</h5>
-                    <span th:text="${userProfileViewModel.username}">UI/UX Designer</span>
-                    <h5>Age</h5>
-                    <span th:text="${userProfileViewModel.age}">33</span>
-                    <div>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Enim et nostrum
-                            optio perferendis quam quod ratione rem sit soluta ut! A dolor laborum, maiores neque
-                            nesciunt quis rerum sunt suscipit. </p>
-                    </div>
-                    <div class="social-list">
-                        <i class="fab fa-facebook-square"></i>
-                        <i class="fab fa-instagram"></i>
-                        <i class="fab fa-linkedin"></i>
-                        <i class="fab fa-google"></i>
-                    </div>
-                    <div>
-                        <a href="/">Back</a>
-                    </div>
+<div th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></div>
+<main>
+    <section class="profile">
+        <div class="profile-card">
+            <h1>Account Details</h1>
+            <div class="profile-card-img" style="position: relative">
+                <img id="profileImage" th:src="${userProfileViewModel.profileImageUrl ?:'/images/profile.jpg'}"
+                     alt="Avatar" width="100">
+                <span title="Upload image" class="image-upload"
+                      onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                </span>
+                <input id="fileInput"
+                       type="file"
+                       style="display: none"
+                       accept="image/*"
+                />
+            </div>
+            <div class="profile-card-wrapper">
+                <h3 th:text="${userProfileViewModel.role}">Pro</h3>
+                <div class="text-box">
+                    <p>Username</p>
+                    <p th:text="${userProfileViewModel.username}"></p>
+                </div>
+                <div class="text-box">
+                    <p>Full name</p>
+                    <p th:text="${userProfileViewModel.firstName} + ' ' + ${userProfileViewModel.lastName}">UI/UX
+                        Designer</p>
+                </div>
+                <div class="text-box">
+                    <p>E-mail</p>
+                    <p th:text="${userProfileViewModel.email}">UI/UX Designer</p>
+                </div>
+                <div class="text-box">
+                    <p>Age</p>
+                    <p th:text="${userProfileViewModel.age}">33</p>
+                </div>
+                <div class="profile-button-group">
+                    <a href="/user/edit-profile">Edit Profile</a>
+                    <a href="/user/change-password">Change Password</a>
+                </div>
+                <div class="social-list">
+                    <i class="fab fa-facebook-square"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-linkedin"></i>
+                    <i class="fab fa-google"></i>
+                </div>
+                <div style="align-self: center">
+                    <a href="/">Back</a>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+</main>
+<script>
+    document.getElementById('fileInput').addEventListener('change', uploadImage);
+
+    async function uploadImage(event) {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('profileImage', file);
+
+        if (file) {
+            try {
+                const response = await fetch('/user/profile/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    console.error(`HTTP error! status: ${response.status}`);
+                    alert('Failed to upload image. Please try again.');
+                    return;
+                }
+
+                const data = await response.json();
+
+                const profileImageUrl = data.profileImageUrl;
+                const imgElement = document.getElementById('profileImage');
+
+                // Force refresh by adding a timestamp to the image URL
+                imgElement.src = `${profileImageUrl}?t=${new Date().getTime()}`;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('Failed to upload image. Please try again.');
+            }
+        }
+    }
+</script>
 </body>
 </html>
