@@ -6,6 +6,7 @@ import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
+import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.ShoppingCartService;
 import org.example.gamestoreapp.service.UserService;
@@ -37,12 +38,14 @@ public class UserController {
     private final CartHelperService cartHelperService;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final AuthService authService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, AuthService authService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
         this.cartHelperService = cartHelperService;
+        this.authService = authService;
     }
 
     @GetMapping("/profile")
@@ -121,7 +124,7 @@ public class UserController {
             return "redirect:/user/change-password";
         }
 
-        userService.changePassword(changePasswordBindingModel);
+        authService.changePassword(changePasswordBindingModel);
         redirectAttributes.addFlashAttribute("message", "Password has been changed successfully.");
 
         return "redirect:/user/change-password";

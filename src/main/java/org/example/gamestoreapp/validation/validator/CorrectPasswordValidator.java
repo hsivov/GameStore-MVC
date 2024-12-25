@@ -2,14 +2,14 @@ package org.example.gamestoreapp.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.example.gamestoreapp.service.UserService;
+import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.validation.annotation.CorrectPassword;
 
 public class CorrectPasswordValidator implements ConstraintValidator<CorrectPassword, String> {
-    private final UserService userService;
+    private final AuthService authService;
 
-    public CorrectPasswordValidator(UserService userService) {
-        this.userService = userService;
+    public CorrectPasswordValidator(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -19,6 +19,6 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
-        return userService.isCorrectPassword(password);
+        return authService.isCorrectPassword(password);
     }
 }

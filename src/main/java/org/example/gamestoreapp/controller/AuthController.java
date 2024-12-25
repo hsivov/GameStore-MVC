@@ -2,29 +2,33 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.exception.UsedTokenException;
+import org.example.gamestoreapp.model.dto.ForgotPasswordDTO;
+import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserLoginBindingModel;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
+import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.TokenService;
-import org.example.gamestoreapp.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
-
-    private final UserService userService;
     private final TokenService tokenService;
+    private final AuthService authService;
 
-    public AuthController(UserService userService, TokenService tokenService) {
-        this.userService = userService;
+    public AuthController(TokenService tokenService, AuthService authService) {
         this.tokenService = tokenService;
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -61,7 +65,7 @@ public class AuthController {
             return new ModelAndView("redirect:/auth/register");
         }
 
-        boolean hasSuccessfulRegistration = userService.register(userRegisterBindingModel);
+        boolean hasSuccessfulRegistration = authService.register(userRegisterBindingModel);
 
         if (!hasSuccessfulRegistration){
             // If registration failed (user not saved or email not sent), show the registration page with an error
@@ -77,8 +81,8 @@ public class AuthController {
     @GetMapping("/confirm")
     public String confirmEmail(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
         try {
-            tokenService.validateToken(token);
-            userService.enableUser(token);
+            tokenService.verifyToken(token);
+            authService.enableUser(token);
             return "redirect:/auth/login?confirmed";
         } catch (TokenExpiredException e) {
 
@@ -98,7 +102,7 @@ public class AuthController {
     @PostMapping("/resend-confirmation")
     public String resendConfirmation(@RequestParam("token") String token, RedirectAttributes redirectAttributes) throws MessagingException {
         try {
-            userService.resendConfirmationToken(token);
+            authService.resendConfirmationToken(token);
             return "redirect:/users/login?resendSuccess";
         } catch (UsedTokenException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -110,5 +114,92 @@ public class AuthController {
     public String tokenExpiredPage() {
 
         return "token-expired";
+    }
+
+    @GetMapping("/forgotten-password")
+    public String forgotPassword(@ModelAttribute("message") String message, Model model) {
+        if (!model.containsAttribute("forgotPasswordDTO")) {
+            model.addAttribute("forgotPasswordDTO", new ForgotPasswordDTO());
+        }
+
+        if (message != null && !message.isEmpty()) {
+            model.addAttribute("message", message);
+        }
+
+        return "forgotten-password";
+    }
+
+    @PostMapping("/forgotten-password")
+    public String forgotPassword(@Valid ForgotPasswordDTO forgotPasswordDTO, BindingResult bindingResult,
+                                 RedirectAttributes redirectAttributes) throws MessagingException {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("forgotPasswordDTO", forgotPasswordDTO);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.forgotPasswordDTO", bindingResult);
+
+            return "redirect:/auth/forgotten-password";
+        }
+
+        authService.passwordResetRequest(forgotPasswordDTO.getEmail());
+        redirectAttributes.addFlashAttribute("message", "An email has been sent to you with instructions how to reset your password.");
+
+        return "redirect:/auth/forgotten-password";
+    }
+
+    @GetMapping("/confirm/reset-password")
+    public String confirmResetPassword(@RequestParam("token") String token) {
+        try {
+            tokenService.verifyToken(token);
+
+            return "redirect:/auth/reset-password?token=" + token;
+
+        } catch (IllegalTokenException | UsedTokenException | TokenExpiredException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The token is invalid or has expired.", e);
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPassword(@ModelAttribute("message") String message,
+                                @ModelAttribute("errorMessage") String errorMessage, Model model,
+                                @RequestParam(value = "token") String token) {
+        if (!model.containsAttribute("resetPasswordDTO")) {
+            model.addAttribute("resetPasswordDTO", new ResetPasswordDTO());
+        }
+
+        if (message != null && !message.isEmpty()) {
+            model.addAttribute("message", message);
+        }
+
+        if (errorMessage != null && !errorMessage.isEmpty()) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
+
+        if (token != null && !token.isEmpty()) {
+            model.addAttribute("token", token);
+        }
+
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@Valid ResetPasswordDTO resetPasswordDTO, BindingResult bindingResult,
+                                @RequestParam("token") String token,
+                                RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("resetPasswordDTO", resetPasswordDTO);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.resetPasswordDTO", bindingResult);
+
+            return "redirect:/auth/reset-password?token=" + token;
+        }
+
+        try {
+            tokenService.verifyToken(token);
+            authService.resetPassword(resetPasswordDTO, token);
+            redirectAttributes.addFlashAttribute("message", "Your password has been reset. You can now log in with your new password.");
+
+            return "redirect:/auth/login";
+        } catch (IllegalTokenException | UsedTokenException | TokenExpiredException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/auth/reset-password?token=" + token;
+        }
     }
 }

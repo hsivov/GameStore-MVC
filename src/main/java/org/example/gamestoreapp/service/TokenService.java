@@ -9,7 +9,7 @@ public interface TokenService {
 
     Optional<ConfirmationToken> getToken(String token);
 
-    void validateToken(String token);
+    void verifyToken(String token);
 
     void invalidateToken(ConfirmationToken token);
 }

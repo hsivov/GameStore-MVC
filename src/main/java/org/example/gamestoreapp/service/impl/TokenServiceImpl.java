@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service.impl;
 
+import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
@@ -30,18 +31,18 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void validateToken(String token) {
+    public void verifyToken(String token) {
         ConfirmationToken confirmationToken = getToken(token)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
+                .orElseThrow(() -> new IllegalTokenException("The provided token is invalid."));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new UsedTokenException("Account already confirmed");
+            throw new UsedTokenException("The token has already been used.");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new TokenExpiredException("Token expired");
+            throw new TokenExpiredException("The token has expired. Please request a new one.");
         }
     }
 

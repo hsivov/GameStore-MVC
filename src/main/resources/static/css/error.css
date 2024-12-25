@@ -1,3 +1,8 @@
+* {
+    margin:0;
+    padding: 0;
+}
+
 body {
     display: flex;
     justify-content: center;
@@ -11,7 +16,8 @@ body {
 }
 
 img {
-    width: 100%;
+    width: 150px;
+    margin-bottom: 2rem;
 }
 
 .container {
