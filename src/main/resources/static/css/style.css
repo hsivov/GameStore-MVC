@@ -161,9 +161,21 @@ main::before {
     color: white;
 }
 
+.form {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .input-group {
     width: 420px;
     margin-bottom: 1.5rem;
+}
+
+.login-group {
+    display: flex;
+    gap: 5rem;
 }
 
 label {

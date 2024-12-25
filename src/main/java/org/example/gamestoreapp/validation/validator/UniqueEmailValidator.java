@@ -3,16 +3,16 @@ package org.example.gamestoreapp.validation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.example.gamestoreapp.model.entity.User;
-import org.example.gamestoreapp.service.UserService;
+import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.example.gamestoreapp.validation.annotation.UniqueEmail;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
-    private final UserService userService;
+    private final AuthService authService;
     private final UserHelperService userHelperService;
 
-    public UniqueEmailValidator(UserService userService, UserHelperService userHelperService) {
-        this.userService = userService;
+    public UniqueEmailValidator(AuthService authService, UserHelperService userHelperService) {
+        this.authService = authService;
         this.userHelperService = userHelperService;
     }
 
@@ -29,6 +29,6 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
             return true;
         }
 
-        return userService.isUniqueEmail(email);
+        return authService.isUniqueEmail(email);
     }
 }

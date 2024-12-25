@@ -2,14 +2,14 @@ package org.example.gamestoreapp.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.example.gamestoreapp.service.UserService;
+import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.validation.annotation.UniqueUsername;
 
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
-    private final UserService userService;
+    private final AuthService authService;
 
-    public UniqueUsernameValidator(UserService userService) {
-        this.userService = userService;
+    public UniqueUsernameValidator(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -23,6 +23,6 @@ public class UniqueUsernameValidator implements ConstraintValidator<UniqueUserna
             return true;
         }
 
-        return userService.isUniqueUsername(username);
+        return authService.isUniqueUsername(username);
     }
 }

@@ -25,8 +25,11 @@
                     <input id="password" type="password" th:field="*{password}">
                     <small th:errors="*{password}" class="text-danger">Password error message</small>
                 </div>
-                
-                <button type="submit" class="btn-submit">Login</button>
+
+                <div class="login-group">
+                    <a href="/auth/forgotten-password" style="color: white">Forgot password?</a>
+                    <button class="btn-submit" type="submit" style="flex: 1">Login</button>
+                </div>
             </form>
             <div class="create-account">
                 <p>You don't have an account? It's free <a th:href="@{/auth/register}">Create an account.</a></p>

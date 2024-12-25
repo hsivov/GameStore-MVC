@@ -3,6 +3,7 @@ package org.example.gamestoreapp.validation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
+import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.validation.annotation.PasswordMatches;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
@@ -27,6 +28,9 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
         } else if (obj instanceof ChangePasswordBindingModel changePasswordBindingModel) {
             password = changePasswordBindingModel.getNewPassword();
             confirmPassword = changePasswordBindingModel.getConfirmPassword();
+        } else if (obj instanceof ResetPasswordDTO resetPasswordDTO) {
+            password = resetPasswordDTO.getNewPassword();
+            confirmPassword = resetPasswordDTO.getConfirmPassword();
         }
 
         if (password == null || confirmPassword == null) {
