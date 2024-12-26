@@ -19,8 +19,8 @@
                 <th scope="col">Last Name</th>
                 <th scope="col">E-mail</th>
                 <th scope="col">Role</th>
-                <th scope="col">Promote</th>
-                <th scope="col">Delete</th>
+                <th scope="col">Setting up roles</th>
+                <th scope="col">Change Status</th>
             </tr>
             </thead>
             <tbody>
@@ -39,12 +39,17 @@
                 </td>
                 <td th:if="${user.role.toString() == 'ADMIN' and user.id != 1}">
                     <form th:method="POST" th:action="@{/admin/user/demote/{id}(id=${user.id})}">
-                        <button type="submit" class="btn warning">Demote </button>
+                        <button type="submit" class="btn warning">Demote</button>
                     </form>
                 </td>
-                <td th:unless="${user.id == 1}">
-                    <form th:method="POST" th:action="@{/admin/user/delete/{id}(id=${user.id})}">
-                        <button type="submit" class="btn danger">Delete</button>
+                <td th:if="${user.id != 1 and user.enabled}">
+                    <form th:method="POST" th:action="@{/admin/user/change/{id}(id=${user.id})}">
+                        <button type="submit" class="btn danger">Disable</button>
+                    </form>
+                </td>
+                <td th:if="${user.id != 1 and !user.enabled}">
+                    <form th:method="POST" th:action="@{/admin/user/change/{id}(id=${user.id})}">
+                        <button type="submit" class="btn success">Activate</button>
                     </form>
                 </td>
             </tr>

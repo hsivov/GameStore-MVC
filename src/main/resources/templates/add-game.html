@@ -6,6 +6,7 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'add-game'})}"></header>
 <main>
     <div class="container">
+        <button class="btn btn-back" onclick="window.history.back()"><i class="fa-solid fa-arrow-left-long"></i> Back to games</button>
         <h1>Add Game</h1>
         <form th:action="@{/admin/add-game}" th:method="POST" th:object="${addGameBindingModel}">
             <div class="input-group">

@@ -8,6 +8,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private UserRole role;
+    private boolean enabled;
 
     public Long getId() {
         return id;
@@ -47,5 +48,13 @@ public class UserDTO {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

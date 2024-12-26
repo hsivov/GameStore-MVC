@@ -341,24 +341,47 @@ input, select {
 
 #content-wrapper {
     display: flex;
+    min-height: calc(100vh - 140px);
 }
 
 .sidebar {
-    padding: 2rem;
+    padding: 2rem 0;
     width: 20%;
     background-color: #395688;
 }
 
 .sidebar a{
-    margin-bottom: 1rem;
     display: block;
     text-decoration: none;
     color: #fff;
+    padding: 10px 25px;
 }
 
 a.active{
     color: #1a9fff;
     text-decoration: underline;
+}
+
+.sidebar a.active {
+    color: #1a9fff;
+    text-decoration: none;
+    background: #202f44;
+    font-weight: bold;
+}
+
+.dropdown-btn {
+    border: none;
+    color: white;
+    text-align: start;
+    padding: 10px 25px;
+    width: 100%;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.dropdown-container {
+    background: #202f44;
+    padding-left: 15px;
 }
 
 .dashboard {

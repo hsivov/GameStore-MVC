@@ -3,16 +3,11 @@ package org.example.gamestoreapp.service.impl;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
-import jakarta.transaction.Transactional;
-import org.example.gamestoreapp.model.dto.AddGameBindingModel;
-import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
-import org.example.gamestoreapp.model.dto.GameDTO;
-import org.example.gamestoreapp.model.dto.UserDTO;
+import org.example.gamestoreapp.model.dto.*;
 import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.Genre;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
-import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
@@ -34,18 +29,16 @@ public class AdminServiceImpl implements AdminService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
-    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     @Value("${azure.storage.connection-string}")
     private String azureStorageConnectionString;
 
 
-    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, ConfirmationTokenRepository confirmationTokenRepository) {
+    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
         this.modelMapper = modelMapper;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.genreRepository = genreRepository;
-        this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
     @Override
@@ -118,14 +111,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    @Transactional
-    public void deleteUser(long id) {
-        confirmationTokenRepository.deleteByUserId(id);
-
-        userRepository.deleteById(id);
-    }
-
-    @Override
     public void demote(long id) {
         Optional<User> user = userRepository.findById(id);
 
@@ -134,6 +119,17 @@ public class AdminServiceImpl implements AdminService {
             userEntity.setRole(UserRole.USER);
 
             userRepository.save(userEntity);
+        }
+    }
+
+    @Override
+    public void toggleUserState(long id) {
+        Optional<User> byId = userRepository.findById(id);
+
+        if (byId.isPresent()) {
+            User user = byId.get();
+            user.setEnabled(!user.isEnabled());
+            userRepository.save(user);
         }
     }
 
@@ -183,5 +179,12 @@ public class AdminServiceImpl implements AdminService {
 
             gameRepository.save(game);
         }
+    }
+
+    @Override
+    public List<GenreDTO> getAllGenres() {
+        return genreRepository.findAll().stream()
+                .map(genre -> modelMapper.map(genre, GenreDTO.class))
+                .toList();
     }
 }

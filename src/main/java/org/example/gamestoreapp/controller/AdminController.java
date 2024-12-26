@@ -2,6 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.model.dto.GenreDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.enums.GenreName;
@@ -54,9 +55,9 @@ public class AdminController {
         return new ModelAndView("redirect:/admin/users");
     }
 
-    @PostMapping("/user/delete/{id}")
+    @PostMapping("/user/change/{id}")
     public ModelAndView deleteUser(@PathVariable("id") long id) {
-        adminService.deleteUser(id);
+        adminService.toggleUserState(id);
 
         return new ModelAndView("redirect:/admin/users");
     }
@@ -134,6 +135,14 @@ public class AdminController {
         adminService.editGame(updateGameBindingModel, id);
 
         return new ModelAndView("redirect:/admin/games");
+    }
+
+    @GetMapping("/genres")
+    public String genres(Model model) {
+        List<GenreDTO> genres = adminService.getAllGenres();
+        model.addAttribute("genres", genres);
+
+        return "manage-genres";
     }
 
     @GetMapping("/orders")
