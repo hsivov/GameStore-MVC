@@ -1,15 +1,21 @@
-package org.example.gamestoreapp.model.entity;
+package org.example.gamestoreapp.model.dto;
 
-import jakarta.persistence.*;
-import org.example.gamestoreapp.model.enums.GenreName;
-@Entity
-@Table(name = "genres")
-public class Genre extends BaseEntity{
+import jakarta.validation.constraints.Size;
 
-    @Column(nullable = false,unique = true)
+public class UpdateGenreBindingModel {
+    private long id;
+    @Size(min = 3, max = 20)
     private String name;
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Size(min = 5, max = 500)
     private String description;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

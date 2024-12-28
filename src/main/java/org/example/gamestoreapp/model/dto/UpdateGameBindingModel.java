@@ -20,7 +20,7 @@ public class UpdateGameBindingModel {
     @NotBlank
     private String publisher;
     @NotNull
-    private GenreName genre;
+    private String genre;
     @PositiveOrZero
     private BigDecimal price;
 
@@ -80,11 +80,11 @@ public class UpdateGameBindingModel {
         this.publisher = publisher;
     }
 
-    public GenreName getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(GenreName genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 

@@ -4,11 +4,24 @@
 </head>
 <body>
 <header th:replace="~{fragments/commons::header(activeLink=${'add-game'})}"></header>
-<main>
-    <div class="container">
-        <button class="btn btn-back" onclick="window.history.back()"><i class="fa-solid fa-arrow-left-long"></i> Back to games</button>
-        <h1>Add Game</h1>
-        <form th:action="@{/admin/add-game}" th:method="POST" th:object="${addGameBindingModel}">
+<div class="content-wrapper">
+    <div class="sidebar">
+        <h2 class="sidebar-heading">Settings</h2>
+        <a th:href="@{/admin/users}">User management</a>
+        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <div id="dropdown-container" class="dropdown-container">
+            <a th:href="@{/admin/games}" class="active">Games</a>
+            <a th:href="@{/admin/genres}">Genres</a>
+        </div>
+        <a th:href="@{/admin/orders}">Orders</a>
+    </div>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Add Game</h1>
+            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> Back</a>
+        </div>
+        <form class="admin-panel-form" th:action="@{/admin/add-game}" th:method="POST"
+              th:object="${addGameBindingModel}">
             <div class="input-group">
                 <label for="title">Title</label>
                 <input id="title" type="text" th:field="*{title}">
@@ -16,7 +29,7 @@
             </div>
             <div class="input-group">
                 <label for="description">Description</label>
-                <input id="description" type="text" th:field="*{description}">
+                <textarea id="description" th:field="*{description}" rows="4" cols="43"></textarea>
                 <small th:errors="*{description}" class="text-danger">Description error message</small>
             </div>
             <div class="input-group">
@@ -44,8 +57,8 @@
                 <select id="genre" name="genre">
                     <option value="" selected disabled>Select genre</option>
                     <option th:each="genre : ${genres}"
-                            th:text="${genre.value}"
-                            th:value="${genre.key}">
+                            th:text="${genre.name}"
+                            th:value="${genre.name}">
                     </option>
                 </select>
                 <small th:errors="*{genre}" class="text-danger">Genre error message</small>
@@ -59,6 +72,6 @@
             <button type="submit" class="btn-submit">Add</button>
         </form>
     </div>
-</main>
+</div>
 </body>
 </html>

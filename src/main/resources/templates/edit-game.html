@@ -42,8 +42,8 @@
                 <label for="genre">Genre</label>
                 <select id="genre" name="genre">
                     <option th:each="genre : ${genres}"
-                            th:text="${genre.value}"
-                            th:value="${genre.key}"
+                            th:text="${genre.name}"
+                            th:value="${genre.name}"
                             th:selected="${bindingModel.genre == genre}">
                     </option>
                 </select>

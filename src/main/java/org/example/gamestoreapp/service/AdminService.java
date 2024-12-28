@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service;
 
+import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.*;
 
 import java.io.IOException;
@@ -22,7 +23,15 @@ public interface AdminService {
 
     UpdateGameBindingModel getById(Long id);
 
-    void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) throws IOException;
+    void editGame(UpdateGameBindingModel updateGameBindingModel) throws IOException;
 
     List<GenreDTO> getAllGenres();
+
+    void addGenre(@Valid AddGenreBindingModel addGenreBindingModel);
+
+    UpdateGenreBindingModel getGenreById(long id);
+
+    void editGenre(@Valid UpdateGenreBindingModel updateGenreBindingModel);
+
+    void deleteGenre(Long id);
 }

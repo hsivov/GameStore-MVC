@@ -8,7 +8,7 @@
     <button class="btn btn-back" onclick="window.history.back()"><i class="fa-solid fa-arrow-left-long"></i> Back to profile</button>
     <div class="edit-profile">
         <h1>Edit Profile</h1>
-        <form th:method="POST" th:action="@{/user/edit-profile}" th:object="${editProfileDTO}">
+        <form class="form-vertical" th:method="POST" th:action="@{/user/edit-profile}" th:object="${editProfileDTO}">
             <div class="input-group">
                 <label for="firstName">First name</label>
                 <input id="firstName" name="firstName"

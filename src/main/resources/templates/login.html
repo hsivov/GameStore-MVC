@@ -12,7 +12,10 @@
                      th:text="${param.error}" class="text-danger">Login error message</div>
             </div>
             <h1>Login</h1>
-            <form th:action="@{/auth/login}" th:method="POST" th:object="${userLoginBindingModel}">
+            <form id="login-form" name="login-form" class="form-vertical"
+                  th:method="POST"
+                  th:action="@{/auth/login}"
+                  th:object="${userLoginBindingModel}">
 
                 <div class="input-group">
                     <label for="username">Username</label>

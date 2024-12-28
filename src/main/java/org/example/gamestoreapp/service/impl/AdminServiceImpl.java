@@ -151,8 +151,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) throws IOException {
-        Optional<Game> optionalGame = gameRepository.findById(id);
+    public void editGame(UpdateGameBindingModel updateGameBindingModel) throws IOException {
+        Optional<Game> optionalGame = gameRepository.findById(updateGameBindingModel.getId());
 
         if (optionalGame.isPresent()) {
             Game game = optionalGame.get();
@@ -186,5 +186,44 @@ public class AdminServiceImpl implements AdminService {
         return genreRepository.findAll().stream()
                 .map(genre -> modelMapper.map(genre, GenreDTO.class))
                 .toList();
+    }
+
+    @Override
+    public void addGenre(AddGenreBindingModel addGenreBindingModel) {
+        Genre genre = new Genre();
+        genre.setName(addGenreBindingModel.getName());
+        genre.setDescription(addGenreBindingModel.getDescription());
+
+        genreRepository.save(genre);
+    }
+
+    @Override
+    public UpdateGenreBindingModel getGenreById(long id) {
+        Optional<Genre> byId = genreRepository.findById(id);
+
+        if (byId.isPresent()) {
+            Genre genre = byId.get();
+            return modelMapper.map(genre, UpdateGenreBindingModel.class);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void editGenre(UpdateGenreBindingModel updateGenreBindingModel) {
+        long id = updateGenreBindingModel.getId();
+        Optional<Genre> byId = genreRepository.findById(id);
+
+        if (byId.isPresent()) {
+            Genre genre = byId.get();
+            genre.setName(updateGenreBindingModel.getName());
+            genre.setDescription(updateGenreBindingModel.getDescription());
+            genreRepository.save(genre);
+        }
+    }
+
+    @Override
+    public void deleteGenre(Long id) {
+        genreRepository.deleteById(id);
     }
 }

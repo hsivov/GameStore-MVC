@@ -4,8 +4,9 @@
 </head>
 <body>
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
-<div id="content-wrapper">
+<div class="content-wrapper">
     <div class="sidebar">
+        <h2 class="sidebar-heading">Settings</h2>
         <a th:href="@{/admin/users}">User management</a>
         <a th:href="@{/admin/games}" class="active">Game management</a>
         <div id="dropdown-container" class="dropdown-container">

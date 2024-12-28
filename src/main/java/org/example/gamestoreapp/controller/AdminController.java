@@ -1,14 +1,9 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
-import org.example.gamestoreapp.model.dto.AddGameBindingModel;
-import org.example.gamestoreapp.model.dto.GenreDTO;
-import org.example.gamestoreapp.model.dto.OrderResponseDTO;
-import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
-import org.example.gamestoreapp.model.enums.GenreName;
+import org.example.gamestoreapp.model.dto.*;
 import org.example.gamestoreapp.service.AdminService;
 import org.example.gamestoreapp.service.OrderService;
-import org.example.gamestoreapp.util.GenreConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +15,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -56,7 +50,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/change/{id}")
-    public ModelAndView deleteUser(@PathVariable("id") long id) {
+    public ModelAndView changeUserStatus(@PathVariable("id") long id) {
         adminService.toggleUserState(id);
 
         return new ModelAndView("redirect:/admin/users");
@@ -73,8 +67,8 @@ public class AdminController {
     @GetMapping("/add-game")
     public ModelAndView addGame(Model model) {
         ModelAndView modelAndView = new ModelAndView("add-game");
-        Map<GenreName, String> genreDescriptions = GenreConverter.getAllGenreDescriptions();
-        modelAndView.addObject("genres", genreDescriptions);
+        List<GenreDTO> genres = adminService.getAllGenres();
+        modelAndView.addObject("genres", genres);
 
         if (!model.containsAttribute("addGameBindingModel")) {
             model.addAttribute("addGameBindingModel", new AddGameBindingModel());
@@ -114,15 +108,15 @@ public class AdminController {
         UpdateGameBindingModel bindingModel = adminService.getById(id);
 
         modelAndView.addObject("bindingModel", bindingModel);
-        modelAndView.addObject("genres", GenreConverter.getAllGenreDescriptions());
+        modelAndView.addObject("genres", adminService.getAllGenres());
 
         return modelAndView;
     }
 
-    @PostMapping("/game/edit/{id}")
+    @PostMapping("/game/edit")
     public ModelAndView editGame(@Valid UpdateGameBindingModel updateGameBindingModel,
                                  BindingResult bindingResult,
-                                 RedirectAttributes redirectAttributes, @PathVariable Long id) throws IOException {
+                                 RedirectAttributes redirectAttributes) throws IOException {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("editGameBindingModel", updateGameBindingModel);
@@ -132,7 +126,7 @@ public class AdminController {
             return new ModelAndView("redirect:/admin/game/edit/{id}");
         }
 
-        adminService.editGame(updateGameBindingModel, id);
+        adminService.editGame(updateGameBindingModel);
 
         return new ModelAndView("redirect:/admin/games");
     }
@@ -143,6 +137,61 @@ public class AdminController {
         model.addAttribute("genres", genres);
 
         return "manage-genres";
+    }
+
+    @GetMapping("/add-genre")
+    public ModelAndView addGenre(Model model) {
+        if (!model.containsAttribute("addGenreBindingModel")) {
+            model.addAttribute("addGenreBindingModel", new AddGenreBindingModel());
+        }
+
+        return new ModelAndView("add-genre");
+    }
+
+    @PostMapping("/add-genre")
+    public ModelAndView addGenre(@Valid AddGenreBindingModel addGenreBindingModel, BindingResult bindingResult,
+                                 RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("addGenreBindingModel", addGenreBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.addGenreBindingModel", bindingResult);
+
+            return new ModelAndView("redirect:/admin/add-genre");
+        }
+
+        adminService.addGenre(addGenreBindingModel);
+
+        return new ModelAndView("redirect:/admin/genres");
+    }
+
+    @GetMapping("/genre/edit/{id}")
+    public ModelAndView editGenre(@PathVariable Long id, Model model) {
+        if (!model.containsAttribute("updateGenreBindingModel")) {
+            model.addAttribute("updateGenreBindingModel", adminService.getGenreById(id));
+        }
+
+        return new ModelAndView("edit-genre");
+    }
+
+    @PostMapping("/genre/edit")
+    public ModelAndView editGenre(@Valid UpdateGenreBindingModel updateGenreBindingModel,
+                                  BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("updateGenreBindingModel", updateGenreBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.updateGenreBindingModel", bindingResult);
+
+            return new ModelAndView("redirect:/admin/genre/edit/{id}");
+        }
+
+        adminService.editGenre(updateGenreBindingModel);
+
+        return new ModelAndView("redirect:/admin/genres");
+    }
+
+    @DeleteMapping("/genre/delete/{id}")
+    public ModelAndView deleteGenre(@PathVariable Long id) {
+        adminService.deleteGenre(id);
+
+        return new ModelAndView("redirect:/admin/genres");
     }
 
     @GetMapping("/orders")
