@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.config;
 
 import org.example.gamestoreapp.model.dto.GameDTO;
+import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
 import org.example.gamestoreapp.model.entity.Game;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -40,7 +41,13 @@ public class AppConfig {
                 .typeMap(Game.class, GameDTO.class)
                 .addMappings(mapper -> mapper
                         .map(src -> src.getGenre().getName(), GameDTO::setGenre)
-        );
+                );
+
+        modelMapper
+                .typeMap(Game.class, UpdateGameBindingModel.class)
+                .addMappings(mapper -> mapper
+                        .map(src -> src.getGenre().getName(), UpdateGameBindingModel::setGenre)
+                );
 
         return modelMapper;
     }

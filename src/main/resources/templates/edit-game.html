@@ -4,10 +4,23 @@
 </head>
 <body>
 <header th:replace="~{fragments/commons::header(activeLink=${'edit-game'})}"></header>
-<main>
-    <div class="container">
-        <h1>Edit Game</h1>
-        <form th:action="@{/admin/game/edit/{id}(id=${bindingModel.id})}" th:method="POST" th:object="${bindingModel}">
+<div class="content-wrapper">
+    <div class="sidebar">
+        <h2 class="sidebar-heading">Settings</h2>
+        <a th:href="@{/admin/users}">User management</a>
+        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <div id="dropdown-container" class="dropdown-container">
+            <a th:href="@{/admin/games}" class="active">Games</a>
+            <a th:href="@{/admin/genres}">Genres</a>
+        </div>
+        <a th:href="@{/admin/orders}">Orders</a>
+    </div>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Edit Game</h1>
+            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> Back</a>
+        </div>
+        <form class="admin-panel-form" th:action="@{/admin/game/edit/{id}(id=${bindingModel.id})}" th:method="POST" th:object="${bindingModel}">
             <div class="input-group">
                 <label for="title">Title</label>
                 <input id="title" type="text" th:field="*{title}">
@@ -44,7 +57,7 @@
                     <option th:each="genre : ${genres}"
                             th:text="${genre.name}"
                             th:value="${genre.name}"
-                            th:selected="${bindingModel.genre == genre}">
+                            th:selected="${bindingModel.genre == genre.name}">
                     </option>
                 </select>
                 <small th:errors="*{genre}" class="text-danger">Genre error message</small>
@@ -58,6 +71,6 @@
             <button type="submit" class="btn-submit">Edit</button>
         </form>
     </div>
-</main>
+</div>
 </body>
 </html>

@@ -1,7 +1,6 @@
 package org.example.gamestoreapp.model.dto;
 
 import jakarta.validation.constraints.*;
-import org.example.gamestoreapp.model.enums.GenreName;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

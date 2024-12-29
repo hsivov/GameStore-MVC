@@ -1,7 +1,7 @@
 package org.example.gamestoreapp.model.entity;
 
 import jakarta.persistence.*;
-import org.example.gamestoreapp.model.enums.GenreName;
+
 @Entity
 @Table(name = "genres")
 public class Genre extends BaseEntity{

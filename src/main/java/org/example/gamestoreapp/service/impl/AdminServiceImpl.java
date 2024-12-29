@@ -147,7 +147,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public UpdateGameBindingModel getById(Long id) {
-        return modelMapper.map(gameRepository.findById(id).orElse(null), UpdateGameBindingModel.class);
+        Game game = gameRepository.findById(id)
+                .orElse(null);
+        return modelMapper.map(game, UpdateGameBindingModel.class);
     }
 
     @Override
