@@ -1,9 +1,7 @@
 package org.example.gamestoreapp.service;
 
-import org.example.gamestoreapp.model.dto.AddGameBindingModel;
-import org.example.gamestoreapp.model.dto.UpdateGameBindingModel;
-import org.example.gamestoreapp.model.dto.GameDTO;
-import org.example.gamestoreapp.model.dto.UserDTO;
+import jakarta.validation.Valid;
+import org.example.gamestoreapp.model.dto.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +13,7 @@ public interface AdminService {
 
     void promote(long id);
 
-    void deleteUser(long id);
+    void toggleUserState(long id);
 
     void demote(long id);
 
@@ -25,5 +23,15 @@ public interface AdminService {
 
     UpdateGameBindingModel getById(Long id);
 
-    void editGame(UpdateGameBindingModel updateGameBindingModel, Long id) throws IOException;
+    void editGame(UpdateGameBindingModel updateGameBindingModel) throws IOException;
+
+    List<GenreDTO> getAllGenres();
+
+    void addGenre(@Valid AddGenreBindingModel addGenreBindingModel);
+
+    UpdateGenreBindingModel getGenreById(long id);
+
+    void editGenre(@Valid UpdateGenreBindingModel updateGenreBindingModel);
+
+    void deleteGenre(Long id);
 }

@@ -1,15 +1,17 @@
-package org.example.gamestoreapp.model.entity;
+package org.example.gamestoreapp.model.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "genres")
-public class Genre extends BaseEntity{
-
-    @Column(nullable = false,unique = true)
+public class GenreDTO {
+    private long id;
     private String name;
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

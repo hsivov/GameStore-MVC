@@ -1,7 +1,6 @@
 package org.example.gamestoreapp.model.dto;
 
 import jakarta.validation.constraints.*;
-import org.example.gamestoreapp.model.enums.GenreName;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,7 +19,7 @@ public class UpdateGameBindingModel {
     @NotBlank
     private String publisher;
     @NotNull
-    private GenreName genre;
+    private String genre;
     @PositiveOrZero
     private BigDecimal price;
 
@@ -80,11 +79,11 @@ public class UpdateGameBindingModel {
         this.publisher = publisher;
     }
 
-    public GenreName getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(GenreName genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
