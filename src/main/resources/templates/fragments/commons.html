@@ -17,7 +17,7 @@
             </div>
         </a>
         <div class="user">
-            <p th:if="${@userHelperService.isAuthenticated()}" th:text="'Welcome: ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
+            <p th:if="${@userHelperService.isAuthenticated()}" th:text="#{welcome} + ' ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
         </div>
     </div>
     <nav class="navbar">
@@ -56,6 +56,14 @@
                     </form>
                 </li>
             </ul>
+            <div>
+                <form id="languageForm" th:action="@{${currentUrl}}" method="get">
+                    <select name="lang" onchange="document.getElementById('languageForm').submit();">
+                        <option value="en" th:selected="${#locale.language == 'en'}">EN</option>
+                        <option value="bg" th:selected="${#locale.language == 'bg'}">BG</option>
+                    </select>
+                </form>
+            </div>
         </div>
     </nav>
 </header>
