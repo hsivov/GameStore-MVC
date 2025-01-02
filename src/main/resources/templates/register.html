@@ -6,48 +6,48 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'register'})}"></header>
 <main>
     <div class="container">
-        <h1>Sign Up</h1>
+        <h1 th:text="#{signup}">Sign Up</h1>
         <form id="register-form" name="register-form" class="form-vertical"
               th:method="POST"
               th:action="@{/auth/register}"
               th:object="${userRegisterBindingModel}">
             <div class="input-group">
-                <label for="username">Username</label>
+                <label for="username" th:text="#{username}">Username</label>
                 <input id="username" type="text" th:field="*{username}">
                 <small th:errors="*{username}" class="text-danger">Username error message</small>
             </div>
             <div class="input-group">
-                <label for="email">E-mail</label>
+                <label for="email" th:text="#{email}">E-mail</label>
                 <input id="email" type="email" th:field="*{email}">
                 <small th:errors="*{email}" class="text-danger">E-mail error message</small>
             </div>
             <div class="input-group">
-                <label for="first-name">First name</label>
+                <label for="first-name" th:text="#{firstName}">First name</label>
                 <input id="first-name" type="text" th:field="*{firstName}">
                 <small th:errors="*{firstName}" class="text-danger">Full name error message</small>
             </div>
             <div class="input-group">
-                <label for="last-name">Last name</label>
+                <label for="last-name" th:text="#{lastName}">Last name</label>
                 <input id="last-name" type="text" th:field="*{lastName}">
                 <small th:errors="*{lastName}" class="text-danger">Full name error message</small>
             </div>
             <div class="input-group">
-                <label for="age">Age</label>
+                <label for="age" th:text="#{age}">Age</label>
                 <input id="age" type="number" th:field="*{age}">
                 <small th:errors="*{age}" class="text-danger">Age error message</small>
             </div>
             <div class="input-group">
-                <label for="password">Password</label>
+                <label for="password" th:text="#{password}">Password</label>
                 <input id="password" type="password" th:field="*{password}">
                 <small th:errors="*{password}" class="text-danger">Password error message</small>
             </div>
             <div class="input-group">
-                <label for="confirm-password">Confirm Password</label>
+                <label for="confirm-password" th:text="#{confirmPassword}">Confirm Password</label>
                 <input id="confirm-password" type="password" th:field="*{confirmPassword}">
                 <small th:errors="*{confirmPassword}" class="text-danger">Password error message</small>
             </div>
             <div>
-                <button type="submit" class="btn-submit">Sign Up</button>
+                <button type="submit" class="btn-submit" th:text="#{signup}">Sign Up</button>
             </div>
         </form>
     </div>

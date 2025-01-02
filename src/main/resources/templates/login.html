@@ -11,31 +11,31 @@
                 <div th:if="${param.error}"
                      th:text="${param.error}" class="text-danger">Login error message</div>
             </div>
-            <h1>Login</h1>
+            <h1 th:text="#{login}">Login</h1>
             <form id="login-form" name="login-form" class="form-vertical"
                   th:method="POST"
                   th:action="@{/auth/login}"
                   th:object="${userLoginBindingModel}">
 
                 <div class="input-group">
-                    <label for="username">Username</label>
+                    <label for="username" th:text="#{username}">Username</label>
                     <input id="username" type="text" th:field="*{username}">
                     <small th:errors="*{username}" class="text-danger">Username error message</small>
                 </div>
 
                 <div class="input-group">
-                    <label for="password">Password</label>
+                    <label for="password" th:text="#{password}">Password</label>
                     <input id="password" type="password" th:field="*{password}">
                     <small th:errors="*{password}" class="text-danger">Password error message</small>
                 </div>
 
                 <div class="login-group">
-                    <a href="/auth/forgotten-password" style="color: white">Forgot password?</a>
-                    <button class="btn-submit" type="submit" style="flex: 1">Login</button>
+                    <a href="/auth/forgotten-password" style="color: white" th:text="#{forgotPassword}">Forgot password?</a>
+                    <button class="btn-submit" type="submit" style="flex: 1" th:text="#{login}">Login</button>
                 </div>
             </form>
             <div class="create-account">
-                <p>You don't have an account? It's free <a th:href="@{/auth/register}">Create an account.</a></p>
+                <p th:utext="#{createAccountMessage('@{/auth/register}', #{createAccount})}"></p>
             </div>
         </div>
     </main>
