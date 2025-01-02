@@ -475,9 +475,10 @@ table td {
 }
 
 .btn-link {
+    display: inline-block;
     text-decoration: none;
     color: white;
-    padding: 0.5rem 0.75rem;
+    padding: 5px 20px;
     border-radius: 4px;
 }
 

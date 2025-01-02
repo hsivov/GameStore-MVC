@@ -6,21 +6,21 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}">User management</a>
-        <a th:href="@{/admin/games}">Game management</a>
-        <a th:href="@{/admin/orders}" class="active">Orders</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" th:text="#{gameManagement}">Game management</a>
+        <a th:href="@{/admin/orders}" class="active" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Order N</th>
-                <th scope="col">Order Date</th>
-                <th scope="col">Status</th>
-                <th scope="col">Total</th>
-                <th scope="col">Customer</th>
+                <th scope="col" th:text="#{orderNumber}">Order N</th>
+                <th scope="col" th:text="#{orderDate}">Order Date</th>
+                <th scope="col" th:text="#{status}">Status</th>
+                <th scope="col" th:text="#{total}">Total</th>
+                <th scope="col" th:text="#{customer}">Customer</th>
             </tr>
             </thead>
             <tbody>
@@ -32,7 +32,7 @@
                 <td th:text="${order.totalPrice} + ' лв.'">Total Sum</td>
                 <td th:text="${order.customer.firstName} + ' ' + ${order.customer.lastName}">Customer</td>
                 <td>
-                    <a th:href="@{/admin/order/{id}(id=${order.id})}" class="btn-link continue">Order details</a>
+                    <a th:href="@{/admin/order/{id}(id=${order.id})}" class="btn-link continue" th:text="#{details}">Order details</a>
                 </td>
             </tr>
             </tbody>

@@ -6,26 +6,26 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}">User management</a>
-        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" class="active" th:text="#{gameManagement}">Game management</a>
         <div id="dropdown-container" class="dropdown-container">
-            <a th:href="@{/admin/games}">Games</a>
-            <a th:href="@{/admin/genres}" class="active">Genres</a>
+            <a th:href="@{/admin/games}" th:text="#{games}">Games</a>
+            <a th:href="@{/admin/genres}" class="active" th:text="#{genres}">Genres</a>
         </div>
-        <a th:href="@{/admin/orders}">Orders</a>
+        <a th:href="@{/admin/orders}" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
         <div class="dashboard-header">
-            <a th:href="@{/admin/add-genre}" class="btn-link success">Add Genre</a>
+            <a th:href="@{/admin/add-genre}" class="btn-link success" th:text="#{addGenre}">Add Genre</a>
         </div>
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
+                <th scope="col" th:text="#{id}">Id</th>
+                <th scope="col" th:text="#{name}">Name</th>
+                <th scope="col" th:text="#{description}">Description</th>
             </tr>
             </thead>
             <tbody>
@@ -37,12 +37,12 @@
 
                 <td>
                     <form th:method="GET" th:action="@{/admin/genre/edit/{id}(id=${genre.id})}">
-                        <button type="submit" class="btn warning">Edit</button>
+                        <button type="submit" class="btn warning" th:text="#{edit}">Edit</button>
                     </form>
                 </td>
                 <td>
                     <form th:method="POST" th:action="@{/admin/genre/delete/{id}(id=${genre.id})}">
-                        <button type="submit" class="btn danger">Delete</button>
+                        <button type="submit" class="btn danger" th:text="#{delete}">Delete</button>
                     </form>
                 </td>
             </tr>

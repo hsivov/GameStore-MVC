@@ -6,22 +6,22 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}" class="active">User management</a>
-        <a th:href="@{/admin/games}">Game management</a>
-        <a th:href="@{/admin/orders}">Orders</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" class="active" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" th:text="#{gameManagement}">Game management</a>
+        <a th:href="@{/admin/orders}" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">User Id</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">E-mail</th>
-                <th scope="col">Role</th>
-                <th scope="col">Setting up roles</th>
-                <th scope="col">Change Status</th>
+                <th scope="col" th:text="#{id}">User Id</th>
+                <th scope="col" th:text="#{firstName}">First Name</th>
+                <th scope="col" th:text="#{lastName}">Last Name</th>
+                <th scope="col" th:text="#{email}">E-mail</th>
+                <th scope="col" th:text="#{role}">Role</th>
+                <th scope="col" th:text="#{settingUpRoles}">Setting up roles</th>
+                <th scope="col" th:text="#{changeStatus}">Change Status</th>
             </tr>
             </thead>
             <tbody>
@@ -35,22 +35,22 @@
 
                 <td th:unless="${user.id == 1 or user.role.toString() == 'ADMIN'}">
                     <form th:method="POST" th:action="@{/admin/user/promote/{id}(id=${user.id})}">
-                        <button type="submit" class="btn warning">Promote</button>
+                        <button type="submit" class="btn warning" th:text="#{promote}">Promote</button>
                     </form>
                 </td>
                 <td th:if="${user.role.toString() == 'ADMIN' and user.id != 1}">
                     <form th:method="POST" th:action="@{/admin/user/demote/{id}(id=${user.id})}">
-                        <button type="submit" class="btn warning">Demote</button>
+                        <button type="submit" class="btn warning" th:text="#{demote}">Demote</button>
                     </form>
                 </td>
                 <td th:if="${user.id != 1 and user.enabled}">
                     <form th:method="POST" th:action="@{/admin/user/change/{id}(id=${user.id})}">
-                        <button type="submit" class="btn danger">Disable</button>
+                        <button type="submit" class="btn danger" th:text="#{disable}">Disable</button>
                     </form>
                 </td>
                 <td th:if="${user.id != 1 and !user.enabled}">
                     <form th:method="POST" th:action="@{/admin/user/change/{id}(id=${user.id})}">
-                        <button type="submit" class="btn success">Activate</button>
+                        <button type="submit" class="btn success" th:text="#{activate}">Activate</button>
                     </form>
                 </td>
             </tr>

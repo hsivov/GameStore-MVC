@@ -6,30 +6,30 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}">User management</a>
-        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" class="active" th:text="#{gameManagement}">Game management</a>
         <div id="dropdown-container" class="dropdown-container">
-            <a th:href="@{/admin/games}" class="active">Games</a>
-            <a th:href="@{/admin/genres}">Genres</a>
+            <a th:href="@{/admin/games}" class="active" th:text="#{games}">Games</a>
+            <a th:href="@{/admin/genres}" th:text="#{genres}">Genres</a>
         </div>
-        <a th:href="@{/admin/orders}">Orders</a>
+        <a th:href="@{/admin/orders}" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
         <div class="dashboard-header">
-            <a th:href="@{/admin/add-game}" class="btn-link success">Add Game</a>
+            <a th:href="@{/admin/add-game}" class="btn-link success" th:text="#{addGame}">Add Game</a>
         </div>
 
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Game Id</th>
-                <th scope="col">Title</th>
-                <th scope="col">Publisher</th>
-                <th scope="col">Release Date</th>
-                <th scope="col">Price</th>
-                <th scope="col">Edit</th>
-                <th scope="col">Delete</th>
+                <th scope="col" th:text="#{id}">Game Id</th>
+                <th scope="col" th:text="#{title}">Title</th>
+                <th scope="col" th:text="#{publisher}">Publisher</th>
+                <th scope="col" th:text="#{releaseDate}">Release Date</th>
+                <th scope="col" th:text="#{price}">Price</th>
+                <th scope="col" th:text="#{edit}">Edit</th>
+                <th scope="col" th:text="#{delete}">Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -43,12 +43,12 @@
 
                 <td>
                     <form th:method="GET" th:action="@{/admin/game/edit/{id}(id=${game.id})}">
-                        <button type="submit" class="btn warning">Edit</button>
+                        <button type="submit" class="btn warning" th:text="#{edit}">Edit</button>
                     </form>
                 </td>
                 <td>
                     <form th:method="POST" th:action="@{/admin/game/delete/{id}(id=${game.id})}">
-                        <button type="submit" class="btn danger">Delete</button>
+                        <button type="submit" class="btn danger" th:text="#{delete}">Delete</button>
                     </form>
                 </td>
             </tr>

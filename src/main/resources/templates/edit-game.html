@@ -6,53 +6,53 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'edit-game'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}">User management</a>
-        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" class="active" th:text="#{gameManagement}">Game management</a>
         <div id="dropdown-container" class="dropdown-container">
-            <a th:href="@{/admin/games}" class="active">Games</a>
-            <a th:href="@{/admin/genres}">Genres</a>
+            <a th:href="@{/admin/games}" class="active" th:text="#{games}">Games</a>
+            <a th:href="@{/admin/genres}" th:text="#{genres}">Genres</a>
         </div>
-        <a th:href="@{/admin/orders}">Orders</a>
+        <a th:href="@{/admin/orders}" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">Edit Game</h1>
-            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> Back</a>
+            <h1 class="dashboard-title" th:text="#{editGame}">Edit Game</h1>
+            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{back}"></span></a>
         </div>
         <form class="admin-panel-form" th:action="@{/admin/game/edit/{id}(id=${bindingModel.id})}" th:method="POST" th:object="${bindingModel}">
             <div class="input-group">
-                <label for="title">Title</label>
+                <label for="title" th:text="#{title}">Title</label>
                 <input id="title" type="text" th:field="*{title}">
                 <small th:errors="*{title}" class="text-danger">Title error message</small>
             </div>
             <div class="input-group">
-                <label for="description">Description</label>
+                <label for="description" th:text="#{description}">Description</label>
                 <input id="description" type="text" th:field="*{description}">
                 <small th:errors="*{description}" class="text-danger">Description error message</small>
             </div>
             <div class="input-group">
-                <label for="image-thumbnail">Image thumbnail</label>
+                <label for="image-thumbnail" th:text="#{imageUrl}">Image thumbnail</label>
                 <input id="image-thumbnail" type="text" th:field="*{imageUrl}">
                 <small th:errors="*{imageUrl}" class="text-danger">Image thumbnail error message</small>
             </div>
             <div class="input-group">
-                <label for="video-url">Video url (optional)</label>
+                <label for="video-url" th:text="#{videoUrl}">Video url (optional)</label>
                 <input id="video-url" type="text" th:field="*{videoUrl}">
 
             </div>
             <div class="input-group">
-                <label for="release-date">Release Date</label>
+                <label for="release-date" th:text="#{releaseDate}">Release Date</label>
                 <input id="release-date" type="date" th:value="${bindingModel.releaseDate}" name="releaseDate">
                 <small th:errors="*{releaseDate}" class="text-danger">Release date error message</small>
             </div>
             <div class="input-group">
-                <label for="publisher">Publisher</label>
+                <label for="publisher" th:text="#{publisher}">Publisher</label>
                 <input id="publisher" type="text" th:field="*{publisher}">
                 <small th:errors="*{publisher}" class="text-danger">Publisher error message</small>
             </div>
             <div class="input-group">
-                <label for="genre">Genre</label>
+                <label for="genre" th:text="#{genre}">Genre</label>
                 <select id="genre" name="genre">
                     <option th:each="genre : ${genres}"
                             th:text="${genre.name}"
@@ -63,12 +63,12 @@
                 <small th:errors="*{genre}" class="text-danger">Genre error message</small>
             </div>
             <div class="input-group">
-                <label for="price">Price</label>
+                <label for="price" th:text="#{price}">Price</label>
                 <input id="price" type="number" step=".01" th:field="*{price}">
                 <small th:errors="*{price}" class="text-danger">Price error message</small>
             </div>
 
-            <button type="submit" class="btn-submit">Edit</button>
+            <button type="submit" class="btn-submit" th:text="#{update}">Update</button>
         </form>
     </div>
 </div>
