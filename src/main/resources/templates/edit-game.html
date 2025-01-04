@@ -20,7 +20,8 @@
             <h1 class="dashboard-title" th:text="#{editGame}">Edit Game</h1>
             <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{back}"></span></a>
         </div>
-        <form class="admin-panel-form" th:action="@{/admin/game/edit/{id}(id=${bindingModel.id})}" th:method="POST" th:object="${bindingModel}">
+        <form class="admin-panel-form" th:action="@{/admin/game/edit}" th:method="POST" th:object="${bindingModel}">
+            <input type="hidden" th:field="*{id}" />
             <div class="input-group">
                 <label for="title" th:text="#{title}">Title</label>
                 <input id="title" type="text" th:field="*{title}">

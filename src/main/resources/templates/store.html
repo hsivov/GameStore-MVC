@@ -13,18 +13,18 @@
             <div class="game-content">
                 <h1 th:text="${game.title}"></h1>
                 <p th:text="${game.description}" class="description"></p>
-                <p th:text="'Genre: ' + ${game.genre}"></p>
-                <p th:text="'Publisher: ' + ${game.publisher}"></p>
-                <p th:text="'Release date: ' + ${game.releaseDate}"></p>
+                <p th:text="#{genre} + ': ' + ${game.genre}"></p>
+                <p th:text="#{publisher} + ': ' + ${game.publisher}"></p>
+                <p th:text="#{releaseDate} + ': ' + ${game.releaseDate}"></p>
                 <div class="price-box">
 
                     <!-- Display price or "Free" -->
                     <h5 th:if="${!gamesInLibrary[game.id]}"
-                        th:text="${game.price == 0} ? 'Free' : ${game.price} + ' лв.'">
+                        th:text="${game.price == 0} ? #{free} : ${game.price} + ' лв.'">
                     </h5>
 
                     <!-- Message for games already in the library -->
-                    <h5 th:if="${gamesInLibrary[game.id]}" class="already-in-library">
+                    <h5 th:if="${gamesInLibrary[game.id]}" class="already-in-library" th:text="#{gameAlreadyInLibrary}">
                         Game is already in your library
                     </h5>
 
@@ -32,7 +32,7 @@
                     <form th:if="${!gamesInLibrary[game.id] && game.price == 0}"
                           th:action="@{/user/add-to-library/{id}(id=${game.id})}"
                           th:method="POST">
-                        <button type="submit" class="btn success">Add to library</button>
+                        <button type="submit" class="btn success" th:text="#{addToLibrary}">Add to library</button>
                     </form>
 
                     <form th:if="${!gamesInLibrary[game.id] && game.price != 0}"
@@ -40,7 +40,7 @@
                           th:method="POST">
                         <button th:disabled="${gamesInShoppingCart[game.id]}"
                                 type="submit" class="btn success"
-                                th:text="${gamesInShoppingCart[game.id]} ? 'In cart' : 'Add to cart'">
+                                th:text="${gamesInShoppingCart[game.id]} ? #{inCart} : #{addToCart}">
                         </button>
                     </form>
                 </div>
@@ -52,15 +52,15 @@
             <div class="modal-toolbar">
                 <button id="close-button" onclick="closeGameModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="dialog-content">Added to your cart!</div>
+            <div class="dialog-content" th:text="#{addedToCart}">Added to your cart!</div>
             <div class="modal-game-content">
                 <img id="modal-image" src="" alt="Game Image">
                 <h1 id="modal-title"></h1>
                 <p id="modal-price"></p>
             </div>
             <div class="modal-buttons">
-                <button onclick="closeGameModal()">Continue Shopping</button>
-                <a href="/user/shopping-cart">View My Cart</a>
+                <button onclick="closeGameModal()" th:text="#{continueShopping}">Continue Shopping</button>
+                <a href="/user/shopping-cart" th:text="#{viewCart}">View My Cart</a>
             </div>
         </div>
     </div>
@@ -128,8 +128,14 @@
                     method: 'POST',
                 })
                 .then(response => {
+                    if (response.redirected) {
+                        // Redirect to the login page if the user is not authenticated
+                        window.location.href = response.url;
+                        return;
+                    }
+
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error(`Network response was not ok, status: ${response.status}`);
                     }
                     return response.json(); // Parse the JSON response
                 })

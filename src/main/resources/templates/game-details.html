@@ -6,7 +6,7 @@
 <body>
 <main>
     <button class="btn btn-back" onclick="window.history.back()" style="top: 1rem">
-        <i class="fa-solid fa-arrow-left-long"></i> Back to store</button>
+        <i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{backToStore}">Back to store</span></button>
     <div class="game-details-wrapper">
         <div class="game-details">
             <div class="video-section">
@@ -21,34 +21,34 @@
                 <div class="game-description">
                     <p th:text="${game.description}">This is a brief description of the game. Immerse yourself in an
                         epic adventure with stunning visuals and engaging gameplay.</p>
-                    <p th:text="'Release date: ' + ${game.releaseDate}">Release date: </p>
-                    <p th:text="'Developer: ' + ${game.publisher}">Developer: </p>
+                    <p th:text="#{releaseDate} + ': ' + ${game.releaseDate}">Release date: </p>
+                    <p th:text="#{publisher} + ': ' + ${game.publisher}">Developer: </p>
                 </div>
             </div>
         </div>
         <div class="purchase-wrapper">
-            <h1 th:text="'Buy ' + ${game.title}">Buy Farming Simulator 22</h1>
+            <h1 th:text="#{buy} + ' ' + ${game.title}">Buy Farming Simulator 22</h1>
             <div class="purchase-action">
                 <div class="price">
-                    <h5 th:if="${isInLibrary}" class="already-in-library">Game is already in your library</h5>
+                    <h5 th:if="${isInLibrary}" class="already-in-library" th:text="#{gameAlreadyInLibrary}">Game is already in your library</h5>
                     <p th:unless="${isInLibrary}" th:text="${game.price} + '&nbsp;лв.'">69.99$</p>
                 </div>
                 <div class="btn-add-to-cart">
                     <form th:if="${!isInLibrary && game.price != 0}"
                           th:action="@{/game-details/add-to-cart/{id}(id=${game.id})}" th:method="POST">
-                        <button type="submit" class="btn success" th:text="${isInCart} ? 'In cart' : 'Add to cart'">Add
+                        <button type="submit" class="btn success" th:text="${isInCart} ? #{inCart} : #{addToCart}">Add
                             to cart
                         </button>
                     </form>
                     <form th:if="${!isInLibrary && game.price == 0}"
                           th:action="@{/user/add-to-library/{id}(id=${game.id})}" th:method="POST">
-                        <button type="submit" class="btn success">Add to library</button>
+                        <button type="submit" class="btn success" th:text="#{addToLibrary}">Add to library</button>
                     </form>
                 </div>
             </div>
         </div>
         <section class="comments">
-            <h4 th:text="'Comments ' + ${comments.size()}"></h4>
+            <h4 th:text="#{comments} + ' ' + ${comments.size()}"></h4>
 
             <div th:each="comment: ${comments}" class="comment">
                 <div class="user-group">
@@ -61,9 +61,9 @@
 
             <div th:if="${@userHelperService.isAuthenticated()}">
                 <form id="post-comment" th:method="POST" th:action="@{/game-details/post-comment/{id}(id=${game.id})}">
-                    <label for="comment">Leave Comment</label>
+                    <label for="comment" th:text="#{leaveComment}">Leave Comment</label>
                     <textarea id="comment" name="comment" cols=70 rows=4></textarea>
-                    <button type="submit" class="btn-submit">Post</button>
+                    <button type="submit" class="btn-submit" th:text="#{post}">Post</button>
                 </form>
                 <script>
                     // Save scroll position before reload
