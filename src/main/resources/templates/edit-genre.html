@@ -6,36 +6,36 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'admin'})}"></header>
 <div class="content-wrapper">
     <div class="sidebar">
-        <h2 class="sidebar-heading">Settings</h2>
-        <a th:href="@{/admin/users}">User management</a>
-        <a th:href="@{/admin/games}" class="active">Game management</a>
+        <h2 class="sidebar-heading" th:text="#{settings}">Settings</h2>
+        <a th:href="@{/admin/users}" th:text="#{userManagement}">User management</a>
+        <a th:href="@{/admin/games}" class="active" th:text="#{gameManagement}">Game management</a>
         <div id="dropdown-container" class="dropdown-container">
-            <a th:href="@{/admin/games}">Games</a>
-            <a th:href="@{/admin/genres}" class="active">Genres</a>
+            <a th:href="@{/admin/games}" th:text="#{games}">Games</a>
+            <a th:href="@{/admin/genres}" class="active" th:text="#{genres}">Genres</a>
         </div>
-        <a th:href="@{/admin/orders}">Orders</a>
+        <a th:href="@{/admin/orders}" th:text="#{orders}">Orders</a>
     </div>
     <div class="dashboard">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">Edit Genre</h1>
-            <a th:href="@{/admin/genres}"><i class="fa-solid fa-arrow-left-long"></i> Back</a>
+            <h1 class="dashboard-title" th:text="#{editGenre}">Edit Genre</h1>
+            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{back}"></span></a>
         </div>
         <form class="admin-panel-form" th:action="@{/admin/genre/edit}" th:object="${updateGenreBindingModel}" method="post">
             <fieldset>
                 <legend>Genre Information</legend>
                 <input id="genre-id" type="hidden" th:field="*{id}">
                 <div class="input-group">
-                    <label for="genreName">Name</label>
+                    <label for="genreName" th:text="#{name}">Name</label>
                     <input id="genreName" type="text" th:field="*{name}">
                     <small th:errors="*{name}" class="text-danger">Name error message</small>
                 </div>
                 <div class="input-group">
-                    <label for="description">Description</label>
+                    <label for="description" th:text="#{description}">Description</label>
                     <textarea id="description" th:field="*{description}" rows="5" cols="43"></textarea>
                     <small th:errors="*{description}" class="text-danger">Description error message</small>
                 </div>
                 <div>
-                    <button type="submit" class="btn-submit">Add</button>
+                    <button type="submit" class="btn-submit" th:text="#{update}">Update</button>
                 </div>
             </fieldset>
         </form>

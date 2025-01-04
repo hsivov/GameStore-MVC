@@ -120,7 +120,9 @@ ul li {
     margin-right: 10px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .user p{
@@ -344,7 +346,7 @@ input, select {
 }
 
 .sidebar {
-    width: 20%;
+    width: 380px;
     background-color: #395688;
 }
 
@@ -396,7 +398,7 @@ a.active{
 }
 
 .dashboard {
-    width: 80%;
+    width: 100%;
     padding: 3rem 4rem;
     background-color: white;
 }
@@ -473,9 +475,10 @@ table td {
 }
 
 .btn-link {
+    display: inline-block;
     text-decoration: none;
     color: white;
-    padding: 0.5rem 0.75rem;
+    padding: 5px 20px;
     border-radius: 4px;
 }
 

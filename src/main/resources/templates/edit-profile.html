@@ -5,12 +5,14 @@
 <body>
 <div th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></div>
 <div class="container">
-    <button class="btn btn-back" onclick="window.history.back()"><i class="fa-solid fa-arrow-left-long"></i> Back to profile</button>
+    <button class="btn btn-back" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{backToProfile}">Back to profile</span>
+    </button>
     <div class="edit-profile">
-        <h1>Edit Profile</h1>
+        <h1 th:text="#{editProfile}">Edit Profile</h1>
         <form class="form-vertical" th:method="POST" th:action="@{/user/edit-profile}" th:object="${editProfileDTO}">
             <div class="input-group">
-                <label for="firstName">First name</label>
+                <label for="firstName" th:text="#{firstName}">First name</label>
                 <input id="firstName" name="firstName"
                        type="text"
                        th:field="*{firstName}"
@@ -18,7 +20,7 @@
                 <small th:errors="*{firstName}" class="text-danger">{errors.firstName}</small>
             </div>
             <div class="input-group">
-                <label for="lastName">Last name</label>
+                <label for="lastName" th:text="#{lastName}">Last name</label>
                 <input id="lastName" name="lastName"
                        type="text"
                        th:field="*{lastName}"
@@ -26,7 +28,7 @@
                 <small th:errors="*{lastName}" class="text-danger">{errors.lastName}</small>
             </div>
             <div class="input-group">
-                <label for="email">E-mail</label>
+                <label for="email" th:text="#{email}">E-mail</label>
                 <input id="email" name="email"
                        type="email"
                        th:field="*{email}"
@@ -34,7 +36,7 @@
                 <small th:errors="*{email}" class="text-danger">{errors.email}</small>
             </div>
             <div class="input-group">
-                <label for="age">Age</label>
+                <label for="age" th:text="#{age}">Age</label>
                 <input id="age" name="age"
                        type="number"
                        th:field="*{age}"
@@ -42,10 +44,10 @@
                 <small th:errors="*{age}" class="text-danger">{errors.age}</small>
             </div>
             <div class="edit-button-group">
-                <button type="submit" class="btn-submit">
+                <button type="submit" class="btn-submit" th:text="#{save}">
                     Save
                 </button>
-                <button class="btn btn-cancel" onclick="window.history.back()">
+                <button class="btn btn-cancel" onclick="window.history.back()" th:text="#{cancel}">
                     Cancel
                 </button>
             </div>

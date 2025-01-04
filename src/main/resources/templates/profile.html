@@ -7,7 +7,7 @@
 <main>
     <section class="profile">
         <div class="profile-card">
-            <h1>Account Details</h1>
+            <h1 th:text="#{accountDetails}">Account Details</h1>
             <div class="profile-card-img" style="position: relative">
                 <img id="profileImage" th:src="${userProfileViewModel.profileImageUrl ?:'/images/profile.jpg'}"
                      alt="Avatar" width="100">
@@ -24,25 +24,25 @@
             <div class="profile-card-wrapper">
                 <h3 th:text="${userProfileViewModel.role}">Pro</h3>
                 <div class="text-box">
-                    <p>Username</p>
+                    <p th:text="#{username}">Username</p>
                     <p th:text="${userProfileViewModel.username}"></p>
                 </div>
                 <div class="text-box">
-                    <p>Full name</p>
+                    <p th:text="#{fullName}">Full name</p>
                     <p th:text="${userProfileViewModel.firstName} + ' ' + ${userProfileViewModel.lastName}">UI/UX
                         Designer</p>
                 </div>
                 <div class="text-box">
-                    <p>E-mail</p>
+                    <p th:text="#{email}">E-mail</p>
                     <p th:text="${userProfileViewModel.email}">UI/UX Designer</p>
                 </div>
                 <div class="text-box">
-                    <p>Age</p>
+                    <p th:text="#{age}">Age</p>
                     <p th:text="${userProfileViewModel.age}">33</p>
                 </div>
                 <div class="profile-button-group">
-                    <a href="/user/edit-profile">Edit Profile</a>
-                    <a href="/user/change-password">Change Password</a>
+                    <a href="/user/edit-profile" th:text="#{editProfile}">Edit Profile</a>
+                    <a href="/user/change-password" th:text="#{changePassword}">Change Password</a>
                 </div>
                 <div class="social-list">
                     <i class="fab fa-facebook-square"></i>
@@ -51,7 +51,7 @@
                     <i class="fab fa-google"></i>
                 </div>
                 <div style="align-self: center">
-                    <a href="/">Back</a>
+                    <a href="/" th:text="#{back}">Back</a>
                 </div>
             </div>
         </div>

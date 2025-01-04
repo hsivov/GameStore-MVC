@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.service.GameService;
 import org.springframework.stereotype.Controller;
@@ -18,8 +19,8 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String index() {
-
+    public String home(HttpServletRequest request, Model model) {
+        model.addAttribute("currentUrl", request.getRequestURI());
         return "index";
     }
 

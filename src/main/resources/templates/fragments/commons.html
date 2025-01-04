@@ -17,20 +17,20 @@
             </div>
         </a>
         <div class="user">
-            <p th:if="${@userHelperService.isAuthenticated()}" th:text="'Welcome: ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
+            <p th:if="${@userHelperService.isAuthenticated()}" th:text="#{welcome} + ' ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
         </div>
     </div>
     <nav class="navbar">
         <div class="store-nav">
             <ul role="list">
                 <li th:if="${@userHelperService.hasRole('ADMIN')}">
-                    <a th:href="@{/admin/users}" th:classappend="${activeLink == 'admin'} ? 'active'">Admin panel</a>
+                    <a th:href="@{/admin/users}" th:classappend="${activeLink == 'admin'} ? 'active'" th:text="#{adminPanel}">Admin panel</a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a th:href="@{/library}" th:classappend="${activeLink == 'library'} ? 'active'">Library</a>
+                    <a th:href="@{/library}" th:classappend="${activeLink == 'library'} ? 'active'" th:text="#{library}">Library</a>
                 </li>
                 <li>
-                    <a th:classappend="${activeLink == 'store'} ? 'active'" th:href="@{/store}">Store</a>
+                    <a th:classappend="${activeLink == 'store'} ? 'active'" th:href="@{/store}" th:text="#{store}">Store</a>
                 </li>
             </ul>
         </div>
@@ -42,20 +42,28 @@
                         <span class="cart-count" th:text="${@cartHelperService.totalItems}"></span></a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/user/profile}">Profile</a>
+                    <a th:classappend="${activeLink == 'profile'} ? 'active'" th:href="@{/user/profile}" th:text="#{profile}">Profile</a>
                 </li>
                 <li th:unless="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/auth/register}">Sign Up</a>
+                    <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/auth/register}" th:text="#{signup}">Sign Up</a>
                 </li>
                 <li th:unless="${@userHelperService.isAuthenticated()}">
-                    <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/auth/login}">Login</a>
+                    <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/auth/login}" th:text="#{login}">Login</a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <form th:method="POST" th:action="@{/auth/logout}">
-                        <button type="submit" class="btn-logout">Logout</button>
+                        <button type="submit" class="btn-logout" th:text="#{logout}">Logout</button>
                     </form>
                 </li>
             </ul>
+            <div>
+                <form id="languageForm" th:action="@{${currentUrl}}" method="get">
+                    <select name="lang" onchange="document.getElementById('languageForm').submit();">
+                        <option value="en" th:selected="${#locale.language == 'en'}">EN</option>
+                        <option value="bg" th:selected="${#locale.language == 'bg'}">BG</option>
+                    </select>
+                </form>
+            </div>
         </div>
     </nav>
 </header>

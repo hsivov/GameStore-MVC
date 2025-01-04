@@ -6,7 +6,7 @@
 <header th:replace="~{fragments/commons::header(activeLink=${'cart'})}"></header>
 <main>
     <section class="shopping-cart">
-        <div class="shopping-cart-header">Your shopping-cart</div>
+        <div class="shopping-cart-header" th:text="#{yourShoppingCart}">Your shopping-cart</div>
         <div class="shopping-cart-container">
             <th:block th:unless="${@cartHelperService.totalItems == 0}">
             <div class="shopping-cart-products-section">
@@ -17,26 +17,26 @@
                         <p th:text="${game.price}"></p>
                     </div>
                     <form th:action="@{/user/shopping-cart/remove/{id}(id=${game.id})}" th:method="POST" class="remove-item">
-                        <button type="submit">Remove</button>
+                        <button type="submit" th:text="#{remove}">Remove</button>
                     </form>
                 </div>
                 <div class="shopping-card-buttons">
-                    <a href="/store" class="btn-link continue">Continue Shopping</a>
+                    <a href="/store" class="btn-link continue" th:text="#{continueShopping}">Continue Shopping</a>
                     <form th:method="POST" th:action="@{/user/shopping-cart/remove-all}">
-                        <button type="submit" class="remove-all">Remove All Products</button>
+                        <button type="submit" class="remove-all" th:text="#{removeAllProducts}">Remove All Products</button>
                     </form>
                 </div>
             </div>
             <div class="payment-section">
                 <div class="checkout">
-                    <p id="total-price" th:text="'Total price: ' + ${totalPrice}">Total price: 264.73</p>
-                    <p>Vat is included</p>
-                    <a href="/checkout" class="btn-link">Continue to payment</a>
+                    <p id="total-price" th:text="#{totalPrice(${totalPrice})}">Total price: 264.73</p>
+                    <p th:text="#{vat}">Vat is included</p>
+                    <a href="/checkout" class="btn-link" th:text="#{continueToPayment}">Continue to payment</a>
                 </div>
             </div>
             </th:block>
             <th:block th:if="${@cartHelperService.totalItems == 0}">
-                <div class="shopping-cart-empty">
+                <div class="shopping-cart-empty" th:text="#{shoppingCartEmpty}">
                     Your shopping cart is empty!
                 </div>
             </th:block>
