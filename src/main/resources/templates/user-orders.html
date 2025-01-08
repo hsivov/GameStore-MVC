@@ -1,101 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../../../../../../Desktop/orders/style.css">
-    <link rel="stylesheet" href="../../../../../../Desktop/orders/reset.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
 </head>
 <body>
-    <header th:fragment="header(activeLink)">
-        <div class="header-wrapper">
-            <a href="/">
-                <div class="logo">
-                    <h1>Game Store</h1><small>&#169;</small>
-                </div>
-            </a>
-            <div class="user">
-                <p th:if="${@userHelperService.isAuthenticated()}" th:text="#{welcome} + ' ' + ${@userHelperService.getUserDetails().getUsername()}"></p>
-            </div>
-        </div>
-        <nav class="navbar">
-            <div class="store-nav">
-                <ul role="list">
-                    <li th:if="${@userHelperService.hasRole('ADMIN')}">
-                        <a th:href="@{/admin/users}" th:classappend="${activeLink == 'admin'} ? 'active'" th:text="#{adminPanel}">Admin panel</a>
-                    </li>
-                    <li th:if="${@userHelperService.isAuthenticated()}">
-                        <a th:href="@{/library}" th:classappend="${activeLink == 'library'} ? 'active'" th:text="#{library}">Library</a>
-                    </li>
-                    <li>
-                        <a th:classappend="${activeLink == 'store'} ? 'active'" th:href="@{/store}" th:text="#{store}">Store</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="user-nav">
-                <ul role="list">
-                    <li th:if="${@userHelperService.isAuthenticated()}">
-                        <a th:href="@{/user/shopping-cart}">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="cart-count" th:text="${@cartHelperService.totalItems}"></span></a>
-                    </li>
-                    <li th:if="${@userHelperService.isAuthenticated()}">
-                        <div th:classappend="${activeLink == 'profile'} ? 'active'" id="profileSelect">
-                            <span th:text="${@userHelperService.user.username}"></span>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </div>
-                        <div id="dropdown-profile" class="dropdown-profile">
-                            <a th:href="@{/user/profile}" th:text="#{accountDetails}">Account Details</a>
-                            <a th:href="@{/user/orders}" th:text="#{orders}">Orders</a>
-                            <form name="logout" class="logout" th:method="POST" th:action="@{/auth/logout}">
-                                <button type="submit" class="btn-logout" th:text="#{logout}">Logout</button>
-                            </form>
-                        </div>
-                    </li>
-                    <li th:unless="${@userHelperService.isAuthenticated()}">
-                        <a th:classappend="${activeLink == 'register'} ? 'active'" th:href="@{/auth/register}" th:text="#{signup}">Sign Up</a>
-                    </li>
-                    <li th:unless="${@userHelperService.isAuthenticated()}">
-                        <a th:classappend="${activeLink == 'login'} ? 'active'" th:href="@{/auth/login}" th:text="#{login}">Login</a>
-                    </li>
-                </ul>
-                <div>
-                    <form id="languageForm" th:action="@{${currentUrl}}" method="get">
-                        <select name="lang" onchange="document.getElementById('languageForm').submit();">
-                            <option value="en" th:selected="${#locale.language == 'en'}">EN</option>
-                            <option value="bg" th:selected="${#locale.language == 'bg'}">BG</option>
-                        </select>
-                    </form>
-                </div>
-            </div>
-        </nav>
-    <script>
-        document.getElementById('profileSelect').addEventListener('click', function (event) {
-            const dropdown = document.getElementById('dropdown-profile');
-    
-            if (dropdown.classList.contains('visible')) {
-                dropdown.classList.remove('visible');
-            } else {
-                dropdown.classList.add('visible');
-            }
-    
-            event.stopPropagation();
-        });
-    
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (event) {
-            const dropdown = document.getElementById('dropdown-profile');
-            const profileSelect = document.getElementById('profileSelect');
-    
-            // Close the dropdown if the click is outside the dropdown or the button
-            if (!dropdown.contains(event.target) && !profileSelect.contains(event.target)) {
-                dropdown.classList.remove('visible');
-            }
-        });
-    </script>
-    </header>
+    <header th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></header>
     <div class="account">
         <div class="account-header">
             <h2>hristo's Purchase History</h2>
@@ -110,7 +18,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr id="more_history" style="display: none"></tr>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.orderDate}">02.01.2025 13:58</td>
+                        <td>
+                            <div th:each="item: ${order.boughtGames}" th:text="${item.title}">Farming Simulator 25</div>
+                        </td>
+                        <td th:text="${order.totalPrice} + ' ' + #{lv}">$250</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

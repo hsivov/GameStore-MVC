@@ -422,6 +422,16 @@ input, select {
     font-size: 1.5rem;
 }
 
+.purchase_history_table th{
+    background: #0197cf;
+}
+
+.purchase_history_table td{
+    color: white;
+}
+
+/*Admin panel*/
+
 .sidebar a{
     display: block;
     text-decoration: none;
