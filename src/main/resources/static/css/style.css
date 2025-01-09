@@ -5,7 +5,9 @@
 }
 
 body {
-    font-family: 'Monserat', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
     background-color: #1b2838;
 }
 
@@ -129,6 +131,45 @@ ul li {
     padding: 10px;
     font-size: 1.2rem;
     color: white;
+}
+
+#profileSelect {
+    color: white;
+    font-size: 1.75rem;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+.dropdown-profile {
+    width: 180px;
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: #3D4450;
+    box-shadow: 0 0 12px #000000;
+    right: 90px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.visible {
+    max-height: 200px;
+}
+
+.dropdown-profile > a{
+    font-size: 1.25rem;
+}
+
+.dropdown-profile > a:hover {
+    background: #b8b6b4;
+    color: #1c1e23;
+}
+
+.dropdown-profile button:hover {
+    color: #1c1e23;
+    background: #b8b6b4;
 }
 
 main {
@@ -334,10 +375,33 @@ input, select {
 
 .btn-logout {
     color: white;
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     background: transparent;
     border: none;
     cursor: pointer;
+    padding: 5px 10px;
+    width: 100%;
+    text-align: left;
+}
+
+/* Account purchase history */
+.account {
+    width: 940px;
+    margin: 0 auto;
+}
+
+.account-header {
+    color: white;
+    background-color: #223d59;
+    padding: 2rem 2rem;
+}
+
+.account-header h2 {
+    font-size: 1.75rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 0 rgba( 0, 0, 0, 0.4 );
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .content-wrapper {
@@ -357,6 +421,16 @@ input, select {
     font-weight: 400;
     font-size: 1.5rem;
 }
+
+.purchase_history_table th{
+    background: #0197cf;
+}
+
+.purchase_history_table td{
+    color: white;
+}
+
+/*Admin panel*/
 
 .sidebar a{
     display: block;

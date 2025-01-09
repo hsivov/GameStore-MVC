@@ -4,13 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
+import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
-import org.example.gamestoreapp.service.AuthService;
-import org.example.gamestoreapp.service.GameService;
-import org.example.gamestoreapp.service.ShoppingCartService;
-import org.example.gamestoreapp.service.UserService;
+import org.example.gamestoreapp.service.*;
 import org.example.gamestoreapp.service.session.CartHelperService;
+import org.example.gamestoreapp.service.session.UserHelperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,8 +23,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -36,16 +38,20 @@ public class UserController {
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
     private final CartHelperService cartHelperService;
+    private final OrderService orderService;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final AuthService authService;
+    private final UserHelperService userHelperService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, AuthService authService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, OrderService orderService, AuthService authService, UserHelperService userHelperService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
         this.cartHelperService = cartHelperService;
+        this.orderService = orderService;
         this.authService = authService;
+        this.userHelperService = userHelperService;
     }
 
     @GetMapping("/profile")
@@ -170,5 +176,21 @@ public class UserController {
     public String shoppingCartRemoveAll() {
         shoppingCartService.removeAll();
         return "redirect:/user/shopping-cart";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+        long userId = userHelperService.getUser().getId();
+        List<OrderResponseDTO> orders = orderService.getOrdersByUser(userId);
+
+        model.addAttribute("orders", orders);
+        return "user-orders";
+    }
+
+    @GetMapping("/order/{orderId}")
+    public String getOrderDetails(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+        OrderResponseDTO order = orderService.getOrderById(id);
+        model.addAttribute("order", order);
+        return "order-details";
     }
 }

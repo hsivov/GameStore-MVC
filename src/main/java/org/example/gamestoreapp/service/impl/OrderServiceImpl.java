@@ -69,6 +69,26 @@ public class OrderServiceImpl implements OrderService {
         return response.getBody();
     }
 
+    @Override
+    public List<OrderResponseDTO> getOrdersByUser(long userId) throws NoSuchAlgorithmException, InvalidKeyException {
+        String endpoint = "/api/orders/customer/" + userId;
+        String url = orderServiceUrl + endpoint;
+        String method = "GET";
+
+        HttpHeaders headers = setHeaders(method, endpoint);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<OrderResponseDTO[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO[].class);
+
+        OrderResponseDTO[] responseBody = response.getBody();
+
+        if (responseBody == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(responseBody);
+    }
+
     private HttpHeaders setHeaders(String method, String endpoint) throws NoSuchAlgorithmException, InvalidKeyException {
         HttpHeaders headers = new HttpHeaders();
         String timestamp = String.valueOf(Instant.now().getEpochSecond());

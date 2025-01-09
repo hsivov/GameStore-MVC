@@ -10,4 +10,6 @@ public interface OrderService {
     List<OrderResponseDTO> getAllOrders() throws NoSuchAlgorithmException, InvalidKeyException;
 
     OrderResponseDTO getOrderById(long id) throws NoSuchAlgorithmException, InvalidKeyException;
+
+    List<OrderResponseDTO> getOrdersByUser(long userId) throws NoSuchAlgorithmException, InvalidKeyException;
 }
