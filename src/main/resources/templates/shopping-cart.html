@@ -14,7 +14,7 @@
                     <div class="product-content">
                         <img th:src="${game.imageUrl}" alt="Game Image">
                         <h1 th:text="${game.title}"></h1>
-                        <p th:text="${game.price}"></p>
+                        <p th:text="${game.price} + ' ' + #{lv}"></p>
                     </div>
                     <form th:action="@{/user/shopping-cart/remove/{id}(id=${game.id})}" th:method="POST" class="remove-item">
                         <button type="submit" th:text="#{remove}">Remove</button>
@@ -29,7 +29,7 @@
             </div>
             <div class="payment-section">
                 <div class="checkout">
-                    <p id="total-price" th:text="#{totalPrice(${totalPrice})}">Total price: 264.73</p>
+                    <p id="total-price" th:text="#{totalPrice(${totalPrice}, #{lv})}">Total price: 264.73</p>
                     <p th:text="#{vat}">Vat is included</p>
                     <a href="/checkout" class="btn-link" th:text="#{continueToPayment}">Continue to payment</a>
                 </div>

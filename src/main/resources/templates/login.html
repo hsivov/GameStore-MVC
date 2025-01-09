@@ -35,7 +35,7 @@
                 </div>
             </form>
             <div class="create-account">
-                <p th:utext="#{createAccountMessage('@{/auth/register}', #{createAccount})}"></p>
+                <p style="display: inline" th:text="#{createAccountMessage} + ' '"></p><a th:href="@{/auth/register}" th:text="#{createAccount}"></a>
             </div>
         </div>
     </main>

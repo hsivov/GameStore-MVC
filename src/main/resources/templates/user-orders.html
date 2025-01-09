@@ -6,7 +6,7 @@
     <header th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></header>
     <div class="account">
         <div class="account-header">
-            <h2>hristo's Purchase History</h2>
+            <h2 th:text="#{purchaseHistory(${@userHelperService.user.username})}">hristo's Purchase History</h2>
         </div>
         <div class="account-content">
             <table class="purchase_history_table">
@@ -15,6 +15,7 @@
                         <th rowspan="2" class="wht_date">Date</th>
                         <th rowspan="2" class="wht_items">Items</th>
                         <th rowspan="2" class="wht_total">Total</th>
+                        <th rowspan="2" class="wht_details">Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,6 +25,11 @@
                             <div th:each="item: ${order.boughtGames}" th:text="${item.title}">Farming Simulator 25</div>
                         </td>
                         <td th:text="${order.totalPrice} + ' ' + #{lv}">$250</td>
+                        <td>
+                            <a class="btn-link continue"
+                               th:href="@{/user/order/{id}(id=${order.id})}"
+                               th:text="#{viewDetails}"></a>
+                        </td>
                     </tr>
                 </tbody>
             </table>

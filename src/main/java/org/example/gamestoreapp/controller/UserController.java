@@ -186,4 +186,11 @@ public class UserController {
         model.addAttribute("orders", orders);
         return "user-orders";
     }
+
+    @GetMapping("/order/{orderId}")
+    public String getOrderDetails(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+        OrderResponseDTO order = orderService.getOrderById(id);
+        model.addAttribute("order", order);
+        return "order-details";
+    }
 }
