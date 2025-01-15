@@ -72,17 +72,20 @@
         </div>
     </nav>
 <script>
-    document.getElementById('profileSelect').addEventListener('click', function (event) {
-        const dropdown = document.getElementById('dropdown-profile');
+    const profileSelect = document.getElementById('profileSelect');
+    if (profileSelect) {
+        profileSelect.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('dropdown-profile');
 
-        if (dropdown.classList.contains('visible')) {
-            dropdown.classList.remove('visible');
-        } else {
-            dropdown.classList.add('visible');
-        }
+            if (dropdown.classList.contains('visible')) {
+                dropdown.classList.remove('visible');
+            } else {
+                dropdown.classList.add('visible');
+            }
 
-        event.stopPropagation();
-    });
+            event.stopPropagation();
+        });
+    }
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function (event) {
@@ -96,5 +99,38 @@
     });
 </script>
 </header>
+<footer>
+    <div class="footer-content">
+        <div class="rule"></div>
+        <div id="footer-logo">
+            <div id="logo">Game Store</div>
+        </div>
+        <div id="footer-text">
+            <div>© 2024 Game Store Ltd. Всички права запазени. Всички марки са собственост на съответните им собственици в и извън САЩ.</div>
+            <div>ДДС е вкл. за всички цени, където е приложимо.</div>
+        </div>
+        <div class="rule"></div>
+        <div class="footer-links">
+            <a>
+                About Us
+            </a>
+            <a href='/contacts'>
+                Contact Us
+            </a>
+            <a>
+                Support
+            </a>
+            <a>
+                Gift Cards
+            </a>
+            <a>
+                <i class="fa-brands fa-facebook"></i>Game Store
+            </a>
+            <a>
+                <i class="fa-brands fa-x-twitter"></i>@gamestore
+            </a>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
