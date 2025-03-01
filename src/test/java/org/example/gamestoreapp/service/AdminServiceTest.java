@@ -3,6 +3,7 @@ package org.example.gamestoreapp.service;
 import org.example.gamestoreapp.exception.FileUploadException;
 import org.example.gamestoreapp.exception.GenreNotFoundException;
 import org.example.gamestoreapp.model.dto.AddGameBindingModel;
+import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.Genre;
@@ -12,6 +13,7 @@ import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.AdminServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,9 +24,10 @@ import org.modelmapper.ModelMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -48,8 +51,18 @@ public class AdminServiceTest {
     @InjectMocks
     private AdminServiceImpl adminService;
 
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User();
+        user.setId(1L);
+        user.setRole(UserRole.USER);
+        user.setEnabled(false);
+    }
+
     @Test
-    public void testAddGame_Success() throws IOException {
+    void testAddGame_Success() throws IOException {
         AddGameBindingModel addGameBindingModel = new AddGameBindingModel();
         addGameBindingModel.setTitle("Test Title");
         addGameBindingModel.setDescription("Test Description");
@@ -79,7 +92,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void testAddGame_WhenGenreNotFound_ShouldThrowException() {
+    void testAddGame_WhenGenreNotFound_ShouldThrowException() {
         // Given
         AddGameBindingModel addGameBindingModel = new AddGameBindingModel();
         addGameBindingModel.setGenre("NonExistingGenre");
@@ -93,7 +106,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void testAddGame_WhenFileUploadFails_ShouldThrowException() throws IOException {
+    void testAddGame_WhenFileUploadFails_ShouldThrowException() throws IOException {
         // Given
         AddGameBindingModel addGameBindingModel = new AddGameBindingModel();
         addGameBindingModel.setImageUrl("https://example.com/test-image.jpg");
@@ -116,7 +129,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void testGetAllUsers_ShouldReturnUserDTOList() {
+    void testGetAllUsers_ShouldReturnUserDTOList() {
         User user1 = new User();
         user1.setId(1L);
         user1.setFirstName("First Name 1");
@@ -131,7 +144,7 @@ public class AdminServiceTest {
         user2.setEmail("user2@email.com");
         user2.setRole(UserRole.USER);
 
-        List<User> mockUsers = Arrays.asList(user1, user2);
+        List<User> mockUsers = List.of(user1, user2);
 
         UserDTO userDTO1 = new UserDTO();
         userDTO1.setId(1L);
@@ -146,7 +159,7 @@ public class AdminServiceTest {
         userDTO2.setEmail("user2@email.com");
         userDTO2.setRole(UserRole.USER);
 
-        List<UserDTO> expectedUserDTOList = Arrays.asList(userDTO1, userDTO2);
+        List<UserDTO> expectedUserDTOList = List.of(userDTO1, userDTO2);
 
         when(userRepository.findAll()).thenReturn(mockUsers);
 
@@ -155,10 +168,112 @@ public class AdminServiceTest {
 
         List<UserDTO> actualUserDTOList = adminService.getAllUsers();
 
-        assertEquals(2, actualUserDTOList.size());
-        assertEquals(expectedUserDTOList, actualUserDTOList);
+        assertThat(actualUserDTOList)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedUserDTOList);
 
         verify(userRepository, times(1)).findAll();
         verify(modelMapper, times(2)).map(any(User.class), eq(UserDTO.class));
+    }
+
+    @Test
+    void testPromote_UserExist() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        adminService.promote(1L);
+
+        assertEquals(UserRole.ADMIN, user.getRole());
+
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void testPromote_UserNotExist() {
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+
+        adminService.promote(2L);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testDemote_UserExist() {
+        user.setRole(UserRole.ADMIN);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        adminService.demote(1L);
+
+        assertEquals(UserRole.USER, user.getRole());
+
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void testDemote_UserNotExist() {
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+
+        adminService.demote(2L);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testToggleUserState_UserExist() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        adminService.toggleUserState(1L);
+        assertTrue(user.isEnabled());
+
+        adminService.toggleUserState(1L);
+        assertFalse(user.isEnabled());
+
+        verify(userRepository, times(2)).save(user);
+    }
+
+    @Test
+    void testToggleUserState_UserNotExist() {
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+
+        adminService.toggleUserState(2L);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testGetAllGames_ShouldReturnGameDTOList() {
+        Game game1 = new Game();
+        game1.setId(1L);
+        game1.setTitle("Title1");
+
+        Game game2 = new Game();
+        game2.setId(2L);
+        game2.setTitle("Title2");
+
+        List<Game> mockGames = List.of(game1, game2);
+
+        GameDTO gameDTO1 = new GameDTO();
+        gameDTO1.setId(1L);
+        gameDTO1.setTitle("Title1");
+
+        GameDTO gameDTO2 = new GameDTO();
+        gameDTO2.setId(2L);
+        gameDTO2.setTitle("Title2");
+
+        List<GameDTO> expectedGameDTOList = List.of(gameDTO1, gameDTO2);
+
+        when(gameRepository.findAll()).thenReturn(mockGames);
+
+        when(modelMapper.map(game1, GameDTO.class)).thenReturn(gameDTO1);
+        when(modelMapper.map(game2, GameDTO.class)).thenReturn(gameDTO2);
+
+        List<GameDTO> actualGameDTOList = adminService.getAllGames();
+
+        assertThat(actualGameDTOList)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedGameDTOList);
+
+        verify(gameRepository, times(1)).findAll();
+        verify(modelMapper, times(2)).map(any(Game.class), eq(GameDTO.class));
     }
 }
