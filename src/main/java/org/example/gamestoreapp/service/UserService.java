@@ -13,8 +13,6 @@ public interface UserService {
 
     UserProfileViewModel viewProfile();
 
-    String uploadProfileImage(MultipartFile file, String containerName) throws IOException;
-
     Optional<UserDTO> getUserById(Long userId);
 
     EditProfileDTO getUserProfile();

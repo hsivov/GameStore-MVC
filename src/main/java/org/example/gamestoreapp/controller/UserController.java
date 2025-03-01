@@ -43,8 +43,9 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final AuthService authService;
     private final UserHelperService userHelperService;
+    private final AzureBlobStorageService azureBlobStorageService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, OrderService orderService, AuthService authService, UserHelperService userHelperService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
@@ -52,6 +53,7 @@ public class UserController {
         this.orderService = orderService;
         this.authService = authService;
         this.userHelperService = userHelperService;
+        this.azureBlobStorageService = azureBlobStorageService;
     }
 
     @GetMapping("/profile")
@@ -69,7 +71,7 @@ public class UserController {
         log.info("Request received from: {}", request.getRemoteAddr());
         log.info("File name: {}", file.getOriginalFilename());
         try {
-            String profileImageUrl = userService.uploadProfileImage(file, "profile-images");
+            String profileImageUrl = azureBlobStorageService.uploadToAzureBlobStorage(file, "profile-images");
             log.info("File uploaded successfully. URL: {}", profileImageUrl);
 
             return ResponseEntity.status(HttpStatus.CREATED)
