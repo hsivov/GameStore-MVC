@@ -105,7 +105,7 @@ public class AdminController {
     @GetMapping("/game/edit/{id}")
     public ModelAndView editGame(@PathVariable("id") Long id) {
         ModelAndView modelAndView = new ModelAndView("edit-game");
-        UpdateGameBindingModel bindingModel = adminService.getById(id);
+        UpdateGameBindingModel bindingModel = adminService.getGameById(id);
 
         modelAndView.addObject("bindingModel", bindingModel);
         modelAndView.addObject("genres", adminService.getAllGenres());

@@ -43,8 +43,8 @@ public class AdminServiceImpl implements AdminService {
             throw new GenreNotFoundException("Genre '" + addGameBindingModel.getGenre() + "' not found");
         }
 
-        String imageBlobUrl = null;
-        String videoBlobUrl = null;
+        String imageBlobUrl;
+        String videoBlobUrl;
 
         try {
             imageBlobUrl = azureBlobStorageService.uploadToAzureBlobStorage(addGameBindingModel.getImageUrl(), "images");
@@ -120,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UpdateGameBindingModel getById(Long id) {
+    public UpdateGameBindingModel getGameById(Long id) {
         Game game = gameRepository.findById(id)
                 .orElse(null);
         return modelMapper.map(game, UpdateGameBindingModel.class);
@@ -133,6 +133,11 @@ public class AdminServiceImpl implements AdminService {
         if (optionalGame.isPresent()) {
             Game game = optionalGame.get();
             Genre genre = genreRepository.findByName(updateGameBindingModel.getGenre());
+
+            if (genre == null) {
+                throw new GenreNotFoundException("Genre '" + updateGameBindingModel.getGenre() + "' was not found");
+            }
+
             String imageBlobUrl = updateGameBindingModel.getImageUrl();
             String videoBlobUrl = updateGameBindingModel.getVideoUrl();
 
