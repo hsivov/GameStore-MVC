@@ -9,7 +9,7 @@ import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
-import org.example.gamestoreapp.repository.TokenRepository;
+import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.EmailService;
@@ -29,23 +29,28 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final UserHelperService userHelperService;
     private final EmailService emailService;
     private final TokenService tokenService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
-    private final TokenRepository tokenRepository;
 
     @Value("${app.domain.name}")
     private String domain;
 
-    public AuthServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, UserHelperService userHelperService, EmailService emailService, TokenService tokenService, TokenRepository tokenRepository) {
+    public AuthServiceImpl(PasswordEncoder passwordEncoder,
+                           UserRepository userRepository,
+                           UserHelperService userHelperService,
+                           EmailService emailService,
+                           TokenService tokenService,
+                           ConfirmationTokenRepository confirmationTokenRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
         this.emailService = emailService;
         this.tokenService = tokenService;
-        this.tokenRepository = tokenRepository;
+        this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
     @Override
@@ -108,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO, String resetToken) {
-        Optional<ConfirmationToken> tokenOptional = tokenRepository.findByToken(resetToken);
+        Optional<ConfirmationToken> tokenOptional = confirmationTokenRepository.findByToken(resetToken);
 
         if (tokenOptional.isPresent()) {
             ConfirmationToken token = tokenOptional.get();
@@ -123,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void sendResetPasswordEmail(User user) throws MessagingException {
         ConfirmationToken token = new ConfirmationToken(user);
-        tokenRepository.save(token);
+        confirmationTokenRepository.save(token);
 
         String link = domain + "/auth/confirm/reset-password?token=" + token.getToken();
 
