@@ -1,8 +1,6 @@
 package org.example.gamestoreapp.service.impl;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
+import org.example.gamestoreapp.exception.UserNotFoundException;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
@@ -11,14 +9,8 @@ import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,9 +18,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserHelperService userHelperService;
     private final ModelMapper modelMapper;
-
-    @Value("${azure.storage.connection-string}")
-    private String azureStorageConnectionString;
 
     public UserServiceImpl(UserRepository userRepository,
                            UserHelperService userHelperService,
