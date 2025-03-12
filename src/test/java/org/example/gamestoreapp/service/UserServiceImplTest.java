@@ -1,8 +1,10 @@
 package org.example.gamestoreapp.service;
 
+import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
+import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.UserServiceImpl;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -36,20 +38,21 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userServiceImpl;
 
-    private User user;
+    private User mockUser;
     private UserDTO userDTO;
 
     @BeforeEach
     public void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setUsername("username");
-        user.setPassword("password");
-        user.setEmail("email");
-        user.setFirstName("firstName");
-        user.setLastName("lastName");
-        user.setRole(UserRole.USER);
-        user.setEnabled(true);
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("username");
+        mockUser.setPassword("password");
+        mockUser.setEmail("email");
+        mockUser.setFirstName("firstName");
+        mockUser.setLastName("lastName");
+        mockUser.setRole(UserRole.USER);
+        mockUser.setEnabled(true);
+        mockUser.setAge(25);
 
         userDTO = new UserDTO();
         userDTO.setId(1L);
@@ -62,8 +65,8 @@ public class UserServiceImplTest {
 
     @Test
     void testGetUserById_ShouldReturnUserDTO() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserDTO.class)).thenReturn(userDTO);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
+        when(modelMapper.map(mockUser, UserDTO.class)).thenReturn(userDTO);
 
         UserDTO result = userServiceImpl.getUserById(1L).orElse(null);
 
@@ -76,6 +79,69 @@ public class UserServiceImplTest {
         assertThat(result.isEnabled()).isEqualTo(userDTO.isEnabled());
 
         verify(userRepository, times(1)).findById(1L);
-        verify(modelMapper, times(1)).map(user, UserDTO.class);
+        verify(modelMapper, times(1)).map(mockUser, UserDTO.class);
+    }
+
+    @Test
+    void testGetUserById_NotExist_ShouldReturnNull() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        UserDTO result = userServiceImpl.getUserById(99L).orElse(null);
+
+        assertThat(result).isNull();
+
+        verify(userRepository, times(1)).findById(99L);
+    }
+
+    @Test
+    void testGetUserProfile_ShouldReturnEditProfileDTO() {
+        when(userHelperService.getUser()).thenReturn(mockUser);
+
+        EditProfileDTO result = userServiceImpl.getUserProfile();
+
+        assertNotNull(result);
+        assertEquals(mockUser.getEmail(), result.getEmail());
+        assertEquals(mockUser.getFirstName(), result.getFirstName());
+        assertEquals(mockUser.getLastName(), result.getLastName());
+        assertEquals(mockUser.getAge(), result.getAge());
+
+        verify(userHelperService, times(1)).getUser();
+    }
+
+    @Test
+    void testEditProfile() {
+        when(userHelperService.getUser()).thenReturn(mockUser);
+
+        EditProfileDTO editProfileDTO = new EditProfileDTO();
+        editProfileDTO.setEmail("new@example.com");
+        editProfileDTO.setFirstName("NewFirst");
+        editProfileDTO.setLastName("NewLast");
+        editProfileDTO.setAge(30);
+
+        userServiceImpl.editProfile(editProfileDTO);
+
+        assertEquals("new@example.com", mockUser.getEmail());
+        assertEquals("NewFirst", mockUser.getFirstName());
+        assertEquals("NewLast", mockUser.getLastName());
+        assertEquals(30, mockUser.getAge());
+
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void testViewProfile() {
+        when(userHelperService.getUser()).thenReturn(mockUser);
+
+        UserProfileViewModel result = userServiceImpl.viewProfile();
+
+        assertEquals(mockUser.getUsername(), result.getUsername());
+        assertEquals(mockUser.getRole().toString(), result.getRole());
+        assertEquals(mockUser.getAge(), result.getAge());
+        assertEquals(mockUser.getEmail(), result.getEmail());
+        assertEquals(mockUser.getFirstName(), result.getFirstName());
+        assertEquals(mockUser.getLastName(), result.getLastName());
+        assertEquals(mockUser.getProfileImageUrl(), result.getProfileImageUrl());
+
+        verify(userHelperService, times(1)).getUser();
     }
 }

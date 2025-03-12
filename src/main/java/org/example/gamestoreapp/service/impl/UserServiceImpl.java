@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service.impl;
 
-import org.example.gamestoreapp.exception.UserNotFoundException;
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
