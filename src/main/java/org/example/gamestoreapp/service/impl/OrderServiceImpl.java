@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service.impl;
 
+import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.service.OrderService;
 import org.example.gamestoreapp.util.HMACUtil;
@@ -89,11 +90,39 @@ public class OrderServiceImpl implements OrderService {
         return Arrays.asList(responseBody);
     }
 
+    @Override
+    public OrderResponseDTO sendCreateOrderRequest(CreateOrderRequestDTO createOrderRequest) throws NoSuchAlgorithmException, InvalidKeyException {
+
+        String endpoint = "/api/orders/create";
+        String url = orderServiceUrl + endpoint;
+        String method = "POST";
+
+        // Create headers and set Content-Type to application/json
+        HttpHeaders headers = setHeaders(method, endpoint);
+
+        // Wrap the request and headers in an HttpEntity
+        HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
+
+        // Make POST request to OrderService createOrder endpoint
+        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(url, entity, OrderResponseDTO.class);
+
+        // Check response status and return the OrderResponseDTO
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to create order in OrderService");
+        }
+    }
+
     private HttpHeaders setHeaders(String method, String endpoint) throws NoSuchAlgorithmException, InvalidKeyException {
         HttpHeaders headers = new HttpHeaders();
+
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
 
+        // Construct the payload
         String payload = method + endpoint + timestamp;
+
+        // Generate HMAC signature
         String signature = HMACUtil.generateHMAC(payload, secret);
 
         headers.setContentType(MediaType.APPLICATION_JSON);

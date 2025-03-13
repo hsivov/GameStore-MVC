@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service;
 
+import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 
 import java.security.InvalidKeyException;
@@ -12,4 +13,6 @@ public interface OrderService {
     OrderResponseDTO getOrderById(long id) throws NoSuchAlgorithmException, InvalidKeyException;
 
     List<OrderResponseDTO> getOrdersByUser(long userId) throws NoSuchAlgorithmException, InvalidKeyException;
+
+    OrderResponseDTO sendCreateOrderRequest(CreateOrderRequestDTO createOrderRequest) throws NoSuchAlgorithmException, InvalidKeyException;
 }

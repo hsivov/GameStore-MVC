@@ -10,18 +10,14 @@ import org.example.gamestoreapp.repository.ShoppingCartRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.CheckoutService;
 import org.example.gamestoreapp.service.EmailService;
+import org.example.gamestoreapp.service.OrderService;
 import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
-import org.example.gamestoreapp.util.HMACUtil;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,27 +29,20 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final CartHelperService cartHelperService;
     private final UserRepository userRepository;
     private final EmailService emailService;
-    private final RestTemplate restTemplate;
+    private final OrderService orderService;
 
-    @Value("${order.service.url}")
-    private String orderServiceUrl;
-
-    @Value("${app.api.key}")
-    private String apiKey;
-
-    @Value("${app.api.secret}")
-    private String secret;
-    public static final String HEADER_API_KEY = "X-Api-Key";
-    public static final String HEADER_SIGNATURE = "X-Signature";
-    public static final String HEADER_TIMESTAMP = "X-Timestamp";
-
-    public CheckoutServiceImpl(UserHelperService userHelperService, ShoppingCartRepository shoppingCartRepository, CartHelperService cartHelperService, UserRepository userRepository, EmailService emailService, RestTemplate restTemplate) {
+    public CheckoutServiceImpl(UserHelperService userHelperService,
+                               ShoppingCartRepository shoppingCartRepository,
+                               CartHelperService cartHelperService,
+                               UserRepository userRepository,
+                               EmailService emailService,
+                               OrderService orderService) {
         this.userHelperService = userHelperService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.cartHelperService = cartHelperService;
         this.userRepository = userRepository;
         this.emailService = emailService;
-        this.restTemplate = restTemplate;
+        this.orderService = orderService;
     }
 
     @Override
@@ -76,7 +65,7 @@ public class CheckoutServiceImpl implements CheckoutService {
             createOrderRequest.setPaymentMethod(paymentMethod);
 
             // Send request to OrderService
-            OrderResponseDTO orderResponse = sendRequest(createOrderRequest);
+            OrderResponseDTO orderResponse = orderService.sendCreateOrderRequest(createOrderRequest);
 
             // Send confirmation email
             String subject = "Order Confirmation";
@@ -88,40 +77,6 @@ public class CheckoutServiceImpl implements CheckoutService {
 
             // Update user with owned games
             userRepository.save(currentUser);
-        }
-    }
-
-    private OrderResponseDTO sendRequest(CreateOrderRequestDTO createOrderRequest) throws NoSuchAlgorithmException, InvalidKeyException {
-
-        String endpoint = "/api/orders/create";
-        String url = orderServiceUrl + endpoint;
-        String method = "POST";
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
-
-        // Construct the payload
-        String payload = method + endpoint + timestamp;
-
-        // Generate HMAC signature
-        String signature = HMACUtil.generateHMAC(payload, secret);
-
-        // Create headers and set Content-Type to application/json
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(HEADER_API_KEY, apiKey);
-        headers.set(HEADER_SIGNATURE, signature);
-        headers.set(HEADER_TIMESTAMP, timestamp);
-
-        // Wrap the request and headers in an HttpEntity
-        HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
-
-        // Make POST request to OrderService createOrder endpoint
-        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(url, entity, OrderResponseDTO.class);
-
-        // Check response status and return the OrderResponseDTO
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
-            throw new RuntimeException("Failed to create order in OrderService");
         }
     }
 
