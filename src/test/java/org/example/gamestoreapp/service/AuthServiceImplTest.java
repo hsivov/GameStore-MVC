@@ -9,7 +9,7 @@ import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.entity.User;
-import org.example.gamestoreapp.repository.TokenRepository;
+import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.AuthServiceImpl;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -43,7 +43,7 @@ public class AuthServiceImplTest {
     @Mock
     private TokenService tokenService;
     @Mock
-    private TokenRepository tokenRepository;
+    private ConfirmationTokenRepository tokenRepository;
 
     @InjectMocks
     private AuthServiceImpl authService;

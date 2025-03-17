@@ -10,7 +10,7 @@ import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
-import org.example.gamestoreapp.repository.TokenRepository;
+import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.EmailService;
@@ -33,14 +33,19 @@ public class AuthServiceImpl implements AuthService {
     private final UserHelperService userHelperService;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private final ConfirmationTokenRepository tokenRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
-    private final TokenRepository tokenRepository;
 
     @Value("${app.domain.name}")
     private String domain;
 
-    public AuthServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, UserHelperService userHelperService, EmailService emailService, TokenService tokenService, TokenRepository tokenRepository) {
+    public AuthServiceImpl(PasswordEncoder passwordEncoder,
+                           UserRepository userRepository,
+                           UserHelperService userHelperService,
+                           EmailService emailService,
+                           TokenService tokenService,
+                           ConfirmationTokenRepository tokenRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
