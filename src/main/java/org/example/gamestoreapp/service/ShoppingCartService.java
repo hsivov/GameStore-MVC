@@ -8,7 +8,7 @@ public interface ShoppingCartService {
 
     ShoppingCartDTO getShoppingCart();
 
-    void remove(Long id);
+    void removeItem(Long id);
 
     void removeAll();
 

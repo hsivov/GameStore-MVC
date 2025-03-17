@@ -170,7 +170,7 @@ public class UserController {
 
     @PostMapping("/shopping-cart/remove/{id}")
     public String shoppingCartRemove(@PathVariable Long id) {
-        shoppingCartService.remove(id);
+        shoppingCartService.removeItem(id);
         return "redirect:/user/shopping-cart";
     }
 

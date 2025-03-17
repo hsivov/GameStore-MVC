@@ -66,7 +66,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     @Transactional
-    public void remove(Long gameId) {
+    public void removeItem(Long gameId) {
         User currentUser = userHelperService.getUser();
         ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer(currentUser)
                 .orElseThrow(() -> new RuntimeException("Shopping cart not found"));
