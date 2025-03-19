@@ -140,7 +140,6 @@ public class UserController {
         ShoppingCartDTO shoppingCartDTO = shoppingCartService.getShoppingCart();
 
         model.addAttribute("shoppingCart", shoppingCartDTO);
-        model.addAttribute("totalPrice", shoppingCartDTO.getTotalPrice());
 
         return "shopping-cart";
     }
