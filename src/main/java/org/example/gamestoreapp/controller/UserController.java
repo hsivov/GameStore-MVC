@@ -8,7 +8,6 @@ import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.*;
-import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,6 @@ public class UserController {
     private final UserService userService;
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
-    private final CartHelperService cartHelperService;
     private final OrderService orderService;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -45,11 +43,10 @@ public class UserController {
     private final UserHelperService userHelperService;
     private final AzureBlobStorageService azureBlobStorageService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
-        this.cartHelperService = cartHelperService;
         this.orderService = orderService;
         this.authService = authService;
         this.userHelperService = userHelperService;
@@ -143,7 +140,7 @@ public class UserController {
         ShoppingCartDTO shoppingCartDTO = shoppingCartService.getShoppingCart();
 
         model.addAttribute("shoppingCart", shoppingCartDTO);
-        model.addAttribute("totalPrice", cartHelperService.getTotalPrice());
+        model.addAttribute("totalPrice", shoppingCartDTO.getTotalPrice());
 
         return "shopping-cart";
     }
@@ -153,7 +150,7 @@ public class UserController {
         shoppingCartService.addToCart(gameId);
 
         // Get the updated cart item count after adding the game
-        int totalItems = cartHelperService.getTotalItems();
+        int totalItems = shoppingCartService.getShoppingCart().getTotalItems();
         Map<String, Integer> response = new HashMap<>();
         response.put("totalItems", totalItems);
 

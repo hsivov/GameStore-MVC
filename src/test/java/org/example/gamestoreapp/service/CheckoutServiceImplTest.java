@@ -9,7 +9,6 @@ import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.ShoppingCartRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.CheckoutServiceImpl;
-import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,9 +41,6 @@ public class CheckoutServiceImplTest {
     private UserHelperService userHelperService;
 
     @Mock
-    private CartHelperService cartHelperService;
-
-    @Mock
     private EmailService emailService;
 
     @Mock
@@ -67,8 +63,11 @@ public class CheckoutServiceImplTest {
 
         Game game1 = new Game();
         game1.setId(101L);
+        game1.setPrice(BigDecimal.valueOf(199.99));
         Game game2 = new Game();
         game2.setId(102L);
+        game2.setPrice(BigDecimal.valueOf(299.99));
+
         mockGames = List.of(game1, game2);
 
         mockCart = new ShoppingCart();
@@ -82,7 +81,6 @@ public class CheckoutServiceImplTest {
     void testPayment_Success() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
         when(userHelperService.getUser()).thenReturn(mockUser);
         when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.of(mockCart));
-        when(cartHelperService.getTotalPrice()).thenReturn(BigDecimal.valueOf(199.99));
         when(orderService.sendCreateOrderRequest(any(CreateOrderRequestDTO.class))).thenReturn(mockOrderResponse);
 
         checkoutService.payment("CREDIT_CARD");
@@ -111,7 +109,6 @@ public class CheckoutServiceImplTest {
     void testPayment_EmailFailure() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
         when(userHelperService.getUser()).thenReturn(mockUser);
         when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.of(mockCart));
-        when(cartHelperService.getTotalPrice()).thenReturn(BigDecimal.valueOf(49.99));
         when(orderService.sendCreateOrderRequest(any(CreateOrderRequestDTO.class))).thenReturn(mockOrderResponse);
 
         doThrow(new MessagingException("Email error")).when(emailService).sendEmail(any(), any(), any());

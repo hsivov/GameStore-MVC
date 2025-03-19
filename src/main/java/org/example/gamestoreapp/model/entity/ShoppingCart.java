@@ -5,6 +5,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -31,5 +32,17 @@ public class ShoppingCart extends BaseEntity {
 
     public void setGames(List<Game> games) {
         this.games = games;
+    }
+
+    public int getTotalItems() {
+        return games != null ? games.size() : 0;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return games != null ?
+                games.stream()
+                        .map(Game::getPrice)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                : BigDecimal.ZERO;
     }
 }

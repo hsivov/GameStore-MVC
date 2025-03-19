@@ -11,7 +11,6 @@ import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.CheckoutService;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.OrderService;
-import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,20 +25,17 @@ import java.util.Optional;
 public class CheckoutServiceImpl implements CheckoutService {
     private final UserHelperService userHelperService;
     private final ShoppingCartRepository shoppingCartRepository;
-    private final CartHelperService cartHelperService;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final OrderService orderService;
 
     public CheckoutServiceImpl(UserHelperService userHelperService,
                                ShoppingCartRepository shoppingCartRepository,
-                               CartHelperService cartHelperService,
                                UserRepository userRepository,
                                EmailService emailService,
                                OrderService orderService) {
         this.userHelperService = userHelperService;
         this.shoppingCartRepository = shoppingCartRepository;
-        this.cartHelperService = cartHelperService;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.orderService = orderService;
@@ -60,7 +56,7 @@ public class CheckoutServiceImpl implements CheckoutService {
             CreateOrderRequestDTO createOrderRequest = new CreateOrderRequestDTO();
             createOrderRequest.setCustomerId(currentUser.getId());
             createOrderRequest.setGameIds(games.stream().map(Game::getId).toList());
-            createOrderRequest.setTotalPrice(cartHelperService.getTotalPrice());
+            createOrderRequest.setTotalPrice(shoppingCart.getTotalPrice());
             createOrderRequest.setOrderDate(LocalDateTime.now());
             createOrderRequest.setPaymentMethod(paymentMethod);
 
