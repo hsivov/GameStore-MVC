@@ -66,7 +66,7 @@ public class AdminController {
 
     @GetMapping("/add-game")
     public ModelAndView addGame(Model model) {
-        ModelAndView modelAndView = new ModelAndView("add-game");
+        ModelAndView modelAndView = new ModelAndView("add_game");
         List<GenreDTO> genres = adminService.getAllGenres();
         modelAndView.addObject("genres", genres);
 
@@ -119,11 +119,11 @@ public class AdminController {
                                  RedirectAttributes redirectAttributes) throws IOException {
 
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("editGameBindingModel", updateGameBindingModel);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editGameBindingModel", bindingResult);
+            redirectAttributes.addFlashAttribute("updateGameBindingModel", updateGameBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.updateGameBindingModel", bindingResult);
 
             // handle errors
-            return new ModelAndView("redirect:/admin/game/edit/{id}");
+            return new ModelAndView("redirect:/admin/game/edit/" + updateGameBindingModel.getId());
         }
 
         adminService.editGame(updateGameBindingModel);
@@ -145,7 +145,7 @@ public class AdminController {
             model.addAttribute("addGenreBindingModel", new AddGenreBindingModel());
         }
 
-        return new ModelAndView("add-genre");
+        return new ModelAndView("add_genre");
     }
 
     @PostMapping("/add-genre")
@@ -179,7 +179,7 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("updateGenreBindingModel", updateGenreBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.updateGenreBindingModel", bindingResult);
 
-            return new ModelAndView("redirect:/admin/genre/edit/{id}");
+            return new ModelAndView("redirect:/admin/genre/edit/" + updateGenreBindingModel.getId());
         }
 
         adminService.editGenre(updateGenreBindingModel);
@@ -200,11 +200,11 @@ public class AdminController {
 
         model.addAttribute("orders", allOrders);
 
-        return "orders";
+        return "order-list";
     }
 
     @GetMapping("/order/{orderId}")
-    public String getOrderDetail(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+    public String getOrderDetails(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
         OrderResponseDTO order = orderService.getOrderById(id);
         model.addAttribute("order", order);
         return "order-details";
