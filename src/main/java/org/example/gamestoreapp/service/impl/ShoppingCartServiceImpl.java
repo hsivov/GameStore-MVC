@@ -59,9 +59,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDTO getShoppingCart() {
         User currentUser = userHelperService.getUser();
 
-        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findByCustomer(currentUser);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByCustomer(currentUser)
+                .orElse(new ShoppingCart());
 
-        return modelMapper.map(optionalShoppingCart, ShoppingCartDTO.class);
+        return modelMapper.map(shoppingCart, ShoppingCartDTO.class);
     }
 
     @Override

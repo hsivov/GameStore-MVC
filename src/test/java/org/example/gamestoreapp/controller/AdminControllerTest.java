@@ -201,12 +201,8 @@ public class AdminControllerTest {
         // Set invalid values that will trigger binding validation errors
         invalidModel.setTitle("");  // Assuming the title is required and empty will trigger validation error
 
-        // Create a mock BindingResult with errors
-        BindingResult bindingResult = new BeanPropertyBindingResult(invalidModel, "addGameBindingModel");
-        bindingResult.rejectValue("title", "NotEmpty.addGameBindingModel.title");  // Example error message for the title field
-
-        // Perform the POST request and simulate the BindingResult
-        mockMvc.perform(post("/admin/add-game"))
+        mockMvc.perform(post("/admin/add-game")
+                        .flashAttr("addGameBindingModel", invalidModel))
                 .andExpect(status().is3xxRedirection())  // Expecting a redirection
                 .andExpect(redirectedUrl("/admin/add-game")) // The controller should redirect back to the same page
                 .andExpect(flash().attributeExists("addGameBindingModel"))

@@ -18,7 +18,7 @@
     <div class="dashboard">
         <div class="dashboard-header">
             <h1 class="dashboard-title" th:text="#{editGenre}">Edit Genre</h1>
-            <a th:href="@{/admin/games}"><i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{back}"></span></a>
+            <a th:href="@{/admin/genres}"><i class="fa-solid fa-arrow-left-long"></i> <span th:text="#{back}"></span></a>
         </div>
         <form class="admin-panel-form" th:action="@{/admin/genre/edit}" th:object="${updateGenreBindingModel}" method="post">
             <fieldset>

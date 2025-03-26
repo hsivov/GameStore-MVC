@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
@@ -37,7 +38,7 @@ public class AuthController {
                         Model model) {
 
         if (confirmed != null) {
-            model.addAttribute("message", "Your account is confirmed");
+            model.addAttribute("message", "Your account has been confirmed");
         }
 
         return "login";
@@ -56,7 +57,8 @@ public class AuthController {
     @PostMapping("/register")
     public ModelAndView register(@Valid UserRegisterBindingModel userRegisterBindingModel,
                                  BindingResult bindingResult,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegisterBindingModel", userRegisterBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userRegisterBindingModel", bindingResult);
@@ -69,6 +71,7 @@ public class AuthController {
 
         if (!hasSuccessfulRegistration){
             // If registration failed (user not saved or email not sent), show the registration page with an error
+            response.setStatus(500);
             return new ModelAndView("register", "error", "Registration failed, please try again.");
         }
 
@@ -103,10 +106,10 @@ public class AuthController {
     public String resendConfirmation(@RequestParam("token") String token, RedirectAttributes redirectAttributes) throws MessagingException {
         try {
             authService.resendConfirmationToken(token);
-            return "redirect:/users/login?resendSuccess";
+            return "redirect:/auth/login?resendSuccess";
         } catch (UsedTokenException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
-            return "redirect:/users/login";
+            return "redirect:/auth/login";
         }
     }
 
@@ -122,9 +125,7 @@ public class AuthController {
             model.addAttribute("forgotPasswordDTO", new ForgotPasswordDTO());
         }
 
-        if (message != null && !message.isEmpty()) {
-            model.addAttribute("message", message);
-        }
+        model.addAttribute("message", message);
 
         return "forgotten-password";
     }
@@ -165,17 +166,9 @@ public class AuthController {
             model.addAttribute("resetPasswordDTO", new ResetPasswordDTO());
         }
 
-        if (message != null && !message.isEmpty()) {
-            model.addAttribute("message", message);
-        }
-
-        if (errorMessage != null && !errorMessage.isEmpty()) {
-            model.addAttribute("errorMessage", errorMessage);
-        }
-
-        if (token != null && !token.isEmpty()) {
-            model.addAttribute("token", token);
-        }
+        model.addAttribute("message", message);
+        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("token", token);
 
         return "reset-password";
     }
@@ -198,7 +191,6 @@ public class AuthController {
 
             return "redirect:/auth/login";
         } catch (IllegalTokenException | UsedTokenException | TokenExpiredException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/auth/reset-password?token=" + token;
         }
     }

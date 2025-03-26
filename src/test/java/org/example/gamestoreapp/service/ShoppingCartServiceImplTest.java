@@ -118,13 +118,13 @@ class ShoppingCartServiceImplTest {
 
         when(userHelperService.getUser()).thenReturn(mockUser);
         when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.of(mockShoppingCart));
-        when(modelMapper.map(Optional.of(mockShoppingCart), ShoppingCartDTO.class)).thenReturn(shoppingCartDTO);
+        when(modelMapper.map(mockShoppingCart, ShoppingCartDTO.class)).thenReturn(shoppingCartDTO);
 
         shoppingCartService.getShoppingCart();
 
         verify(userHelperService, times(1)).getUser();
         verify(shoppingCartRepository, times(1)).findByCustomer(mockUser);
-        verify(modelMapper, times(1)).map(Optional.of(mockShoppingCart), ShoppingCartDTO.class);
+        verify(modelMapper, times(1)).map(mockShoppingCart, ShoppingCartDTO.class);
     }
 
     @Test

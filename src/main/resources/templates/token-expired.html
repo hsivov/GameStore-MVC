@@ -12,7 +12,7 @@
         <h2 th:text="${message}">Token Expired</h2>
 
         <p>Your token has expired. Click the button below to receive a new confirmation email.</p>
-        <form th:action="@{/users/resend-confirmation}" th:method="post">
+        <form th:action="@{/auth/resend-confirmation}" th:method="post">
             <input type="hidden" name="token" th:value="${token}"/>
             <button type="submit" class="btn-submit">Resend Confirmation Email</button>
         </form>
