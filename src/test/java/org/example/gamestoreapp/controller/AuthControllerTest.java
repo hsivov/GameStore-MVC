@@ -1,6 +1,6 @@
 package org.example.gamestoreapp.controller;
 
-import org.example.gamestoreapp.config.CustomValidatorTestConfig;
+import org.example.gamestoreapp.config.TestConfig;
 import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.TokenExpiredException;
 import org.example.gamestoreapp.exception.UsedTokenException;
@@ -48,8 +48,8 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        Validator validator = new CustomValidatorTestConfig().validator(authService, userHelperService);
-        ViewResolver viewResolver = new CustomValidatorTestConfig().viewResolver();
+        Validator validator = new TestConfig().validator(authService, userHelperService);
+        ViewResolver viewResolver = new TestConfig().viewResolver();
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(authController)

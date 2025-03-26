@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @TestConfiguration
-public class CustomValidatorTestConfig {
+public class TestConfig {
 
     @Bean
     public Validator validator(AuthService authService, UserHelperService userHelperService) {
