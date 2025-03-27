@@ -1,7 +1,6 @@
 package org.example.gamestoreapp.controller;
 
 import jakarta.validation.Valid;
-import org.example.gamestoreapp.exception.GameNotFoundException;
 import org.example.gamestoreapp.model.dto.CommentDTO;
 import org.example.gamestoreapp.model.dto.GameDTO;
 import org.example.gamestoreapp.model.dto.PostCommentDTO;
@@ -9,11 +8,15 @@ import org.example.gamestoreapp.service.CommentService;
 import org.example.gamestoreapp.service.GameService;
 import org.example.gamestoreapp.service.LibraryService;
 import org.example.gamestoreapp.service.ShoppingCartService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +66,7 @@ public class StoreController {
     @GetMapping("/store/game-details/{id}")
     public String gameDetails(@PathVariable Long id, Model model) {
         GameDTO gameById = gameService.getGameById(id)
-                .orElseThrow(() -> new GameNotFoundException("Game with ID " + id + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with ID " + id + " not found"));
 
         boolean isInLibrary = libraryService.isGameInLibrary(id);
         boolean isInCart = shoppingCartService.isGameInCart(id);
@@ -87,7 +90,11 @@ public class StoreController {
 
     @PostMapping("/game-details/post-comment/{gameId}")
     public String postComment(@PathVariable("gameId") Long gameId,
-                              @Valid PostCommentDTO postCommentDTO) {
+                              @ModelAttribute("postCommentDTO") @Valid PostCommentDTO postCommentDTO,
+                              BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:/store/game-details/{gameId}";
+        }
         commentService.postComment(postCommentDTO, gameId);
 
         return "redirect:/store/game-details/{gameId}";
