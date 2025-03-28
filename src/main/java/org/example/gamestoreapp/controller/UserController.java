@@ -57,7 +57,7 @@ public class UserController {
     public ModelAndView profile() {
         ModelAndView modelAndView = new ModelAndView("profile");
 
-        UserProfileViewModel userProfileViewModel = userService.viewProfile();
+        UserProfileViewModel userProfileViewModel = userService.getProfileView();
         modelAndView.addObject("userProfileViewModel", userProfileViewModel);
 
         return modelAndView;

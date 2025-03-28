@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileViewModel viewProfile() {
+    public UserProfileViewModel getProfileView() {
         User currentUser = userHelperService.getUser();
         UserProfileViewModel userProfileViewModel = new UserProfileViewModel();
 

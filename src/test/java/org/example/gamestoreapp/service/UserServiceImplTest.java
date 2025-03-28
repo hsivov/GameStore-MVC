@@ -129,10 +129,10 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void testViewProfile() {
+    void testGetProfileView_ShouldReturnUserProfileViewModel() {
         when(userHelperService.getUser()).thenReturn(mockUser);
 
-        UserProfileViewModel result = userServiceImpl.viewProfile();
+        UserProfileViewModel result = userServiceImpl.getProfileView();
 
         assertEquals(mockUser.getUsername(), result.getUsername());
         assertEquals(mockUser.getRole().toString(), result.getRole());
