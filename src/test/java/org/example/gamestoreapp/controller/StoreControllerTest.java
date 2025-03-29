@@ -138,14 +138,29 @@ class StoreControllerTest {
     }
 
     @Test
-    void testPostComment() throws Exception {
+    void testPostComment_WithBindingErrors() throws Exception {
+        Long gameId = 1L;
+
+        PostCommentDTO invalidCommentDTO = new PostCommentDTO();
+        invalidCommentDTO.setComment("");
+
+        mockMvc.perform(post("/game-details/post-comment/{id}", gameId)
+                        .flashAttr("postCommentDTO", invalidCommentDTO))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/store/game-details/" + gameId));
+
+        verify(commentService, never()).postComment(invalidCommentDTO, gameId);
+    }
+
+    @Test
+    void testPostComment_SubmitSuccess() throws Exception {
         Long gameId = 1L;
 
         PostCommentDTO validCommentDTO = new PostCommentDTO();
         validCommentDTO.setComment("Test Comment");
 
         mockMvc.perform(post("/game-details/post-comment/{id}", gameId)
-                        .flashAttr("comment", validCommentDTO))
+                        .flashAttr("postCommentDTO", validCommentDTO))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/store/game-details/" + gameId));
 

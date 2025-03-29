@@ -12,6 +12,7 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -72,9 +73,12 @@ public class UserController {
             log.info("File uploaded successfully. URL: {}", profileImageUrl);
 
             return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(Collections.singletonMap("profileImageUrl", profileImageUrl));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Error uploading file: " + e.getMessage());
         }
     }
 
@@ -111,10 +115,6 @@ public class UserController {
             model.addAttribute("changePasswordBindingModel", new ChangePasswordBindingModel());
         }
 
-        if (message != null && !message.isEmpty()) {
-            model.addAttribute("message", message);
-        }
-
         return "change-password";
     }
 
@@ -125,6 +125,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("changePasswordBindingModel", changePasswordBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.changePasswordBindingModel", bindingResult);
+            redirectAttributes.addFlashAttribute("message", "Validation error!");
 
             return "redirect:/user/change-password";
         }
@@ -154,7 +155,9 @@ public class UserController {
         response.put("totalItems", totalItems);
 
         // Return the updated cart count in the response
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @PostMapping("/add-to-library/{id}")

@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidatorFactory;
 
 import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.session.UserHelperService;
+import org.example.gamestoreapp.validation.validator.CorrectPasswordValidator;
 import org.example.gamestoreapp.validation.validator.UniqueEmailValidator;
 import org.example.gamestoreapp.validation.validator.UniqueUsernameValidator;
 import org.example.gamestoreapp.validation.validator.ValidEmailValidator;
@@ -34,6 +35,9 @@ public class TestConfig {
                     }
                     if (key == ValidEmailValidator.class) {
                         return (T) new ValidEmailValidator(authService);
+                    }
+                    if (key == CorrectPasswordValidator.class) {
+                        return (T) new CorrectPasswordValidator(authService);
                     }
                     return key.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
