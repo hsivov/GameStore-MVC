@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.model.dto;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class GameDTO {
     private Long id;
@@ -83,5 +84,26 @@ public class GameDTO {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameDTO gameDTO)) return false;
+
+        return Objects.equals(id, gameDTO.id) &&
+                Objects.equals(title, gameDTO.title) &&
+                Objects.equals(description, gameDTO.description) &&
+                Objects.equals(imageUrl, gameDTO.imageUrl) &&
+                Objects.equals(videoUrl, gameDTO.videoUrl) &&
+                Objects.equals(releaseDate, gameDTO.releaseDate) &&
+                Objects.equals(publisher, gameDTO.publisher) &&
+                Objects.equals(genre, gameDTO.genre) &&
+                Objects.equals(price, gameDTO.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, imageUrl, videoUrl, releaseDate, publisher, genre, price);
     }
 }

@@ -11,7 +11,7 @@ public interface AuthService {
 
     void enableUser(String token);
 
-    void resendConfirmationToken(String email) throws MessagingException;
+    void resendConfirmationToken(String token) throws MessagingException;
 
     boolean isUniqueEmail(String email);
 

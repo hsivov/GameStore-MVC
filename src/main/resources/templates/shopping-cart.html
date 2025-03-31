@@ -8,7 +8,7 @@
     <section class="shopping-cart">
         <div class="shopping-cart-header" th:text="#{yourShoppingCart}">Your shopping-cart</div>
         <div class="shopping-cart-container">
-            <th:block th:unless="${@cartHelperService.totalItems == 0}">
+            <th:block th:unless="${shoppingCart.totalItems == 0}">
             <div class="shopping-cart-products-section">
                 <div th:each="game: ${shoppingCart.games}" class="product">
                     <div class="product-content">
@@ -29,13 +29,13 @@
             </div>
             <div class="payment-section">
                 <div class="checkout">
-                    <p id="total-price" th:text="#{totalPrice(${totalPrice}, #{lv})}">Total price: 264.73</p>
+                    <p id="total-price" th:text="#{totalPrice(${shoppingCart.totalPrice}, #{lv})}">Total price: 264.73</p>
                     <p th:text="#{vat}">Vat is included</p>
                     <a href="/checkout" class="btn-link" th:text="#{continueToPayment}">Continue to payment</a>
                 </div>
             </div>
             </th:block>
-            <th:block th:if="${@cartHelperService.totalItems == 0}">
+            <th:block th:if="${shoppingCart.totalItems == 0}">
                 <div class="shopping-cart-empty" th:text="#{shoppingCartEmpty}">
                     Your shopping cart is empty!
                 </div>

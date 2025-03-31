@@ -8,11 +8,11 @@ import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.*;
-import org.example.gamestoreapp.service.session.CartHelperService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,28 +37,28 @@ public class UserController {
     private final UserService userService;
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
-    private final CartHelperService cartHelperService;
     private final OrderService orderService;
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final AuthService authService;
     private final UserHelperService userHelperService;
+    private final AzureBlobStorageService azureBlobStorageService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, CartHelperService cartHelperService, OrderService orderService, AuthService authService, UserHelperService userHelperService) {
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
-        this.cartHelperService = cartHelperService;
         this.orderService = orderService;
         this.authService = authService;
         this.userHelperService = userHelperService;
+        this.azureBlobStorageService = azureBlobStorageService;
     }
 
     @GetMapping("/profile")
     public ModelAndView profile() {
         ModelAndView modelAndView = new ModelAndView("profile");
 
-        UserProfileViewModel userProfileViewModel = userService.viewProfile();
+        UserProfileViewModel userProfileViewModel = userService.getProfileView();
         modelAndView.addObject("userProfileViewModel", userProfileViewModel);
 
         return modelAndView;
@@ -69,13 +69,16 @@ public class UserController {
         log.info("Request received from: {}", request.getRemoteAddr());
         log.info("File name: {}", file.getOriginalFilename());
         try {
-            String profileImageUrl = userService.uploadProfileImage(file, "profile-images");
+            String profileImageUrl = azureBlobStorageService.uploadToAzureBlobStorage(file, "profile-images");
             log.info("File uploaded successfully. URL: {}", profileImageUrl);
 
             return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(Collections.singletonMap("profileImageUrl", profileImageUrl));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Error uploading file: " + e.getMessage());
         }
     }
 
@@ -112,10 +115,6 @@ public class UserController {
             model.addAttribute("changePasswordBindingModel", new ChangePasswordBindingModel());
         }
 
-        if (message != null && !message.isEmpty()) {
-            model.addAttribute("message", message);
-        }
-
         return "change-password";
     }
 
@@ -126,6 +125,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("changePasswordBindingModel", changePasswordBindingModel);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.changePasswordBindingModel", bindingResult);
+            redirectAttributes.addFlashAttribute("message", "Validation error!");
 
             return "redirect:/user/change-password";
         }
@@ -141,7 +141,6 @@ public class UserController {
         ShoppingCartDTO shoppingCartDTO = shoppingCartService.getShoppingCart();
 
         model.addAttribute("shoppingCart", shoppingCartDTO);
-        model.addAttribute("totalPrice", cartHelperService.getTotalPrice());
 
         return "shopping-cart";
     }
@@ -151,12 +150,14 @@ public class UserController {
         shoppingCartService.addToCart(gameId);
 
         // Get the updated cart item count after adding the game
-        int totalItems = cartHelperService.getTotalItems();
+        int totalItems = shoppingCartService.getShoppingCart().getTotalItems();
         Map<String, Integer> response = new HashMap<>();
         response.put("totalItems", totalItems);
 
         // Return the updated cart count in the response
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @PostMapping("/add-to-library/{id}")
@@ -168,7 +169,7 @@ public class UserController {
 
     @PostMapping("/shopping-cart/remove/{id}")
     public String shoppingCartRemove(@PathVariable Long id) {
-        shoppingCartService.remove(id);
+        shoppingCartService.removeItem(id);
         return "redirect:/user/shopping-cart";
     }
 

@@ -1,8 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
+import org.example.gamestoreapp.exception.FileUploadException;
+import org.example.gamestoreapp.exception.GenreNotFoundException;
 import org.example.gamestoreapp.model.dto.*;
 import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.Genre;
@@ -12,15 +11,11 @@ import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.GenreRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AdminService;
+import org.example.gamestoreapp.service.AzureBlobStorageService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -29,16 +24,14 @@ public class AdminServiceImpl implements AdminService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
+    private final AzureBlobStorageService azureBlobStorageService;
 
-    @Value("${azure.storage.connection-string}")
-    private String azureStorageConnectionString;
-
-
-    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository) {
+    public AdminServiceImpl(ModelMapper modelMapper, GameRepository gameRepository, UserRepository userRepository, GenreRepository genreRepository, AzureBlobStorageService azureBlobStorageService) {
         this.modelMapper = modelMapper;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.genreRepository = genreRepository;
+        this.azureBlobStorageService = azureBlobStorageService;
     }
 
     @Override
@@ -46,8 +39,19 @@ public class AdminServiceImpl implements AdminService {
         Game game = new Game();
         Genre genre = genreRepository.findByName(addGameBindingModel.getGenre());
 
-        String imageBlobUrl = uploadToAzureBlobStorage(addGameBindingModel.getImageUrl(), "images");
-        String videoBlobUrl = uploadToAzureBlobStorage(addGameBindingModel.getVideoUrl(), "videos");
+        if (genre == null) {
+            throw new GenreNotFoundException("Genre '" + addGameBindingModel.getGenre() + "' not found");
+        }
+
+        String imageBlobUrl;
+        String videoBlobUrl;
+
+        try {
+            imageBlobUrl = azureBlobStorageService.uploadToAzureBlobStorage(addGameBindingModel.getImageUrl(), "images");
+            videoBlobUrl = azureBlobStorageService.uploadToAzureBlobStorage(addGameBindingModel.getVideoUrl(), "videos");
+        } catch (FileUploadException e) {
+            throw new RuntimeException("Game upload failed due to file storage error", e);
+        }
 
         game.setTitle(addGameBindingModel.getTitle());
         game.setDescription(addGameBindingModel.getDescription());
@@ -59,36 +63,6 @@ public class AdminServiceImpl implements AdminService {
         game.setGenre(genre);
 
         gameRepository.save(game);
-    }
-
-    private String uploadToAzureBlobStorage(String fileUrl, String containerName) throws IOException {
-        URL url = new URL(fileUrl);
-        String uuidShort= UUID.randomUUID().toString().substring(0, 8);
-
-        // Generate a unique filename based on the original URL or a UUID
-        String originalFileName = Paths.get(url.getPath()).getFileName().toString();
-        String uniqueFileName = uuidShort + "_" + originalFileName;
-
-        // Create the BlobContainerClient to interact with the container
-        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
-                .connectionString(azureStorageConnectionString)
-                .containerName(containerName)
-                .buildClient();
-
-        // Get a reference to the BlobClient for the unique file
-        BlobClient blobClient = blobContainerClient.getBlobClient(uniqueFileName);
-
-        // Download the image from the provided URL
-        try (InputStream inputStream = url.openStream()) {
-            // Read the input stream into a byte array
-            byte[] data = inputStream.readAllBytes();
-
-            // Upload the image to Azure Blob Storage
-            blobClient.upload(new ByteArrayInputStream(data), data.length, true);
-        }
-
-        // Return the URL of the uploaded image
-        return blobClient.getBlobUrl();
     }
 
     @Override
@@ -146,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UpdateGameBindingModel getById(Long id) {
+    public UpdateGameBindingModel getGameById(Long id) {
         Game game = gameRepository.findById(id)
                 .orElse(null);
         return modelMapper.map(game, UpdateGameBindingModel.class);
@@ -159,15 +133,20 @@ public class AdminServiceImpl implements AdminService {
         if (optionalGame.isPresent()) {
             Game game = optionalGame.get();
             Genre genre = genreRepository.findByName(updateGameBindingModel.getGenre());
+
+            if (genre == null) {
+                throw new GenreNotFoundException("Genre '" + updateGameBindingModel.getGenre() + "' was not found");
+            }
+
             String imageBlobUrl = updateGameBindingModel.getImageUrl();
             String videoBlobUrl = updateGameBindingModel.getVideoUrl();
 
             if (!imageBlobUrl.equals(game.getImageUrl())) {
-                imageBlobUrl = uploadToAzureBlobStorage(updateGameBindingModel.getImageUrl(), "images");
+                imageBlobUrl = azureBlobStorageService.uploadToAzureBlobStorage(updateGameBindingModel.getImageUrl(), "images");
             }
 
             if (!videoBlobUrl.equals(game.getVideoUrl())) {
-                videoBlobUrl = uploadToAzureBlobStorage(updateGameBindingModel.getVideoUrl(), "videos");
+                videoBlobUrl = azureBlobStorageService.uploadToAzureBlobStorage(updateGameBindingModel.getVideoUrl(), "videos");
             }
 
             game.setTitle(updateGameBindingModel.getTitle());

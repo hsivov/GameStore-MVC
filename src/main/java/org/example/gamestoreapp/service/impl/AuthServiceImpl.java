@@ -1,6 +1,7 @@
 package org.example.gamestoreapp.service.impl;
 
 import jakarta.mail.MessagingException;
+import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.exception.UserNotFoundException;
 import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
@@ -33,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserHelperService userHelperService;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private final ConfirmationTokenRepository tokenRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
@@ -44,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
                            UserHelperService userHelperService,
                            EmailService emailService,
                            TokenService tokenService,
-                           ConfirmationTokenRepository confirmationTokenRepository) {
+                           ConfirmationTokenRepository tokenRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
@@ -125,34 +127,7 @@ public class AuthServiceImpl implements AuthService {
             tokenService.invalidateToken(token);
         }
     }
-
-    private void sendResetPasswordEmail(User user) throws MessagingException {
-        ConfirmationToken token = new ConfirmationToken(user);
-        confirmationTokenRepository.save(token);
-
-        String link = domain + "/auth/confirm/reset-password?token=" + token.getToken();
-
-        String subject = "Reset your password";
-        String htmlContent = "<p>Hello <strong>" + user.getFirstName() + "</strong>,</p>" +
-                "<p>We received a request to reset the password for your <strong>" + user.getUsername() + "</strong> account. " +
-                "If you made this request, please click the button below to reset your password:</p>" +
-                "<a href=\"" + link + "\">Reset My Password</a>" +
-                "<p>If the button above doesn’t work, copy and paste the following link into your browser:</p>" +
-                "<p>" + link + "</p>" +
-                "<p>This link is valid for <strong>15 minutes</strong>.</p>" +
-                "<p><strong>If you did not request a password reset</strong>, no action is required. " +
-                "Your account is still secure, and your password has not been changed. " +
-                "If you suspect any suspicious activity, please contact our support team immediately.</p>" +
-                "<p>Thank you,</p>" +
-                "<p>The <strong>Game Store</strong> Support Team</p>" +
-                "<div>" +
-                "<p>This email is automatically generated. Please do not answer. If you need further assistance, " +
-                "please contact us at <a href=\"mailto:support@yourwebsite.com\">support@yourwebsite.com</a>.</p>" +
-                "</div>";
-
-        emailService.sendEmail(user.getEmail(), subject, htmlContent);
-    }
-
+  
     @Override
     public boolean isUniqueEmail(String email) {
         return userRepository.findByEmail(email).isEmpty();
@@ -163,29 +138,10 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByUsername(username).isEmpty();
     }
 
-    private void sendConfirmationEmail(User user) throws MessagingException {
-        ConfirmationToken token = new ConfirmationToken(user);
-
-        tokenService.saveConfirmationToken(token);
-
-        // Send confirmation email
-        String link = domain + "/auth/confirm?token=" + token.getToken();
-
-        String subject = "Confirm your email";
-        String htmlContent = "<h3>Thank you for registering!</h3>"
-                + "<p>Please click the link below to confirm your email:</p>"
-                + "<a href='" + link + "'>Confirm Email</a>"
-                + "<p>If the button above doesn’t work, copy and paste the following link into your browser:</p>"
-                + "<p>" + link + "</p>"
-                + "<p>If you didn't request this, please ignore this email.</p>";
-
-        emailService.sendEmail(user.getEmail(), subject, htmlContent);
-    }
-
     @Override
     public void resendConfirmationToken(String token) throws MessagingException {
         ConfirmationToken oldToken = tokenService.getToken(token)
-                .orElseThrow(() -> new IllegalStateException("Invalid token"));
+                .orElseThrow(() -> new IllegalTokenException("Invalid token"));
 
         User user = oldToken.getUser();
 
@@ -210,5 +166,51 @@ public class AuthServiceImpl implements AuthService {
 
             tokenService.invalidateToken(confirmationToken); // Mark token as confirmed
         }
+    }
+
+    private void sendConfirmationEmail(User user) throws MessagingException {
+        ConfirmationToken token = new ConfirmationToken(user);
+
+        tokenService.saveConfirmationToken(token);
+
+        // Send confirmation email
+        String link = domain + "/auth/confirm?token=" + token.getToken();
+
+        String subject = "Confirm your email";
+        String htmlContent = "<h3>Thank you for registering!</h3>"
+                + "<p>Please click the link below to confirm your email:</p>"
+                + "<a href='" + link + "'>Confirm Email</a>"
+                + "<p>If the button above doesn’t work, copy and paste the following link into your browser:</p>"
+                + "<p>" + link + "</p>"
+                + "<p>If you didn't request this, please ignore this email.</p>";
+
+        emailService.sendEmail(user.getEmail(), subject, htmlContent);
+    }
+
+    private void sendResetPasswordEmail(User user) throws MessagingException {
+        ConfirmationToken token = new ConfirmationToken(user);
+        tokenRepository.save(token);
+
+        String link = domain + "/auth/confirm/reset-password?token=" + token.getToken();
+
+        String subject = "Reset your password";
+        String htmlContent = "<p>Hello <strong>" + user.getFirstName() + "</strong>,</p>" +
+                "<p>We received a request to reset the password for your <strong>" + user.getUsername() + "</strong> account. " +
+                "If you made this request, please click the button below to reset your password:</p>" +
+                "<a href=\"" + link + "\">Reset My Password</a>" +
+                "<p>If the button above doesn’t work, copy and paste the following link into your browser:</p>" +
+                "<p>" + link + "</p>" +
+                "<p>This link is valid for <strong>15 minutes</strong>.</p>" +
+                "<p><strong>If you did not request a password reset</strong>, no action is required. " +
+                "Your account is still secure, and your password has not been changed. " +
+                "If you suspect any suspicious activity, please contact our support team immediately.</p>" +
+                "<p>Thank you,</p>" +
+                "<p>The <strong>Game Store</strong> Support Team</p>" +
+                "<div>" +
+                "<p>This email is automatically generated. Please do not answer. If you need further assistance, " +
+                "please contact us at <a href=\"mailto:support@yourwebsite.com\">support@yourwebsite.com</a>.</p>" +
+                "</div>";
+
+        emailService.sendEmail(user.getEmail(), subject, htmlContent);
     }
 }

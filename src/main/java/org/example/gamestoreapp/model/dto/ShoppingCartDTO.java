@@ -7,6 +7,10 @@ public class ShoppingCartDTO {
 
     private List<GameDTO> games;
 
+    private int totalItems;
+
+    private BigDecimal totalPrice;
+
     public List<GameDTO> getGames() {
         return games;
     }
@@ -16,14 +20,18 @@ public class ShoppingCartDTO {
     }
 
     public int getTotalItems() {
-        return games != null ? games.size() : 0;
+        return totalItems;
+    }
+
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
     }
 
     public BigDecimal getTotalPrice() {
-        return games != null ?
-                games.stream()
-                        .map(GameDTO::getPrice)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                : BigDecimal.ZERO;
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
