@@ -30,6 +30,7 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final UserHelperService userHelperService;
     private final EmailService emailService;
     private final TokenService tokenService;
@@ -51,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         this.userHelperService = userHelperService;
         this.emailService = emailService;
         this.tokenService = tokenService;
-        this.tokenRepository = tokenRepository;
+        this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
     @Override
@@ -114,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO, String resetToken) {
-        Optional<ConfirmationToken> tokenOptional = tokenRepository.findByToken(resetToken);
+        Optional<ConfirmationToken> tokenOptional = confirmationTokenRepository.findByToken(resetToken);
 
         if (tokenOptional.isPresent()) {
             ConfirmationToken token = tokenOptional.get();
@@ -126,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
             tokenService.invalidateToken(token);
         }
     }
-
+  
     @Override
     public boolean isUniqueEmail(String email) {
         return userRepository.findByEmail(email).isEmpty();
