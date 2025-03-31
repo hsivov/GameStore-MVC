@@ -15,11 +15,14 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CheckoutServiceImpl implements CheckoutService {
@@ -52,10 +55,13 @@ public class CheckoutServiceImpl implements CheckoutService {
             List<Game> games = shoppingCart.getGames();
             currentUser.getOwnedGames().addAll(games);
 
+            Map<String, BigDecimal> orderItems = shoppingCart.getGames().stream()
+                    .collect(Collectors.toMap(Game::getTitle, Game::getPrice));
+
             // Prepare request to OrderService
             CreateOrderRequestDTO createOrderRequest = new CreateOrderRequestDTO();
             createOrderRequest.setCustomerId(currentUser.getId());
-            createOrderRequest.setGameIds(games.stream().map(Game::getId).toList());
+            createOrderRequest.setOrderItems(orderItems);
             createOrderRequest.setTotalPrice(shoppingCart.getTotalPrice());
             createOrderRequest.setOrderDate(LocalDateTime.now());
             createOrderRequest.setPaymentMethod(paymentMethod);
