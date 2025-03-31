@@ -31,4 +31,9 @@ public class HomeController {
 
         return "library";
     }
+
+    @GetMapping("/contacts")
+    public String contacts() {
+        return "contacts";
+    }
 }
