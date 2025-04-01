@@ -1,15 +1,21 @@
 package org.example.gamestoreapp.service.impl;
 
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
+import org.example.gamestoreapp.model.dto.NotificationDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
+import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.entity.User;
+import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,13 +23,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserHelperService userHelperService;
     private final ModelMapper modelMapper;
+    private final NotificationRepository notificationRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            UserHelperService userHelperService,
-                           ModelMapper modelMapper) {
+                           ModelMapper modelMapper, NotificationRepository notificationRepository) {
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
         this.modelMapper = modelMapper;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -55,6 +63,46 @@ public class UserServiceImpl implements UserService {
         currentUser.setAge(editProfileDTO.getAge());
 
         userRepository.save(currentUser);
+    }
+
+    @Override
+    public List<NotificationDTO> getUserNotifications() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        User currentUser = userHelperService.getUser();
+
+        return notificationRepository.findAllByUser(currentUser)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(notification -> {
+                    NotificationDTO dto = new NotificationDTO();
+                    dto.setId(notification.getId());
+                    dto.setMessage(notification.getMessage());
+                    dto.setUnread(notification.unread());
+                    dto.setCreatedAt(formatter.format(notification.getCreatedAt()));
+
+                    return dto;
+                })
+                .toList();
+    }
+
+    @Override
+    public long countUnreadNotifications() {
+        User currentUser = userHelperService.getUser();
+
+        return notificationRepository.countByUserAndUnreadIsTrue(currentUser);
+    }
+
+    @Override
+    public void setNotificationsAsRead() {
+        User currentUser = userHelperService.getUser();
+
+        List<Notification> notifications = notificationRepository.findAllByUser(currentUser)
+                .orElse(Collections.emptyList())
+                .stream()
+                .peek(notification -> notification.setUnread(false))
+                .toList();
+
+        notificationRepository.saveAll(notifications);
     }
 
     @Override

@@ -37,7 +37,9 @@ public class AppConfig {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
         modelMapper.addConverter((Converter<LocalDateTime, String>) mappingContext ->
-                formatter.format(mappingContext.getSource()));
+                mappingContext.getSource() == null
+                        ? null
+                        : formatter.format(mappingContext.getSource()));
 
         modelMapper
                 .typeMap(Game.class, GameDTO.class)

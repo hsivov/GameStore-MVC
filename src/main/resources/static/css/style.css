@@ -518,7 +518,7 @@ table thead {
 }
 
 table td {
-    padding: 5px 10px;
+    padding: 8px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
@@ -700,6 +700,35 @@ p#modal-price {
     color: white;
     text-decoration: none;
     line-height: 40px;
+}
+
+/* Notifications */
+.notifications {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.notifications-box {
+    margin-top: 2rem;
+    padding: 3rem;
+    background-color: #16202d;
+    color: #c3e1f8;
+    border-radius: 8px;
+    width: 80%;
+}
+
+.notification-table td {
+    border-bottom: 1px solid #555c88;
+}
+
+.notification-table th {
+    border-bottom: 1px solid #c3e1f8;
+}
+
+.notification-table .unread {
+    background-color: #353c4a; /* Light gray background */
+    font-weight: bold; /* Bold text for unread notifications */
 }
 
 /*Shopping cart*/

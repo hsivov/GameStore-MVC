@@ -8,9 +8,11 @@ import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
+import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
 import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
+import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.EmailService;
@@ -24,6 +26,7 @@ import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -36,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final ConfirmationTokenRepository tokenRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+    private final NotificationRepository notificationRepository;
 
     @Value("${app.domain.name}")
     private String domain;
@@ -45,13 +49,14 @@ public class AuthServiceImpl implements AuthService {
                            UserHelperService userHelperService,
                            EmailService emailService,
                            TokenService tokenService,
-                           ConfirmationTokenRepository tokenRepository) {
+                           ConfirmationTokenRepository tokenRepository, NotificationRepository notificationRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
         this.emailService = emailService;
         this.tokenService = tokenService;
         this.tokenRepository = tokenRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -69,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(user);
 
             sendConfirmationEmail(user);
+            sendNotification("Your registration is successful.", user);
 
             return true;
         } catch (DataAccessException e) {
@@ -97,6 +103,8 @@ public class AuthServiceImpl implements AuthService {
 
         currentUser.setPassword(passwordEncoder.encode(changePasswordBindingModel.getNewPassword()));
         userRepository.save(currentUser);
+
+        sendNotification("Your password has been changed.", currentUser);
     }
 
     @Override
@@ -124,6 +132,8 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(requestedUser);
 
             tokenService.invalidateToken(token);
+
+            sendNotification("Your password has been successfully reset.", requestedUser);
         }
     }
   
@@ -164,6 +174,8 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(user);
 
             tokenService.invalidateToken(confirmationToken); // Mark token as confirmed
+
+            sendNotification("Your account has been confirmed.", user);
         }
     }
 
@@ -211,5 +223,14 @@ public class AuthServiceImpl implements AuthService {
                 "</div>";
 
         emailService.sendEmail(user.getEmail(), subject, htmlContent);
+    }
+
+    private void sendNotification(String message, User user) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setMessage(message);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        notificationRepository.save(notification);
     }
 }

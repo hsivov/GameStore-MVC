@@ -4,8 +4,10 @@ import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.entity.Game;
+import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.ShoppingCart;
 import org.example.gamestoreapp.model.entity.User;
+import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.repository.ShoppingCartRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.CheckoutService;
@@ -31,17 +33,19 @@ public class CheckoutServiceImpl implements CheckoutService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final OrderService orderService;
+    private final NotificationRepository notificationRepository;
 
     public CheckoutServiceImpl(UserHelperService userHelperService,
                                ShoppingCartRepository shoppingCartRepository,
                                UserRepository userRepository,
                                EmailService emailService,
-                               OrderService orderService) {
+                               OrderService orderService, NotificationRepository notificationRepository) {
         this.userHelperService = userHelperService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.orderService = orderService;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -52,8 +56,6 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         if (cart.isPresent()) {
             ShoppingCart shoppingCart = cart.get();
-            List<Game> games = shoppingCart.getGames();
-            currentUser.getOwnedGames().addAll(games);
 
             Map<String, BigDecimal> orderItems = shoppingCart.getGames().stream()
                     .collect(Collectors.toMap(Game::getTitle, Game::getPrice));
@@ -69,16 +71,37 @@ public class CheckoutServiceImpl implements CheckoutService {
             // Send request to OrderService
             OrderResponseDTO orderResponse = orderService.sendCreateOrderRequest(createOrderRequest);
 
-            // Send confirmation email
-            String subject = "Order Confirmation";
-            String body = createConfirmationEmail(orderResponse, currentUser, games);
-            emailService.sendEmail(currentUser.getEmail(), subject, body);
+            switch (orderResponse.getStatus()) {
+                case APPROVED -> {
+                    List<Game> games = shoppingCart.getGames();
+                    currentUser.getOwnedGames().addAll(games);
 
-            // Remove shopping cart from the App
-            shoppingCartRepository.delete(shoppingCart);
+                    // Send confirmation email
+                    String subject = "Order Confirmation";
+                    String body = createConfirmationEmail(orderResponse, currentUser, games);
+                    emailService.sendEmail(currentUser.getEmail(), subject, body);
 
-            // Update user with owned games
-            userRepository.save(currentUser);
+                    //Send notification
+                    String message = "Thank you for your recent purchase! Your order #" + orderResponse.getId() + " has been successfully processed. " +
+                            "You can find purchased games in your library.";
+
+                    sendNotification(message, currentUser);
+
+                    // Remove shopping cart from the App
+                    shoppingCartRepository.delete(shoppingCart);
+
+                    // Update user with owned games
+                    userRepository.save(currentUser);
+                }
+
+                case PENDING -> {
+                    String message = "Your order #" + orderResponse.getId() + " is awaiting processing. Your games will be available instantly after payment confirmation.";
+
+                    shoppingCartRepository.delete(shoppingCart);
+
+                    sendNotification(message, currentUser);
+                }
+            }
         }
     }
 
@@ -124,5 +147,14 @@ public class CheckoutServiceImpl implements CheckoutService {
                 "    </div>\n" +
                 "</body>\n" +
                 "</html>\n";
+    }
+
+    private void sendNotification(String message, User receiver) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setUser(receiver);
+
+        notificationRepository.save(notification);
     }
 }
