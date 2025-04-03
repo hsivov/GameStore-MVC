@@ -2,10 +2,7 @@ package org.example.gamestoreapp.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
-import org.example.gamestoreapp.model.dto.EditProfileDTO;
-import org.example.gamestoreapp.model.dto.OrderResponseDTO;
-import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
+import org.example.gamestoreapp.model.dto.*;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.*;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -193,5 +190,23 @@ public class UserController {
         OrderResponseDTO order = orderService.getOrderById(id);
         model.addAttribute("order", order);
         return "order-details";
+    }
+
+    @GetMapping("/notifications")
+    public String getNotifications(Model model) {
+        List<NotificationDTO> notifications = userService.getUserNotifications();
+
+        model.addAttribute("notifications", notifications);
+
+        userService.setNotificationsAsRead();
+
+        return "notifications";
+    }
+
+    @PostMapping("/notifications/remove-all")
+    public String removeAllNotifications() {
+        userService.removeAllNotifications();
+
+        return "redirect:/user/notifications";
     }
 }

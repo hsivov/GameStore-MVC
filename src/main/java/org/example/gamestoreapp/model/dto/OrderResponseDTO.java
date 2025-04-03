@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.model.dto;
 
-import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.OrderStatus;
 
 import java.math.BigDecimal;
@@ -10,9 +9,9 @@ public class OrderResponseDTO {
     private Long id;
     private String orderDate;
     private OrderStatus status;
-    private List<GameDTO> boughtGames;
+    private List<OrderItemDTO> boughtGames;
     private BigDecimal totalPrice;
-    private User customer;
+    private UserDTO customer;
 
     public OrderResponseDTO() {}
 
@@ -40,11 +39,11 @@ public class OrderResponseDTO {
         this.status = status;
     }
 
-    public List<GameDTO> getBoughtGames() {
+    public List<OrderItemDTO> getBoughtGames() {
         return boughtGames;
     }
 
-    public void setBoughtGames(List<GameDTO> boughtGames) {
+    public void setBoughtGames(List<OrderItemDTO> boughtGames) {
         this.boughtGames = boughtGames;
     }
 
@@ -56,11 +55,11 @@ public class OrderResponseDTO {
         this.totalPrice = totalPrice;
     }
 
-    public User getCustomer() {
+    public UserDTO getCustomer() {
         return customer;
     }
 
-    public void setCustomer(User customer) {
+    public void setCustomer(UserDTO customer) {
         this.customer = customer;
     }
 }

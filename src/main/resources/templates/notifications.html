@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/commons::head}">
+</head>
+<body>
+<div th:replace="~{fragments/commons::header(activeLink=${'profile'})}"></div>
+<main>
+    <section class="notifications">
+        <div class="notifications-box">
+            <div class="notifications-box-btn">
+                <form th:action="@{/user/notifications/remove-all}" th:method="POST">
+                    <button type="submit" class="btn continue">Remove All</button>
+                </form>
+            </div>
+            <table class="notification-table">
+                <thead>
+                <tr>
+                    <th th:text="#{date}">Date</th>
+                    <th th:text="#{message}">Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="notification: ${notifications}" th:classappend="${notification.unread} ? 'unread' : ''">
+                    <td th:text="${notification.createdAt}">2025-03-31</td>
+                    <td th:text="${notification.message}">Hello, world!</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
