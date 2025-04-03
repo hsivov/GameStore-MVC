@@ -2,11 +2,11 @@ package org.example.gamestoreapp.model.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
 public class CreateOrderRequestDTO {
     private Long customerId;
-    private Map<String, BigDecimal> orderItems;
+    private List<OrderItemDTO> orderItems;
     private BigDecimal totalPrice;
     private LocalDateTime orderDate;
     private String paymentMethod;
@@ -19,11 +19,11 @@ public class CreateOrderRequestDTO {
         this.customerId = customerId;
     }
 
-    public Map<String, BigDecimal> getOrderItems() {
+    public List<OrderItemDTO> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(Map<String, BigDecimal> orderItems) {
+    public void setOrderItems(List<OrderItemDTO> orderItems) {
         this.orderItems = orderItems;
     }
 

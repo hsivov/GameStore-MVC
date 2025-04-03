@@ -503,6 +503,7 @@ fieldset {
 }
 
 .admin-panel-form input, textarea {
+    width: 420px;
     background: #e0e1e6;
     color: #333;
     border: 1px solid #333;
@@ -711,11 +712,16 @@ p#modal-price {
 
 .notifications-box {
     margin-top: 2rem;
-    padding: 3rem;
+    padding: 1rem 2rem 2rem 2rem;
     background-color: #16202d;
     color: #c3e1f8;
     border-radius: 8px;
     width: 80%;
+}
+
+.notifications-box-btn {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .notification-table td {

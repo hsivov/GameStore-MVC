@@ -202,4 +202,11 @@ public class UserController {
 
         return "notifications";
     }
+
+    @PostMapping("/notifications/remove-all")
+    public String removeAllNotifications() {
+        userService.removeAllNotifications();
+
+        return "redirect:/user/notifications";
+    }
 }

@@ -24,4 +24,6 @@ public interface UserService {
     long countUnreadNotifications();
 
     void setNotificationsAsRead();
+
+    void removeAllNotifications();
 }

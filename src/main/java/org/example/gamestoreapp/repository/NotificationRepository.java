@@ -14,4 +14,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     Optional<List<Notification>> findAllByUser(User user);
 
     long countByUserAndUnreadIsTrue(User user);
+
+    void removeAllByUser(User currentUser);
 }

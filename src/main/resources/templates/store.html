@@ -142,6 +142,7 @@
                 .then(data => {
                     // Update the cart count in the header
                     const cartCountElement = document.querySelector('.cart-count');
+                    cartCountElement.classList.remove('hidden');
                     cartCountElement.textContent = data.totalItems;
 
                     // Show the modal with the game's details

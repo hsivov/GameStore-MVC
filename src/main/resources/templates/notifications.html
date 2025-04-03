@@ -7,6 +7,11 @@
 <main>
     <section class="notifications">
         <div class="notifications-box">
+            <div class="notifications-box-btn">
+                <form th:action="@{/user/notifications/remove-all}" th:method="POST">
+                    <button type="submit" class="btn continue">Remove All</button>
+                </form>
+            </div>
             <table class="notification-table">
                 <thead>
                 <tr>

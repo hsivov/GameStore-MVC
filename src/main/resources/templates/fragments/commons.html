@@ -39,13 +39,15 @@
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <a th:href="@{/user/notifications}">
                         <i class="fa-solid fa-envelope"></i>
-                        <span th:if="${@userServiceImpl.countUnreadNotifications() > 0}" class="cart-count" th:text="${@userServiceImpl.countUnreadNotifications()}"></span>
+                        <span th:if="${@userServiceImpl.countUnreadNotifications() > 0}" class="cart-count"
+                              th:text="${@userServiceImpl.countUnreadNotifications()}"></span>
                     </a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <a th:href="@{/user/shopping-cart}">
                         <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-count" th:text="${@shoppingCartServiceImpl.getShoppingCart().totalItems}"></span></a>
+                        <span class="cart-count" th:classappend="${@shoppingCartServiceImpl.getShoppingCart().totalItems} == 0 ? 'hidden' : ''"
+                              th:text="${@shoppingCartServiceImpl.getShoppingCart().totalItems}"></span></a>
                 </li>
                 <li th:if="${@userHelperService.isAuthenticated()}">
                     <div th:classappend="${activeLink == 'profile'} ? 'active'" id="profileSelect">
