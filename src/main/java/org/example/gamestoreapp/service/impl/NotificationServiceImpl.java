@@ -6,6 +6,7 @@ import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.service.NotificationService;
+import org.example.gamestoreapp.service.session.UserHelperService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,9 +18,11 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserHelperService userHelperService;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository, UserHelperService userHelperService) {
         this.notificationRepository = notificationRepository;
+        this.userHelperService = userHelperService;
     }
 
     @Override
@@ -42,8 +45,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public long countUserUnreadNotifications(User user) {
-        return notificationRepository.countByUserAndUnreadIsTrue(user);
+    public long countUserUnreadNotifications() {
+        User currentUser = userHelperService.getUser();
+        return notificationRepository.countByUserAndUnreadIsTrue(currentUser);
     }
 
     @Override

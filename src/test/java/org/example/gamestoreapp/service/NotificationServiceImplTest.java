@@ -5,6 +5,7 @@ import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.service.impl.NotificationServiceImpl;
+import org.example.gamestoreapp.service.session.UserHelperService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,9 @@ import static org.mockito.Mockito.*;
 class NotificationServiceImplTest {
     @Mock
     private NotificationRepository notificationRepository;
+
+    @Mock
+    private UserHelperService userHelperService;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
@@ -73,7 +77,9 @@ class NotificationServiceImplTest {
 
     @Test
     void testCountUserUnreadNotifications() {
-        notificationService.countUserUnreadNotifications(mockUser);
+        when(userHelperService.getUser()).thenReturn(mockUser);
+
+        notificationService.countUserUnreadNotifications();
 
         verify(notificationRepository, times(1)).countByUserAndUnreadIsTrue(any(User.class));
     }

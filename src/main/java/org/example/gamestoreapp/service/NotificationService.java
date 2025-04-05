@@ -8,7 +8,7 @@ import java.util.List;
 public interface NotificationService {
     List<NotificationDTO> getUserNotifications(User user);
 
-    long countUserUnreadNotifications(User user);
+    long countUserUnreadNotifications();
 
     void setAsRead(User user);
 
