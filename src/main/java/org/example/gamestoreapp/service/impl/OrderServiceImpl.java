@@ -13,6 +13,7 @@ import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.NotificationService;
 import org.example.gamestoreapp.service.OrderService;
+import org.example.gamestoreapp.update.OrderStatusUpdater;
 import org.example.gamestoreapp.util.HMACUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -33,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final NotificationService notificationService;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private final OrderStatusUpdater orderStatusUpdater;
 
     @Value("${order.service.url}")
     private String orderServiceUrl;
@@ -44,12 +46,13 @@ public class OrderServiceImpl implements OrderService {
     private String secret;
 
     public OrderServiceImpl(RestTemplate restTemplate, EmailService emailService, NotificationService notificationService,
-                            GameRepository gameRepository, UserRepository userRepository) {
+                            GameRepository gameRepository, UserRepository userRepository, OrderStatusUpdater orderStatusUpdater) {
         this.restTemplate = restTemplate;
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.orderStatusUpdater = orderStatusUpdater;
     }
 
     @Override
@@ -145,47 +148,58 @@ public class OrderServiceImpl implements OrderService {
 
         ResponseEntity<OrderResponseDTO[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO[].class);
 
-        OrderResponseDTO[] responseBody = response.getBody();
+        OrderResponseDTO[] orders = Optional.ofNullable(response.getBody()).orElse(new OrderResponseDTO[0]);
 
-        if (responseBody == null) {
-            return;
-        }
-
-        for (OrderResponseDTO orderResponseDTO : responseBody) {
-            OrderStatus newStatus = updateOrderStatus();
-            orderResponseDTO.setStatus(newStatus);
+        for (OrderResponseDTO order : orders) {
+            OrderStatus newStatus = orderStatusUpdater.updateOrderStatus();
+            order.setStatus(newStatus);
 
             if (newStatus == OrderStatus.APPROVED) {
-                User customer = userRepository.findById(orderResponseDTO.getCustomer().getId())
+                User customer = userRepository.findById(order.getCustomer().getId())
                         .orElseThrow(() -> new UserNotFoundException("Customer not found"));
 
-                Set<Long> gameIds = orderResponseDTO.getBoughtGames().stream()
+                Set<Long> gameIds = order.getBoughtGames().stream()
                         .map(OrderItemDTO::getOrderItemId).collect(Collectors.toSet());
                 List<Game> games = gameRepository.findByIdIn(gameIds);
 
-                completeOrder(orderResponseDTO, customer, games);
+                completeOrder(order, customer, games);
             } else if (newStatus == OrderStatus.REJECTED) {
-                User customer = userRepository.findById(orderResponseDTO.getCustomer().getId())
+                User customer = userRepository.findById(order.getCustomer().getId())
                         .orElseThrow(() -> new UserNotFoundException("Customer not found"));
 
-                String message = "Your recent payment attempt for order #" + orderResponseDTO.getId() +
-                        " on " + orderResponseDTO.getOrderDate() + " was unsuccessful. " +
+                endpoint = "/api/orders/update";
+                method = "POST";
+
+                headers = setHeaders(method, endpoint);
+
+                HttpEntity<OrderResponseDTO> request = new HttpEntity<>(order, headers);
+
+                restTemplate.postForEntity(url, request, Void.class);
+
+                String message = "Your recent payment attempt for order #" + order.getId() +
+                        " on " + order.getOrderDate() + " was unsuccessful. " +
                         "This could be due to various reasons, such as insufficient funds, incorrect details, or a bank authorization issue.";
 
                 notificationService.sendNotification(message, customer);
 
                 String subject = "Order Cancellation";
-                String body = createCancellationEmail(orderResponseDTO, customer);
+                String body = createCancellationEmail(order, customer);
                 emailService.sendEmail(customer.getEmail(), subject, body);
-
-                updateOrderRequest(orderResponseDTO);
             }
         }
     }
 
     @Override
     public void completeOrder(OrderResponseDTO order, User customer, List<Game> boughtGames) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
-        ResponseEntity<Void> response = updateOrderRequest(order);
+        String endpoint = "/api/orders/update";
+        String url = orderServiceUrl + endpoint;
+        String method = "POST";
+
+        HttpHeaders headers = setHeaders(method, endpoint);
+
+        HttpEntity<OrderResponseDTO> request = new HttpEntity<>(order, headers);
+
+        ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
 
@@ -288,22 +302,5 @@ public class OrderServiceImpl implements OrderService {
                 "Best regards,\n" +
                 "Game Store\n" +
                 "[Company Website] | [Support Contact]";
-    }
-
-    private OrderStatus updateOrderStatus() {
-        OrderStatus[] values = OrderStatus.values();
-        return values[new Random().nextInt(values.length)];
-    }
-
-    private ResponseEntity<Void> updateOrderRequest(OrderResponseDTO order) throws NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/api/orders/update";
-        String url = orderServiceUrl + endpoint;
-        String method = "POST";
-
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        HttpEntity<OrderResponseDTO> request = new HttpEntity<>(order, headers);
-
-        return restTemplate.postForEntity(url, request, Void.class);
     }
 }

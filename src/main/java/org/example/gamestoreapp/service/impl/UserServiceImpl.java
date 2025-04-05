@@ -1,18 +1,15 @@
 package org.example.gamestoreapp.service.impl;
 
 import org.example.gamestoreapp.model.dto.EditProfileDTO;
-import org.example.gamestoreapp.model.dto.NotificationDTO;
 import org.example.gamestoreapp.model.dto.UserDTO;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.UserRepository;
-import org.example.gamestoreapp.service.NotificationService;
 import org.example.gamestoreapp.service.UserService;
 import org.example.gamestoreapp.service.session.UserHelperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,15 +17,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserHelperService userHelperService;
     private final ModelMapper modelMapper;
-    private final NotificationService notificationService;
 
     public UserServiceImpl(UserRepository userRepository,
                            UserHelperService userHelperService,
-                           ModelMapper modelMapper, NotificationService notificationService) {
+                           ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
         this.modelMapper = modelMapper;
-        this.notificationService = notificationService;
     }
 
     @Override
@@ -60,34 +55,6 @@ public class UserServiceImpl implements UserService {
         currentUser.setAge(editProfileDTO.getAge());
 
         userRepository.save(currentUser);
-    }
-
-    @Override
-    public List<NotificationDTO> getUserNotifications() {
-        User currentUser = userHelperService.getUser();
-
-        return notificationService.getUserNotifications(currentUser);
-    }
-
-    @Override
-    public long countUnreadNotifications() {
-        User currentUser = userHelperService.getUser();
-
-        return notificationService.countUserUnreadNotifications(currentUser);
-    }
-
-    @Override
-    public void setNotificationsAsRead() {
-        User currentUser = userHelperService.getUser();
-
-        notificationService.setAsRead(currentUser);
-    }
-
-    @Override
-    public void removeAllNotifications() {
-        User currentUser = userHelperService.getUser();
-
-        notificationService.removeAllUserNotifications(currentUser);
     }
 
     @Override

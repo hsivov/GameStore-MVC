@@ -3,6 +3,7 @@ package org.example.gamestoreapp.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.*;
+import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.*;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -35,13 +36,14 @@ public class UserController {
     private final GameService gameService;
     private final ShoppingCartService shoppingCartService;
     private final OrderService orderService;
-
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final AuthService authService;
     private final UserHelperService userHelperService;
     private final AzureBlobStorageService azureBlobStorageService;
+    private final NotificationService notificationService;
 
-    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService) {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    public UserController(UserService userService, GameService gameService, ShoppingCartService shoppingCartService, OrderService orderService, AuthService authService, UserHelperService userHelperService, AzureBlobStorageService azureBlobStorageService, NotificationService notificationService) {
         this.userService = userService;
         this.gameService = gameService;
         this.shoppingCartService = shoppingCartService;
@@ -49,6 +51,7 @@ public class UserController {
         this.authService = authService;
         this.userHelperService = userHelperService;
         this.azureBlobStorageService = azureBlobStorageService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/profile")
@@ -194,18 +197,21 @@ public class UserController {
 
     @GetMapping("/notifications")
     public String getNotifications(Model model) {
-        List<NotificationDTO> notifications = userService.getUserNotifications();
+        User currentUser = userHelperService.getUser();
+        List<NotificationDTO> notifications = notificationService.getUserNotifications(currentUser);
 
         model.addAttribute("notifications", notifications);
 
-        userService.setNotificationsAsRead();
+        notificationService.setAsRead(currentUser);
 
         return "notifications";
     }
 
     @PostMapping("/notifications/remove-all")
     public String removeAllNotifications() {
-        userService.removeAllNotifications();
+        User currentUser = userHelperService.getUser();
+
+        notificationService.removeAllUserNotifications(currentUser);
 
         return "redirect:/user/notifications";
     }

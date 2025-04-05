@@ -8,8 +8,10 @@ import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
+import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
+import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.AuthServiceImpl;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -44,6 +46,8 @@ public class AuthServiceImplTest {
     private TokenService tokenService;
     @Mock
     private ConfirmationTokenRepository tokenRepository;
+    @Mock
+    private NotificationRepository notificationRepository;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -80,6 +84,7 @@ public class AuthServiceImplTest {
         verify(userRepository).save(any(User.class));
         verify(emailService).sendEmail(anyString(), anyString(), anyString());
         verify(tokenService).saveConfirmationToken(any(ConfirmationToken.class));
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     @Test
@@ -158,6 +163,7 @@ public class AuthServiceImplTest {
         verify(userHelperService, times(1)).getUser();
         verify(passwordEncoder, times(1)).encode("newPassword123");
         verify(userRepository, times(1)).save(mockUser);
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     @Test
@@ -218,6 +224,7 @@ public class AuthServiceImplTest {
         verify(passwordEncoder, times(1)).encode("newPassword123");
         verify(userRepository, times(1)).save(any(User.class));
         verify(tokenService, times(1)).invalidateToken(confirmationToken);
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     @Test
@@ -324,6 +331,7 @@ public class AuthServiceImplTest {
         verify(tokenService, times(1)).getToken("validToken123");
         verify(userRepository, times(1)).save(any(User.class));
         verify(tokenService, times(1)).invalidateToken(mockToken);
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     @Test
