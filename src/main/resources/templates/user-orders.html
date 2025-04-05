@@ -12,10 +12,11 @@
             <table class="purchase_history_table">
                 <thead>
                     <tr>
-                        <th rowspan="2" class="wht_date">Date</th>
-                        <th rowspan="2" class="wht_items">Items</th>
-                        <th rowspan="2" class="wht_total">Total</th>
-                        <th rowspan="2" class="wht_details">Details</th>
+                        <th rowspan="2">Date</th>
+                        <th rowspan="2">Items</th>
+                        <th rowspan="2">Total</th>
+                        <th rowspan="2">Status</th>
+                        <th rowspan="2">Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,6 +26,7 @@
                             <div th:each="item: ${order.boughtGames}" th:text="${item.title}">Farming Simulator 25</div>
                         </td>
                         <td th:text="${order.totalPrice} + ' ' + #{lv}">$250</td>
+                        <td th:text="${order.status}"></td>
                         <td>
                             <a class="btn-link continue"
                                th:href="@{/user/order/{id}(id=${order.id})}"

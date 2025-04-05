@@ -12,6 +12,7 @@
         <p><strong th:text="#{orderNumber} + ' ' + ${order.id}">Order ID:</strong></p>
         <p><strong th:text="#{customer} + ': ' + ${order.customer.firstName} + ' ' + ${order.customer.lastName}">Customer:</strong></p>
         <p><strong th:text="#{orderDate} + ': ' + ${order.orderDate}">Order Date:</strong></p>
+        <p><strong th:text="#{status} + ': ' + ${order.status}"></strong></p>
     </div>
 
     <div class="order-items">

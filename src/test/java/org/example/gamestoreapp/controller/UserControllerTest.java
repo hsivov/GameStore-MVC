@@ -1,10 +1,7 @@
 package org.example.gamestoreapp.controller;
 
 import org.example.gamestoreapp.config.TestConfig;
-import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
-import org.example.gamestoreapp.model.dto.EditProfileDTO;
-import org.example.gamestoreapp.model.dto.OrderResponseDTO;
-import org.example.gamestoreapp.model.dto.ShoppingCartDTO;
+import org.example.gamestoreapp.model.dto.*;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.view.UserProfileViewModel;
 import org.example.gamestoreapp.service.*;
@@ -52,13 +49,21 @@ class UserControllerTest {
     @Mock
     private AzureBlobStorageService azureBlobStorageService;
 
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private UserController userController;
 
+    private User mockUser;
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("username");
+
         TestConfig testConfig = new TestConfig();
 
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
@@ -310,9 +315,6 @@ class UserControllerTest {
 
     @Test
     void testOrders() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(1L);
-
         when(userHelperService.getUser()).thenReturn(mockUser);
 
         OrderResponseDTO mockOrder = new OrderResponseDTO();
@@ -345,5 +347,34 @@ class UserControllerTest {
                 .andExpect(model().attribute("order", mockOrder));
 
         verify(orderService, times(1)).getOrderById(orderId);
+    }
+
+    @Test
+    void testGetNotifications() throws Exception {
+        NotificationDTO mockNotification = new NotificationDTO();
+        mockNotification.setMessage("test");
+
+        List<NotificationDTO> mockNotifications = List.of(mockNotification);
+
+        when(userHelperService.getUser()).thenReturn(mockUser);
+        when(notificationService.getUserNotifications(mockUser)).thenReturn(mockNotifications);
+
+        mockMvc.perform(get("/user/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("notifications"))
+                .andExpect(model().attributeExists("notifications"));
+
+        verify(notificationService, times(1)).getUserNotifications(any(User.class));
+    }
+
+    @Test
+    void testRemoveAllNotifications() throws Exception {
+        when(userHelperService.getUser()).thenReturn(mockUser);
+
+        mockMvc.perform(post("/user/notifications/remove-all"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/user/notifications"));
+
+        verify(notificationService, times(1)).removeAllUserNotifications(any(User.class));
     }
 }
