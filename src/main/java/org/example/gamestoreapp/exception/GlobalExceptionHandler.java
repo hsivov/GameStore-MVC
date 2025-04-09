@@ -15,4 +15,12 @@ public class GlobalExceptionHandler {
     public ModelAndView handleResourceNotFoundException() {
         return new ModelAndView("error/404");
     }
+
+    @ExceptionHandler(CryptoProcessingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ModelAndView handleCryptoError() {
+        ModelAndView mav = new ModelAndView("error/500");
+        mav.addObject("message", "A cryptographic error occurred. Please try again later.");
+        return mav;
+    }
 }

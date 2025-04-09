@@ -2,15 +2,12 @@ package org.example.gamestoreapp.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class HMACUtilTest {
 
     @Test
-    void testGenerateHMAC() throws NoSuchAlgorithmException, InvalidKeyException {
+    void testGenerateHMAC() {
         String data = "HelloWorld";
         String key = "SecretKey";
 
@@ -23,7 +20,7 @@ class HMACUtilTest {
     }
 
     @Test
-    void testGenerateHMACWithEmptyData() throws NoSuchAlgorithmException, InvalidKeyException {
+    void testGenerateHMACWithEmptyData() {
         String data = "";
         String key = "SecretKey";
 

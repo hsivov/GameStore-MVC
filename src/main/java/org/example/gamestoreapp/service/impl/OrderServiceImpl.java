@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service.impl;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.UserNotFoundException;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderItemDTO;
@@ -14,167 +13,74 @@ import org.example.gamestoreapp.service.EmailService;
 import org.example.gamestoreapp.service.NotificationService;
 import org.example.gamestoreapp.service.OrderService;
 import org.example.gamestoreapp.update.OrderStatusUpdater;
-import org.example.gamestoreapp.util.HMACUtil;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.example.gamestoreapp.util.OrderServiceClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    private final RestTemplate restTemplate;
     private final EmailService emailService;
     private final NotificationService notificationService;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final OrderStatusUpdater orderStatusUpdater;
+    private final OrderServiceClient orderServiceClient;
 
-    @Value("${order.service.url}")
-    private String orderServiceUrl;
-
-    @Value("${app.api.key}")
-    private String apiKey;
-
-    @Value("${app.api.secret}")
-    private String secret;
-
-    public OrderServiceImpl(RestTemplate restTemplate, EmailService emailService, NotificationService notificationService,
-                            GameRepository gameRepository, UserRepository userRepository, OrderStatusUpdater orderStatusUpdater) {
-        this.restTemplate = restTemplate;
+    public OrderServiceImpl(EmailService emailService, NotificationService notificationService,
+                            GameRepository gameRepository, UserRepository userRepository, OrderStatusUpdater orderStatusUpdater,
+                            OrderServiceClient orderServiceClient) {
         this.emailService = emailService;
         this.notificationService = notificationService;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.orderStatusUpdater = orderStatusUpdater;
+        this.orderServiceClient = orderServiceClient;
     }
 
     @Override
-    public List<OrderResponseDTO> getAllOrders() throws NoSuchAlgorithmException, InvalidKeyException {
+    public List<OrderResponseDTO> getAllOrders() {
+        OrderResponseDTO[] orders = orderServiceClient.get("/api/orders", "GET", OrderResponseDTO[].class);
 
-        String endpoint = "/api/orders";
-        String url = orderServiceUrl + endpoint;
-        String method = "GET";
-
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<OrderResponseDTO[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO[].class);
-
-        OrderResponseDTO[] responseBody = response.getBody();
-
-        if (responseBody == null) {
-            return Collections.emptyList();
-        }
-
-        return Arrays.asList(responseBody);
+        return Arrays.asList(orders);
     }
 
     @Override
-    public OrderResponseDTO getOrderById(long id) throws NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/api/orders/" + id;
-        String url = orderServiceUrl + endpoint;
-        String method = "GET";
-
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<OrderResponseDTO> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO.class);
-
-        return response.getBody();
+    public OrderResponseDTO getOrderById(long id) {
+        return orderServiceClient.get("/api/orders/" + id, "GET", OrderResponseDTO.class);
     }
 
     @Override
-    public List<OrderResponseDTO> getOrdersByUser(long userId) throws NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/api/orders/customer/" + userId;
-        String url = orderServiceUrl + endpoint;
-        String method = "GET";
+    public List<OrderResponseDTO> getOrdersByUser(long userId) {
+        OrderResponseDTO[] orders = orderServiceClient.get("/api/orders/customer/" + userId, "GET", OrderResponseDTO[].class);
 
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<OrderResponseDTO[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO[].class);
-
-        OrderResponseDTO[] responseBody = response.getBody();
-
-        if (responseBody == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(responseBody);
+        return Arrays.asList(orders);
     }
 
     @Override
-    public OrderResponseDTO sendCreateOrderRequest(CreateOrderRequestDTO createOrderRequest) throws NoSuchAlgorithmException, InvalidKeyException {
-
-        String endpoint = "/api/orders/create";
-        String url = orderServiceUrl + endpoint;
-        String method = "POST";
-
-        // Create headers and set Content-Type to application/json
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        // Wrap the request and headers in an HttpEntity
-        HttpEntity<CreateOrderRequestDTO> entity = new HttpEntity<>(createOrderRequest, headers);
-
-        // Make POST request to OrderService createOrder endpoint
-        ResponseEntity<OrderResponseDTO> response = restTemplate.postForEntity(url, entity, OrderResponseDTO.class);
-
-        // Check response status and return the OrderResponseDTO
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
-            throw new RuntimeException("Failed to create order in OrderService");
-        }
+    public OrderResponseDTO sendCreateOrderRequest(CreateOrderRequestDTO requestBody) {
+        // Make POST request to OrderService createOrder endpoint and return the OrderResponseDTO
+        return orderServiceClient.post("/api/orders/create", requestBody, OrderResponseDTO.class);
     }
 
     @Scheduled(cron = "0 0/5 * * * ?")
-    public void processPendingOrders() throws NoSuchAlgorithmException, InvalidKeyException, MessagingException {
-        String endpoint = "/api/orders/pending";
-        String url = orderServiceUrl + endpoint;
-        String method = "GET";
-
-        HttpHeaders headers = setHeaders(method, endpoint);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<OrderResponseDTO[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, OrderResponseDTO[].class);
-
-        OrderResponseDTO[] orders = Optional.ofNullable(response.getBody()).orElse(new OrderResponseDTO[0]);
+    public void processPendingOrders() {
+        OrderResponseDTO[] orders = orderServiceClient.get("/api/orders/pending", "GET", OrderResponseDTO[].class);
 
         for (OrderResponseDTO order : orders) {
             OrderStatus newStatus = orderStatusUpdater.updateOrderStatus();
             order.setStatus(newStatus);
 
             if (newStatus == OrderStatus.APPROVED) {
-                User customer = userRepository.findById(order.getCustomer().getId())
-                        .orElseThrow(() -> new UserNotFoundException("Customer not found"));
-
-                Set<Long> gameIds = order.getBoughtGames().stream()
-                        .map(OrderItemDTO::getOrderItemId).collect(Collectors.toSet());
-                List<Game> games = gameRepository.findByIdIn(gameIds);
-
-                completeOrder(order, customer, games);
+                completeOrder(order);
+                updateOrderStatus(order);
             } else if (newStatus == OrderStatus.REJECTED) {
                 User customer = userRepository.findById(order.getCustomer().getId())
                         .orElseThrow(() -> new UserNotFoundException("Customer not found"));
 
-                endpoint = "/api/orders/update";
-                method = "POST";
-
-                headers = setHeaders(method, endpoint);
-
-                HttpEntity<OrderResponseDTO> request = new HttpEntity<>(order, headers);
-
-                restTemplate.postForEntity(url, request, Void.class);
+                updateOrderStatus(order);
 
                 String message = "Your recent payment attempt for order #" + order.getId() +
                         " on " + order.getOrderDate() + " was unsuccessful. " +
@@ -190,54 +96,35 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void completeOrder(OrderResponseDTO order, User customer, List<Game> boughtGames) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/api/orders/update";
-        String url = orderServiceUrl + endpoint;
-        String method = "POST";
+    public void completeOrder(OrderResponseDTO order) {
+        User customer = userRepository.findById(order.getCustomer().getId())
+                .orElseThrow(() -> new UserNotFoundException("Customer not found"));
 
-        HttpHeaders headers = setHeaders(method, endpoint);
+        Set<Long> gameIds = order.getBoughtGames().stream()
+                .map(OrderItemDTO::getOrderItemId)
+                .collect(Collectors.toSet());
 
-        HttpEntity<OrderResponseDTO> request = new HttpEntity<>(order, headers);
+        List<Game> boughtGames = gameRepository.findByIdIn(gameIds);
+        customer.getOwnedGames().addAll(boughtGames);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+        // Update user with owned games
+        userRepository.save(customer);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        // Send confirmation email
+        String subject = "Order Confirmation";
+        String body = createConfirmationEmail(order, customer);
+        emailService.sendEmail(customer.getEmail(), subject, body);
 
-            customer.getOwnedGames().addAll(boughtGames);
+        //Send notification
+        String message = "Thank you for your recent purchase! Your order #" + order.getId() + " has been successfully processed. " +
+                "You can find purchased games in your library.";
 
-            // Update user with owned games
-            userRepository.save(customer);
-
-            // Send confirmation email
-            String subject = "Order Confirmation";
-            String body = createConfirmationEmail(order, customer);
-            emailService.sendEmail(customer.getEmail(), subject, body);
-
-            //Send notification
-            String message = "Thank you for your recent purchase! Your order #" + order.getId() + " has been successfully processed. " +
-                    "You can find purchased games in your library.";
-
-            notificationService.sendNotification(message, customer);
-        }
+        notificationService.sendNotification(message, customer);
     }
 
-    private HttpHeaders setHeaders(String method, String endpoint) throws NoSuchAlgorithmException, InvalidKeyException {
-        HttpHeaders headers = new HttpHeaders();
+    private void updateOrderStatus(OrderResponseDTO order) {
 
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
-
-        // Construct the payload
-        String payload = method + endpoint + timestamp;
-
-        // Generate HMAC signature
-        String signature = HMACUtil.generateHMAC(payload, secret);
-
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Api-Key", apiKey);
-        headers.set("X-Signature", signature);
-        headers.set("X-Timestamp", timestamp);
-
-        return headers;
+        orderServiceClient.post("/api/orders/update", order, Void.class);
     }
 
     private String createConfirmationEmail(OrderResponseDTO order, User customer) {

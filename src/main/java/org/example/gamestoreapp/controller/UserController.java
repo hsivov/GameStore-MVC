@@ -21,8 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -180,7 +178,7 @@ public class UserController {
     }
 
     @GetMapping("/orders")
-    public String orders(Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+    public String orders(Model model) {
         long userId = userHelperService.getUser().getId();
         List<OrderResponseDTO> orders = orderService.getOrdersByUser(userId);
 
@@ -189,7 +187,7 @@ public class UserController {
     }
 
     @GetMapping("/order/{orderId}")
-    public String getOrderDetails(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+    public String getOrderDetails(@PathVariable("orderId") long id, Model model) {
         OrderResponseDTO order = orderService.getOrderById(id);
         model.addAttribute("order", order);
         return "order-details";

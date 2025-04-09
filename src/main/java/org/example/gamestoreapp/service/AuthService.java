@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service;
 
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
@@ -11,7 +10,7 @@ public interface AuthService {
 
     void enableUser(String token);
 
-    void resendConfirmationToken(String token) throws MessagingException;
+    void resendConfirmationToken(String token);
 
     boolean isUniqueEmail(String email);
 
@@ -23,7 +22,7 @@ public interface AuthService {
 
     boolean isValidEmail(String email);
 
-    void passwordResetRequest(String email) throws MessagingException;
+    void passwordResetRequest(String email);
 
     void resetPassword(@Valid ResetPasswordDTO resetPasswordDTO, String resetToken);
 }

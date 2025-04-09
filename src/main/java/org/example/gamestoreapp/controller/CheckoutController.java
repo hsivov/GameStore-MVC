@@ -1,14 +1,10 @@
 package org.example.gamestoreapp.controller;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.service.CheckoutService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 @Controller
 public class CheckoutController {
@@ -24,7 +20,7 @@ public class CheckoutController {
     }
 
     @PostMapping("/payment")
-    public String payment(@RequestParam("paymentMethod") String paymentMethod) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    public String payment(@RequestParam("paymentMethod") String paymentMethod) {
        checkoutService.payment(paymentMethod);
 
        return "redirect:/library";

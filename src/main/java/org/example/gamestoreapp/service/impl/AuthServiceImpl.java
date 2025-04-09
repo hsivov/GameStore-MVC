@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service.impl;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.exception.UserNotFoundException;
@@ -113,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void passwordResetRequest(String email) throws MessagingException {
+    public void passwordResetRequest(String email) {
         User requestedUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -148,7 +147,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void resendConfirmationToken(String token) throws MessagingException {
+    public void resendConfirmationToken(String token) {
         ConfirmationToken oldToken = tokenService.getToken(token)
                 .orElseThrow(() -> new IllegalTokenException("Invalid token"));
 
@@ -179,7 +178,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void sendConfirmationEmail(User user) throws MessagingException {
+    private void sendConfirmationEmail(User user) {
         ConfirmationToken token = new ConfirmationToken(user);
 
         tokenService.saveConfirmationToken(token);
@@ -198,7 +197,7 @@ public class AuthServiceImpl implements AuthService {
         emailService.sendEmail(user.getEmail(), subject, htmlContent);
     }
 
-    private void sendResetPasswordEmail(User user) throws MessagingException {
+    private void sendResetPasswordEmail(User user) {
         ConfirmationToken token = new ConfirmationToken(user);
         tokenRepository.save(token);
 

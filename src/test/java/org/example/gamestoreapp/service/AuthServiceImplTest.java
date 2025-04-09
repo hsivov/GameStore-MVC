@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.exception.UserNotFoundException;
@@ -75,7 +74,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void register_ShouldReturnTrue_WhenUserIsSuccessfullyRegistered() throws MessagingException {
+    void register_ShouldReturnTrue_WhenUserIsSuccessfullyRegistered() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
         boolean result = authService.register(userRegisterBindingModel);
@@ -88,7 +87,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void register_ShouldReturnFalse_WhenDatabaseErrorOccurs() throws MessagingException {
+    void register_ShouldReturnFalse_WhenDatabaseErrorOccurs() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         doThrow(new DataAccessException("Database error") {}).when(userRepository).save(any(User.class));
 
@@ -101,7 +100,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void register_ShouldReturnFalse_WhenEmailSendingFails() throws MessagingException {
+    void register_ShouldReturnFalse_WhenEmailSendingFails() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         doThrow(new MailException("Email error") {}).when(emailService).sendEmail(anyString(), anyString(), anyString());
 
@@ -114,7 +113,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void register_ShouldReturnFalse_WhenUnexpectedErrorOccurs() throws MessagingException {
+    void register_ShouldReturnFalse_WhenUnexpectedErrorOccurs() {
         when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Unexpected error"));
 
         boolean result = authService.register(userRegisterBindingModel);
@@ -187,7 +186,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void passwordResetRequest_ShouldSendEmail_WhenUserExists() throws MessagingException {
+    void passwordResetRequest_ShouldSendEmail_WhenUserExists() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
 
         authService.passwordResetRequest("test@example.com");
@@ -197,7 +196,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void passwordResetRequest_ShouldThrowException_WhenUserNotFound() throws MessagingException {
+    void passwordResetRequest_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> authService.passwordResetRequest("nonexistent@example.com"));
@@ -281,7 +280,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void testResendConfirmationToken() throws MessagingException {
+    void testResendConfirmationToken() {
         ConfirmationToken mockToken = new ConfirmationToken(mockUser);
         mockToken.setToken("validToken123");
 
@@ -294,7 +293,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void testResendConfirmationToken_ShouldThrow_WhenTokenIsInvalid() throws MessagingException {
+    void testResendConfirmationToken_ShouldThrow_WhenTokenIsInvalid() {
         when(tokenService.getToken("invalidToken")).thenReturn(Optional.empty());
 
         assertThrows(IllegalTokenException.class, () -> authService.resendConfirmationToken("invalidToken"));
@@ -304,7 +303,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    void testResendConfirmationToken_ShouldThrow_WhenUserIsAlreadyConfirmed() throws MessagingException {
+    void testResendConfirmationToken_ShouldThrow_WhenUserIsAlreadyConfirmed() {
         ConfirmationToken mockToken = new ConfirmationToken(mockUser);
         mockToken.setToken("usedToken123");
 

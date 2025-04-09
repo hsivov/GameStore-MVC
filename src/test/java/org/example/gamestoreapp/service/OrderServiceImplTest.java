@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderItemDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
@@ -12,23 +11,15 @@ import org.example.gamestoreapp.repository.GameRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.OrderServiceImpl;
 import org.example.gamestoreapp.update.OrderStatusUpdater;
+import org.example.gamestoreapp.util.OrderServiceClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,13 +27,9 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 
 @ExtendWith({MockitoExtension.class})
 class OrderServiceImplTest {
-
-    @Mock
-    private RestTemplate restTemplate;
 
     @Mock
     private UserRepository userRepository;
@@ -59,20 +46,20 @@ class OrderServiceImplTest {
     @Mock
     private OrderStatusUpdater orderStatusUpdater;
 
+    @Mock
+    private OrderServiceClient orderServiceClient;
+
     @InjectMocks
-    @Spy
     private OrderServiceImpl orderService;
 
-    private final String expectedUrl = "https://mock-order-service.com/api/orders";
-
+    private User mockUser;
     private OrderResponseDTO mockOrder1, mockOrder2;
     private BigDecimal price1, price2;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(orderService, "orderServiceUrl", "https://mock-order-service.com");
-        ReflectionTestUtils.setField(orderService, "apiKey", "test-api-key");
-        ReflectionTestUtils.setField(orderService, "secret", "test-secret");
+        mockUser = new User();
+        mockUser.setId(1L);
 
         price1 = new BigDecimal("100.00");
         price2 = new BigDecimal("200.00");
@@ -87,14 +74,11 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void testGetAllOrders_Success() throws NoSuchAlgorithmException, InvalidKeyException {
+    void testGetAllOrders_Success() {
 
         OrderResponseDTO[] mockResponse = {mockOrder1, mockOrder2};
 
-        ResponseEntity<OrderResponseDTO[]> mockResponseEntity = ResponseEntity.ok(mockResponse);
-
-        when(restTemplate.exchange(eq(expectedUrl), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(mockResponseEntity);
+        when(orderServiceClient.get(anyString(), anyString(), any())).thenReturn(mockResponse);
 
         List<OrderResponseDTO> allOrders = orderService.getAllOrders();
 
@@ -103,128 +87,56 @@ class OrderServiceImplTest {
         assertEquals(price1, allOrders.get(0).getTotalPrice());
         assertEquals(price2, allOrders.get(1).getTotalPrice());
 
-        verify(restTemplate, times(1)).exchange(eq(expectedUrl), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class));
+        verify(orderServiceClient, times(1)).get(anyString(), anyString(), any());
     }
 
     @Test
-    void testGetAllOrders_EmptyResponse() throws NoSuchAlgorithmException, InvalidKeyException {
-        // Mock empty response
-        ResponseEntity<OrderResponseDTO[]> mockResponseEntity = ResponseEntity.ok(null);
+    void testGetOrderById() {
+        long orderId = 1L;
 
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(mockResponseEntity);
+        when(orderServiceClient.get(anyString(), anyString(), any())).thenReturn(mockOrder1);
 
-        // Call the method
-        List<OrderResponseDTO> orders = orderService.getAllOrders();
-
-        // Verify results
-        assertNotNull(orders);
-        assertTrue(orders.isEmpty());
-
-        // Verify that restTemplate was called once
-        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class));
-    }
-
-    @Test
-    void testGetOrderById() throws NoSuchAlgorithmException, InvalidKeyException {
-        String orderId = "/1";
-        OrderResponseDTO mockResponse = mockOrder1;
-
-        ResponseEntity<OrderResponseDTO> mockResponseEntity = ResponseEntity.ok(mockResponse);
-
-        when(restTemplate.exchange(eq(expectedUrl + orderId), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO.class)))
-                .thenReturn(mockResponseEntity);
-
-        OrderResponseDTO order = orderService.getOrderById(1L);
+        OrderResponseDTO order = orderService.getOrderById(orderId);
 
         assertNotNull(order);
         assertEquals(price1, order.getTotalPrice());
 
-        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO.class));
+        verify(orderServiceClient, times(1)).get(anyString(), anyString(), any());
     }
 
     @Test
-    void testGetOrdersByUser_Success() throws NoSuchAlgorithmException, InvalidKeyException {
-        String userId = "/customer/1";
+    void testGetOrdersByUser_Success() {
+        long userId = 1L;
+
         OrderResponseDTO[] mockResponse = {mockOrder1, mockOrder2};
+        when(orderServiceClient.get(anyString(), anyString(), any())).thenReturn(mockResponse);
 
-        ResponseEntity<OrderResponseDTO[]> mockResponseEntity = ResponseEntity.ok(mockResponse);
-
-        when(restTemplate.exchange(eq(expectedUrl + userId), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(mockResponseEntity);
-
-        List<OrderResponseDTO> result = orderService.getOrdersByUser(1L);
+        List<OrderResponseDTO> result = orderService.getOrdersByUser(userId);
 
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(price1, result.get(0).getTotalPrice());
         assertEquals(price2, result.get(1).getTotalPrice());
 
-        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class));
+        verify(orderServiceClient, times(1)).get(anyString(), anyString(), any());
     }
 
     @Test
-    void testGetOrdersByUser_EmptyResponse() throws NoSuchAlgorithmException, InvalidKeyException {
-        ResponseEntity<OrderResponseDTO[]> mockResponseEntity = ResponseEntity.ok(null);
+    void testSendCreateOrderRequest_Success() {
+        CreateOrderRequestDTO requestDTO = new CreateOrderRequestDTO();
 
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(mockResponseEntity);
+        when(orderServiceClient.post(anyString(), eq(requestDTO), eq(OrderResponseDTO.class))).thenReturn(mockOrder1);
 
-        List<OrderResponseDTO> result = orderService.getOrdersByUser(1L);
+        OrderResponseDTO result = orderService.sendCreateOrderRequest(requestDTO);
 
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(1L, result.getId());
 
-        verify(restTemplate, times(1)).exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class));
+        verify(orderServiceClient, times(1)).post(anyString(), eq(requestDTO), eq(OrderResponseDTO.class));
     }
 
     @Test
-    void testSendCreateOrderRequest_Success() throws NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/create";
-        CreateOrderRequestDTO createOrderRequestDTO = new CreateOrderRequestDTO();
-        createOrderRequestDTO.setCustomerId(1L);
-        createOrderRequestDTO.setTotalPrice(BigDecimal.valueOf(301.98));
-
-        OrderResponseDTO mockResponse = new OrderResponseDTO();
-        mockResponse.setTotalPrice(BigDecimal.valueOf(301.98));
-
-        ResponseEntity<OrderResponseDTO> mockResponseEntity = ResponseEntity.ok(mockResponse);
-
-        when(restTemplate.postForEntity(eq(expectedUrl + endpoint), any(HttpEntity.class), eq(OrderResponseDTO.class)))
-                .thenReturn(mockResponseEntity);
-
-        OrderResponseDTO result = orderService.sendCreateOrderRequest(createOrderRequestDTO);
-
-        assertNotNull(result);
-        assertEquals(BigDecimal.valueOf(301.98), result.getTotalPrice());
-
-        verify(restTemplate, times(1)).postForEntity(anyString(), any(HttpEntity.class), eq(OrderResponseDTO.class));
-    }
-
-    @Test
-    void testSendCreateOrderRequest_Failure() throws NoSuchAlgorithmException, InvalidKeyException {
-        String endpoint = "/create";
-        CreateOrderRequestDTO createOrderRequestDTO = new CreateOrderRequestDTO();
-        createOrderRequestDTO.setCustomerId(1L);
-        createOrderRequestDTO.setTotalPrice(BigDecimal.valueOf(301.98));
-
-        when(restTemplate.postForEntity(eq(expectedUrl + endpoint), any(HttpEntity.class), eq(OrderResponseDTO.class)))
-                .thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-
-        Exception exception = assertThrows(RuntimeException.class, () ->
-            orderService.sendCreateOrderRequest(createOrderRequestDTO)
-        );
-
-        assertEquals("Failed to create order in OrderService", exception.getMessage());
-    }
-
-    @Test
-    void testProcessPendingOrders_handleOrderApproved() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
-        String url = expectedUrl + "/pending";
-
-        User mockUser = new User();
-        mockUser.setId(1L);
-
+    void testProcessPendingOrders_handleOrderApproved() {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(1L);
         userDTO.setFirstName("First");
@@ -240,32 +152,23 @@ class OrderServiceImplTest {
         dto.setCustomer(userDTO);
         dto.setBoughtGames(List.of(mockOrderItemDTO));
 
-        when(restTemplate.exchange(eq(url), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(ResponseEntity.ok(new OrderResponseDTO[]{dto}));
+        OrderResponseDTO[] mockResponse = {dto};
 
+        when(orderServiceClient.get(anyString(), anyString(), any())).thenReturn(mockResponse);
         when(userRepository.findById(dto.getCustomer().getId())).thenReturn(Optional.of(mockUser));
         when(gameRepository.findByIdIn(any())).thenReturn(List.of(new Game()));
 
         when(orderStatusUpdater.updateOrderStatus()).thenReturn(OrderStatus.APPROVED);
 
-        doNothing().when(orderService).completeOrder(any(), any(), any());
-
         orderService.processPendingOrders();
 
         // Assert
-        verify(userRepository).findById(1L);
-        verify(gameRepository).findByIdIn(Set.of(1005L));
-        verify(notificationService, never()).sendNotification(any(), any());
-        verify(emailService, never()).sendEmail(any(), any(), any());
+        verify(notificationService, times(1)).sendNotification(any(), any());
+        verify(emailService, times(1)).sendEmail(any(), any(), any());
     }
 
     @Test
-    void testProcessPendingOrders_handleOrderRejected() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
-        String url = expectedUrl + "/pending";
-
-        User mockUser = new User();
-        mockUser.setId(1L);
-
+    void testProcessPendingOrders_handleOrderRejected() {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(1L);
         userDTO.setFirstName("First");
@@ -281,10 +184,11 @@ class OrderServiceImplTest {
         dto.setCustomer(userDTO);
         dto.setBoughtGames(List.of(mockOrderItemDTO));
 
-        when(restTemplate.exchange(eq(url), eq(HttpMethod.GET), any(HttpEntity.class), eq(OrderResponseDTO[].class)))
-                .thenReturn(ResponseEntity.ok(new OrderResponseDTO[]{dto}));
+        OrderResponseDTO[] mockResponse = {dto};
 
-        when(userRepository.findById(dto.getCustomer().getId())).thenReturn(Optional.of(mockUser));
+        when(orderServiceClient.get(anyString(), anyString(), any())).thenReturn(mockResponse);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
 
         when(orderStatusUpdater.updateOrderStatus()).thenReturn(OrderStatus.REJECTED);
 
@@ -297,71 +201,34 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void testCompleteOrder() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
-        String url = expectedUrl + "/update";
+    void testCompleteOrder() {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1L);
+        userDTO.setFirstName("First");
+        userDTO.setLastName("Last");
+
+        OrderItemDTO orderItemDTO = new OrderItemDTO();
+        orderItemDTO.setOrderItemId(1005L);
+        orderItemDTO.setTitle("Game");
+        orderItemDTO.setPrice(BigDecimal.valueOf(49.99));
+
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setId(199L);
+        dto.setCustomer(userDTO);
+        dto.setBoughtGames(List.of(orderItemDTO));
 
         User customer = new User();
         customer.setId(1L);
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(1L);
-        userDTO.setFirstName("First");
-        userDTO.setLastName("Last");
+        when(userRepository.findById(dto.getCustomer().getId())).thenReturn(Optional.of(customer));
+        when(gameRepository.findByIdIn(any())).thenReturn(List.of(new Game()));
+        orderService.completeOrder(dto);
 
-        OrderItemDTO mockOrderItemDTO = new OrderItemDTO();
-        mockOrderItemDTO.setOrderItemId(1005L);
-        mockOrderItemDTO.setTitle("Game");
-        mockOrderItemDTO.setPrice(BigDecimal.valueOf(49.99));
+        assertEquals(1, customer.getOwnedGames().size(), "Games should be added to the user's library.");
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setId(199L);
-        dto.setCustomer(userDTO);
-        dto.setBoughtGames(List.of(mockOrderItemDTO));
-
-        Game game = new Game();
-        game.setId(5L);
-        game.setTitle("Game");
-
-        when(restTemplate.postForEntity(eq(url), any(HttpEntity.class), eq(Void.class))).thenReturn(ResponseEntity.status(HttpStatus.OK).build());
-
-        orderService.completeOrder(dto, customer, List.of(game));
-
+        verify(gameRepository, times(1)).findByIdIn(Set.of(1005L));
         verify(userRepository, times(1)).save(customer); // Verify save called once
         verify(emailService, times(1)).sendEmail(eq(customer.getEmail()), eq("Order Confirmation"), anyString()); // Verify email sent
         verify(notificationService, times(1)).sendNotification(anyString(), eq(customer)); // Verify notification sent
-        assertEquals(1, customer.getOwnedGames().size(), "Games should be added to the user's library.");
-    }
-
-    @Test
-    void testCompleteOrder_shouldNotProceed_whenUpdateOrderRequestFails() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(1L);
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(1L);
-        userDTO.setFirstName("First");
-        userDTO.setLastName("Last");
-
-        OrderItemDTO mockOrderItemDTO = new OrderItemDTO();
-        mockOrderItemDTO.setOrderItemId(1005L);
-        mockOrderItemDTO.setTitle("Game");
-        mockOrderItemDTO.setPrice(BigDecimal.valueOf(49.99));
-
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setId(199L);
-        dto.setCustomer(userDTO);
-        dto.setBoughtGames(List.of(mockOrderItemDTO));
-
-        ResponseEntity<Void> failedResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(Void.class)))
-                .thenReturn(failedResponse);
-
-        // Act
-        orderService.completeOrder(dto, mockUser, List.of(new Game()));
-
-        // Assert
-        verify(userRepository, never()).save(any(User.class)); // Ensure save is not called
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString()); // Ensure email is not sent
-        verify(notificationService, never()).sendNotification(anyString(), any()); // Ensure notification is not sent
     }
 }

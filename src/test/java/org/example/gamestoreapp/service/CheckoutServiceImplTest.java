@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.service;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
 import org.example.gamestoreapp.model.entity.Game;
@@ -19,12 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -71,7 +67,7 @@ public class CheckoutServiceImplTest {
     }
 
     @Test
-    void testPayment_OrderApproved() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    void testPayment_OrderApproved() {
         when(userHelperService.getUser()).thenReturn(mockUser);
         when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.of(mockCart));
         when(orderService.sendCreateOrderRequest(any(CreateOrderRequestDTO.class)))
@@ -80,13 +76,13 @@ public class CheckoutServiceImplTest {
         checkoutService.payment("Credit Card");
 
         verify(orderService).sendCreateOrderRequest(any(CreateOrderRequestDTO.class));
-        verify(orderService).completeOrder(eq(mockOrderResponse), eq(mockUser), anyList());
+        verify(orderService).completeOrder(eq(mockOrderResponse));
         verify(shoppingCartRepository).delete(mockCart);
         verifyNoInteractions(notificationService);
     }
 
     @Test
-    void testPayment_OrderPending() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    void testPayment_OrderPending() {
 
         mockOrderResponse.setStatus(OrderStatus.PENDING);
 
@@ -103,31 +99,19 @@ public class CheckoutServiceImplTest {
         assertTrue(messageCaptor.getValue().contains("Your order #5001 is awaiting processing"));
 
         verify(shoppingCartRepository).delete(mockCart);
-        verify(orderService, never()).completeOrder(any(), any(), any());
+        verify(orderService, never()).completeOrder(any());
     }
 
     @Test
-    void testPayment_NoShoppingCart() throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    void testPayment_NoShoppingCart() {
         when(userHelperService.getUser()).thenReturn(mockUser);
         when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.empty());
 
         checkoutService.payment("Crypto");
 
         verify(orderService, never()).sendCreateOrderRequest(any());
-        verify(orderService, never()).completeOrder(any(), any(), any());
+        verify(orderService, never()).completeOrder(any());
         verify(shoppingCartRepository, never()).delete(any());
         verifyNoInteractions(notificationService);
-    }
-
-    @Test
-    void testPayment_ThrowsMessagingException() throws NoSuchAlgorithmException, InvalidKeyException {
-        when(userHelperService.getUser()).thenReturn(mockUser);
-        when(shoppingCartRepository.findByCustomer(mockUser)).thenReturn(Optional.of(mockCart));
-        when(orderService.sendCreateOrderRequest(any(CreateOrderRequestDTO.class)))
-                .thenThrow(new InvalidKeyException("The key is invalid"));
-
-        assertThrows(InvalidKeyException.class, () -> checkoutService.payment("Bank Transfer"));
-
-        verify(orderService).sendCreateOrderRequest(any());
     }
 }

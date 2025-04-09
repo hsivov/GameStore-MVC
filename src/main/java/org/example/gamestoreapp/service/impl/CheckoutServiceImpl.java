@@ -1,10 +1,8 @@
 package org.example.gamestoreapp.service.impl;
 
-import jakarta.mail.MessagingException;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderItemDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
-import org.example.gamestoreapp.model.entity.Game;
 import org.example.gamestoreapp.model.entity.ShoppingCart;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.repository.ShoppingCartRepository;
@@ -15,8 +13,6 @@ import org.example.gamestoreapp.service.session.UserHelperService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,7 +35,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     @Transactional
-    public void payment(String paymentMethod) throws MessagingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void payment(String paymentMethod) {
         User currentUser = userHelperService.getUser();
         Optional<ShoppingCart> cart = shoppingCartRepository.findByCustomer(currentUser);
 
@@ -69,11 +65,8 @@ public class CheckoutServiceImpl implements CheckoutService {
 
             switch (orderResponse.getStatus()) {
                 case APPROVED -> {
-                    List<Game> games = shoppingCart.getGames();
-                    currentUser.getOwnedGames().addAll(games);
-
                     //Confirm Order
-                    orderService.completeOrder(orderResponse, currentUser, games);
+                    orderService.completeOrder(orderResponse);
 
                     // Remove shopping cart from the App
                     shoppingCartRepository.delete(shoppingCart);

@@ -12,8 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Controller
@@ -195,7 +193,7 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String getOrders(Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+    public String getOrders(Model model) {
         List<OrderResponseDTO> allOrders = orderService.getAllOrders();
 
         model.addAttribute("orders", allOrders);
@@ -204,7 +202,7 @@ public class AdminController {
     }
 
     @GetMapping("/order/{orderId}")
-    public String getOrderDetails(@PathVariable("orderId") long id, Model model) throws NoSuchAlgorithmException, InvalidKeyException {
+    public String getOrderDetails(@PathVariable("orderId") long id, Model model) {
         OrderResponseDTO order = orderService.getOrderById(id);
         model.addAttribute("order", order);
         return "order-details";

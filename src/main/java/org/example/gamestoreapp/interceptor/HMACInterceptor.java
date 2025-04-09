@@ -32,7 +32,7 @@ public class HMACInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
                              @NonNull HttpServletResponse response,
-                             @NonNull Object handler) throws Exception {
+                             @NonNull Object handler) {
 
         String apiKey = request.getHeader("X-Api-Key");
         String providedSignature = request.getHeader("X-Signature");
