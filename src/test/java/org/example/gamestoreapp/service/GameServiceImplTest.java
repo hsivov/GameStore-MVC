@@ -14,7 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,10 +39,13 @@ public class GameServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ApiService steamApiService;
+
     @InjectMocks
     private GameServiceImpl gameService;
 
-    private Game game1, game2;
+    private Game game1, game2, game3;
     private GameDTO gameDTO1, gameDTO2;
     private List<Game> mockGames;
     private User mockUser;
@@ -50,10 +55,17 @@ public class GameServiceImplTest {
         game1 = new Game();
         game1.setId(1L);
         game1.setTitle("Game One");
+        game1.setAppId(123456);
 
         game2 = new Game();
         game2.setId(2L);
         game2.setTitle("Game Two");
+        game2.setAppId(789012);
+
+        game3 = new Game();
+        game3.setId(3L);
+        game3.setTitle("Game Three");
+        game3.setAppId(1000);
 
         mockGames = List.of(game1, game2);
 
@@ -169,5 +181,26 @@ public class GameServiceImplTest {
         assertEquals(2, result.size());
         assertEquals("Game One", result.get(0).getTitle());
         assertEquals("Game Two", result.get(1).getTitle());
+    }
+
+    @Test
+    public void testUpdatePrices() {
+        mockGames = List.of(game1, game2, game3);
+        when(gameRepository.findAll()).thenReturn(mockGames);
+        when(steamApiService.fetchPrice(123456)).thenReturn(Mono.just(BigDecimal.valueOf(49.99)));
+        when(steamApiService.fetchPrice(789012)).thenReturn(Mono.just(BigDecimal.valueOf(19.99)));
+        when(steamApiService.fetchPrice(1000)).thenReturn(null);
+
+        gameService.updatePricesAt0010();
+
+        // Game 1 should be updated
+        assertEquals(BigDecimal.valueOf(49.99), game1.getPrice());
+        // Game 2 should be updated
+        assertEquals(BigDecimal.valueOf(19.99), game2.getPrice());
+        // Game 3 should be untouched
+        assertNull(game3.getPrice());
+
+        verify(steamApiService, times(3)).fetchPrice(anyInt());
+        verify(gameRepository, times(1)).saveAll(anyList());
     }
 }

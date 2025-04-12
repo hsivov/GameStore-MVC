@@ -1,6 +1,5 @@
 package org.example.gamestoreapp.controller;
 
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.example.gamestoreapp.exception.IllegalTokenException;
@@ -103,7 +102,7 @@ public class AuthController {
     }
 
     @PostMapping("/resend-confirmation")
-    public String resendConfirmation(@RequestParam("token") String token, RedirectAttributes redirectAttributes) throws MessagingException {
+    public String resendConfirmation(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
         try {
             authService.resendConfirmationToken(token);
             return "redirect:/auth/login?resendSuccess";
@@ -113,7 +112,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("token-expired")
+    @GetMapping("/token-expired")
     public String tokenExpiredPage() {
 
         return "token-expired";
@@ -132,7 +131,7 @@ public class AuthController {
 
     @PostMapping("/forgotten-password")
     public String forgotPassword(@Valid ForgotPasswordDTO forgotPasswordDTO, BindingResult bindingResult,
-                                 RedirectAttributes redirectAttributes) throws MessagingException {
+                                 RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("forgotPasswordDTO", forgotPasswordDTO);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.forgotPasswordDTO", bindingResult);

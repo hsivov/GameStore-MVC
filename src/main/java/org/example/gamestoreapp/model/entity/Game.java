@@ -32,6 +32,9 @@ public class Game extends BaseEntity{
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(nullable = false)
+    private Integer appId;
+
     public String getTitle() {
         return title;
     }
@@ -94,5 +97,13 @@ public class Game extends BaseEntity{
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Integer getAppId() {
+        return appId;
+    }
+
+    public void setAppId(Integer appId) {
+        this.appId = appId;
     }
 }

@@ -1,5 +1,7 @@
 package org.example.gamestoreapp.service;
 
+import org.example.gamestoreapp.event.OrderApprovedEvent;
+import org.example.gamestoreapp.event.OrderRejectedEvent;
 import org.example.gamestoreapp.model.dto.CreateOrderRequestDTO;
 import org.example.gamestoreapp.model.dto.OrderItemDTO;
 import org.example.gamestoreapp.model.dto.OrderResponseDTO;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,16 +41,13 @@ class OrderServiceImplTest {
     private GameRepository gameRepository;
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Mock
     private OrderStatusUpdater orderStatusUpdater;
 
     @Mock
     private OrderServiceClient orderServiceClient;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -163,8 +163,7 @@ class OrderServiceImplTest {
         orderService.processPendingOrders();
 
         // Assert
-        verify(notificationService, times(1)).sendNotification(any(), any());
-        verify(emailService, times(1)).sendEmail(any(), any(), any());
+        verify(eventPublisher, times(1)).publishEvent(any(OrderApprovedEvent.class));
     }
 
     @Test
@@ -196,8 +195,7 @@ class OrderServiceImplTest {
 
         // Assert
         verify(userRepository, times(1)).findById(1L);
-        verify(notificationService, times(1)).sendNotification(any(), any());
-        verify(emailService, times(1)).sendEmail(any(), any(), any());
+        verify(eventPublisher, times(1)).publishEvent(any(OrderRejectedEvent.class));
     }
 
     @Test
@@ -228,7 +226,7 @@ class OrderServiceImplTest {
 
         verify(gameRepository, times(1)).findByIdIn(Set.of(1005L));
         verify(userRepository, times(1)).save(customer); // Verify save called once
-        verify(emailService, times(1)).sendEmail(eq(customer.getEmail()), eq("Order Confirmation"), anyString()); // Verify email sent
-        verify(notificationService, times(1)).sendNotification(anyString(), eq(customer)); // Verify notification sent
+
+        verify(eventPublisher, times(1)).publishEvent(any(OrderApprovedEvent.class)); // Verify notification sent
     }
 }
