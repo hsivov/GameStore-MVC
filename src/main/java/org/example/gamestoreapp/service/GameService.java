@@ -16,4 +16,6 @@ public interface GameService {
     Optional<GameDTO> getGameById(Long id);
 
     List<GameDTO> getGamesByIds(Set<Long> gameIds);
+
+    void updatePricesAt0010();
 }

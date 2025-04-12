@@ -10,7 +10,6 @@ import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
 import org.example.gamestoreapp.model.entity.User;
 import org.example.gamestoreapp.model.enums.UserRole;
-import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.AuthService;
 import org.example.gamestoreapp.service.TokenService;
@@ -19,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
-import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserHelperService userHelperService;
     private final TokenService tokenService;
-    private final ConfirmationTokenRepository tokenRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
@@ -40,13 +37,11 @@ public class AuthServiceImpl implements AuthService {
                            UserRepository userRepository,
                            UserHelperService userHelperService,
                            TokenService tokenService,
-                           ConfirmationTokenRepository tokenRepository,
                            ApplicationEventPublisher eventPublisher) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userHelperService = userHelperService;
         this.tokenService = tokenService;
-        this.tokenRepository = tokenRepository;
         this.eventPublisher = eventPublisher;
     }
 
@@ -69,9 +64,6 @@ public class AuthServiceImpl implements AuthService {
             return true;
         } catch (DataAccessException e) {
             logger.error("Database error occurred during user registration: {}", e.getMessage(), e);
-            return false;
-        } catch (MailException e) {
-            logger.error("Failed to send confirmation email: {}", e.getMessage(), e);
             return false;
         } catch (Exception e) {
             // Use the logger for generic errors
@@ -112,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO, String resetToken) {
-        Optional<ConfirmationToken> tokenOptional = tokenRepository.findByToken(resetToken);
+        Optional<ConfirmationToken> tokenOptional = tokenService.getToken(resetToken);
 
         if (tokenOptional.isPresent()) {
             ConfirmationToken token = tokenOptional.get();

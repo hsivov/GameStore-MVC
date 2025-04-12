@@ -112,7 +112,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("token-expired")
+    @GetMapping("/token-expired")
     public String tokenExpiredPage() {
 
         return "token-expired";

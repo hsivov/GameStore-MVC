@@ -1,5 +1,6 @@
 package org.example.gamestoreapp.service;
 
+import org.example.gamestoreapp.event.*;
 import org.example.gamestoreapp.exception.IllegalTokenException;
 import org.example.gamestoreapp.exception.UsedTokenException;
 import org.example.gamestoreapp.exception.UserNotFoundException;
@@ -7,10 +8,7 @@ import org.example.gamestoreapp.model.dto.ChangePasswordBindingModel;
 import org.example.gamestoreapp.model.dto.ResetPasswordDTO;
 import org.example.gamestoreapp.model.dto.UserRegisterBindingModel;
 import org.example.gamestoreapp.model.entity.ConfirmationToken;
-import org.example.gamestoreapp.model.entity.Notification;
 import org.example.gamestoreapp.model.entity.User;
-import org.example.gamestoreapp.repository.ConfirmationTokenRepository;
-import org.example.gamestoreapp.repository.NotificationRepository;
 import org.example.gamestoreapp.repository.UserRepository;
 import org.example.gamestoreapp.service.impl.AuthServiceImpl;
 import org.example.gamestoreapp.service.session.UserHelperService;
@@ -20,8 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
-import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -40,13 +38,9 @@ public class AuthServiceImplTest {
     @Mock
     private UserHelperService userHelperService;
     @Mock
-    private EmailService emailService;
-    @Mock
     private TokenService tokenService;
     @Mock
-    private ConfirmationTokenRepository tokenRepository;
-    @Mock
-    private NotificationRepository notificationRepository;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -80,10 +74,9 @@ public class AuthServiceImplTest {
         boolean result = authService.register(userRegisterBindingModel);
 
         assertTrue(result);
-        verify(userRepository).save(any(User.class));
-        verify(emailService).sendEmail(anyString(), anyString(), anyString());
-        verify(tokenService).saveConfirmationToken(any(ConfirmationToken.class));
-        verify(notificationRepository).save(any(Notification.class));
+        verify(passwordEncoder, times(1)).encode(anyString());
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(eventPublisher, times(1)).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -95,21 +88,7 @@ public class AuthServiceImplTest {
 
         assertFalse(result);
         verify(userRepository, times(1)).save(any(User.class));
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
-        verify(tokenService, never()).saveConfirmationToken(any(ConfirmationToken.class));
-    }
-
-    @Test
-    void register_ShouldReturnFalse_WhenEmailSendingFails() {
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        doThrow(new MailException("Email error") {}).when(emailService).sendEmail(anyString(), anyString(), anyString());
-
-        boolean result = authService.register(userRegisterBindingModel);
-
-        assertFalse(result);
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(emailService, times(1)).sendEmail(anyString(), anyString(), anyString());
-        verify(tokenService, times(1)).saveConfirmationToken(any(ConfirmationToken.class));
+        verify(eventPublisher, never()).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -120,8 +99,7 @@ public class AuthServiceImplTest {
 
         assertFalse(result);
         verify(userRepository, times(1)).save(any(User.class));
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
-        verify(tokenService, never()).saveConfirmationToken(any(ConfirmationToken.class));
+        verify(eventPublisher, never()).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -162,7 +140,7 @@ public class AuthServiceImplTest {
         verify(userHelperService, times(1)).getUser();
         verify(passwordEncoder, times(1)).encode("newPassword123");
         verify(userRepository, times(1)).save(mockUser);
-        verify(notificationRepository).save(any(Notification.class));
+        verify(eventPublisher, times(1)).publishEvent(any(PasswordChangedEvent.class));
     }
 
     @Test
@@ -192,7 +170,7 @@ public class AuthServiceImplTest {
         authService.passwordResetRequest("test@example.com");
 
         verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(emailService, times(1)).sendEmail(anyString(), anyString(), anyString());
+        verify(eventPublisher, times(1)).publishEvent(any(PasswordResetRequestEvent.class));
     }
 
     @Test
@@ -202,7 +180,7 @@ public class AuthServiceImplTest {
         assertThrows(UserNotFoundException.class, () -> authService.passwordResetRequest("nonexistent@example.com"));
 
         verify(userRepository, times(1)).findByEmail("nonexistent@example.com");
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+        verify(eventPublisher, never()).publishEvent(any(PasswordResetRequestEvent.class));
     }
 
     @Test
@@ -213,17 +191,17 @@ public class AuthServiceImplTest {
         ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
         resetPasswordDTO.setConfirmPassword("newPassword123");
 
-        when(tokenRepository.findByToken("validToken123")).thenReturn(Optional.of(confirmationToken));
+        when(tokenService.getToken("validToken123")).thenReturn(Optional.of(confirmationToken));
         when(passwordEncoder.encode("newPassword123")).thenReturn("newEncodedPassword");
 
         authService.resetPassword(resetPasswordDTO, "validToken123");
 
         assertEquals("newEncodedPassword", mockUser.getPassword());
-        verify(tokenRepository, times(1)).findByToken("validToken123");
+        verify(tokenService, times(1)).getToken("validToken123");
         verify(passwordEncoder, times(1)).encode("newPassword123");
         verify(userRepository, times(1)).save(any(User.class));
         verify(tokenService, times(1)).invalidateToken(confirmationToken);
-        verify(notificationRepository).save(any(Notification.class));
+        verify(eventPublisher, times(1)).publishEvent(any(PasswordResetEvent.class));
     }
 
     @Test
@@ -231,12 +209,12 @@ public class AuthServiceImplTest {
         ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
         resetPasswordDTO.setConfirmPassword("newPassword123");
 
-        when(tokenRepository.findByToken("invalidToken")).thenReturn(Optional.empty());
+        when(tokenService.getToken("invalidToken")).thenReturn(Optional.empty());
 
         authService.resetPassword(resetPasswordDTO, "invalidToken");
 
-        verify(tokenRepository, times(1)).findByToken("invalidToken");
-        verifyNoInteractions(passwordEncoder, userRepository, tokenService);
+        verify(tokenService, times(1)).getToken("invalidToken");
+        verifyNoInteractions(passwordEncoder, userRepository);
     }
 
     @Test
@@ -289,7 +267,7 @@ public class AuthServiceImplTest {
         authService.resendConfirmationToken("validToken123");
 
         verify(tokenService, times(1)).getToken("validToken123");
-        verify(emailService, times(1)).sendEmail(anyString(), anyString(), anyString());
+        verify(eventPublisher, times(1)).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -299,7 +277,7 @@ public class AuthServiceImplTest {
         assertThrows(IllegalTokenException.class, () -> authService.resendConfirmationToken("invalidToken"));
 
         verify(tokenService, times(1)).getToken("invalidToken");
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+        verify(eventPublisher, never()).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -314,7 +292,7 @@ public class AuthServiceImplTest {
         assertThrows(UsedTokenException.class, () -> authService.resendConfirmationToken("usedToken123"));
 
         verify(tokenService, times(1)).getToken("usedToken123");
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+        verify(eventPublisher, never()).publishEvent(any(UserRegisteredEvent.class));
     }
 
     @Test
@@ -330,7 +308,7 @@ public class AuthServiceImplTest {
         verify(tokenService, times(1)).getToken("validToken123");
         verify(userRepository, times(1)).save(any(User.class));
         verify(tokenService, times(1)).invalidateToken(mockToken);
-        verify(notificationRepository).save(any(Notification.class));
+        verify(eventPublisher, times(1)).publishEvent(any(UserEnabledEvent.class));
     }
 
     @Test
