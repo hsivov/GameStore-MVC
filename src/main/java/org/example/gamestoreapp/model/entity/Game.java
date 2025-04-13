@@ -32,7 +32,7 @@ public class Game extends BaseEntity{
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
+    @Column
     private Integer appId;
 
     public String getTitle() {
