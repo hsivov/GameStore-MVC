@@ -591,13 +591,11 @@ table td {
 
 .game-content {
     padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
 }
 
 .game-content h1 {
     text-align: center;
+    font-size: 24px;
 }
 
 .description {
@@ -610,6 +608,7 @@ table td {
 }
 
 .price-box {
+    margin-top: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
